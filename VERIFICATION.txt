@@ -21,3 +21,14 @@ Responsive layouts use narrow-screen media rules, wrapping navigation, and horiz
 JSON schema/merge validation and legacy migration are covered by automated tests; the native file-picker restore flow was not exercised in the browser.
 
 No QA sessions are bundled or uploaded to the hosted website. Tests use local preview browser storage. History remains local to each origin, including separate storage for the standalone HTML.
+Layout/review correction — October 20, 2026
+Current-session analytics are now intentionally deferred. This replaces the earlier live-checkpoint display behavior described above.
+- Verified New session removes all current result, insight, forecast, trend, and math panels and their review link.
+- Verified the timer and setup form share one full-width stack, with HP/MP cards aligned side by side on desktop.
+- Started a run and saved a checkpoint; current-session analytics remained hidden.
+- Clicked Done and entered ending values; analytics remained hidden until Calculate.
+- Calculate revealed a separate, full-width review with the correct net gain and both checkpoint intervals.
+- Edit ending values hid the review; recalculation restored it. New session hid it again.
+- Inspected dark and light themes at the available browser width. The setup form now leads directly into history without the former empty column.
+- Existing completed history remains accessible. Map comparison is hidden when there are no saved completed runs.
+- Existing calculation tests and syntax/HTML-reference checks passed.

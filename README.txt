@@ -7,7 +7,7 @@ The header slider remembers light/dark mode, including sun/moon icons.
 TRACK A RUN
 1. Optionally enter map, class/job, and level. Starting EXP is within-level EXP when a level is provided.
 2. Enter starting EXP, mesos, supplies, quantities, and editable unit prices. Start the timer.
-3. Pause/resume for breaks. Optional checkpoints show current pace, supply runway, and leveling estimates.
+3. Pause/resume for breaks. Optional checkpoints record snapshots for the final pace review.
 4. Done stops active time, including when paused. Enter ending values and ending level if supplied at the start.
 5. Adjust cumulative supply additions. Without level metadata, the manual extra-EXP field supports legacy sessions.
 6. Optionally add unsold loot estimates or income/expenses not already in your entered balance. Calculate.
@@ -43,3 +43,5 @@ build-download.cjs: regenerate standalone HTML and hosted feature/TODO downloads
 CHECKS
 node test.cjs
 node build-download.cjs
+
+Layout: timer and inputs use one aligned stack. Current-session results, forecasts, supply insights, and checkpoint trends appear only after Done, ending values, and Calculate. Editing or starting a new session hides that review again. Prior completed sessions stay available in history; an empty map-comparison panel is hidden.

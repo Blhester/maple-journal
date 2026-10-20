@@ -23,7 +23,7 @@
   function paint(id,value){$(id).textContent=format(value);$(id).classList.toggle('negative',value<0);}
   function snapshot(){
     if(state.stage==='complete')return {end:state.end,time:elapsed(),label:'Final session results · '+duration(elapsed())+' active training'};
-    const cp=state.checkpoints?.at(-1);return cp?{end:cp.end,time:cp.elapsedMs,label:'Latest checkpoint · '+duration(cp.elapsedMs)+' active training'}:null;
+    return null;
   }
   function updateForecast(){
     if(!latest)return;
@@ -31,7 +31,7 @@
     catch(e){$('target-eta').textContent='—';$('target-detail').textContent=e.message;}
   }
   function renderResults(){
-    const snap=snapshot();latest=null;
+    const complete=state.stage==='complete';$('session-results').hidden=!complete;$('review-link').hidden=!complete;latest=null;if(!complete)return;const snap=snapshot();
     for(const id of ['total-exp','total-net','gross','hp-spend','mp-spend','net-breakdown','adjusted-net','estimated-net','loot-total',...['hour','ten','minute'].flatMap(p=>['exp-'+p,'mesos-'+p])]){$(id).textContent='—';$(id).classList.remove('negative');}
     $('hp-used').textContent='';$('mp-used').textContent='';$('ledger-totals').hidden=true;
     for(const id of ['hp-efficiency','mp-efficiency','supply-cost','supply-share','hp-runway','mp-runway','target-eta','projection-exp-30','projection-mesos-30','projection-exp-60','projection-mesos-60'])$(id).textContent='—';
@@ -50,6 +50,7 @@
     renderTrend();
   }
   function renderTrend(){
+    if(state.stage!=='complete')return;
     const rows=state.start?M.intervals(state.start,state.checkpoints||[],state.stage==='complete'?state.end:null,state.stage==='complete'?elapsed():0):[];
     const body=$('trend-rows');body.replaceChildren();
     for(const row of rows){const tr=document.createElement('tr');for(const v of [duration(row.from)+'–'+duration(row.to),format(row.expHour),format(row.netHour)]){const td=document.createElement('td');td.textContent=v;tr.append(td);}body.append(tr);}

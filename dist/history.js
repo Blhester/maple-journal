@@ -41,6 +41,7 @@
     const close=text('button','Close review','secondary');close.type='button';close.addEventListener('click',()=>{selected=null;box.hidden=true;});box.append(close);
   }
   function render(){
+    $('comparison-section').hidden=records.length===0;$('comparison-link').hidden=records.length===0;
     const selectedClass=$('filter-class').value;
     $('filter-class').replaceChildren(new Option('All classes',''),...[...new Set(records.map(r=>r.meta.class||'Unspecified class'))].sort().map(c=>new Option(c,c)));$('filter-class').value=selectedClass;
     for(const [id,field]of [['known-maps','map'],['known-classes','class']])$(id).replaceChildren(...[...new Set(records.map(r=>r.meta[field]).filter(Boolean))].sort().map(v=>new Option(v,v)));

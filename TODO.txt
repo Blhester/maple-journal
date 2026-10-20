@@ -18,3 +18,5 @@ Scope approved October 20, 2026: implement all proposed grind-insight features.
 Acceptance: all requested features functional, existing net formula preserved, no fabricated history, estimates labeled, data sources linked, and verification results documented.
 
 Verification details and device/file-picker limits: VERIFICATION.txt.
+
+[x] Remove uneven tracker columns and defer all current-session analytics until final calculation.

@@ -8,7 +8,7 @@ Save completed sessions with map, class, starting/ending level, active time, and
 Plot each map's EXP/hour against net mesos/hour. Choose original net, adjusted cash net, or estimated net including unsold loot. Show the fastest training map and highest-profit map for the selected history.
 
 3. Leveling estimates and projections
-Estimate time to the next level or a chosen target using the latest checkpoint or final pace. Show projected EXP and original-formula net mesos for 30 and 60 active minutes. Label estimates and handle zero/negative EXP pace.
+Estimate time to the next level or a chosen target using the completed session’s final pace. Show projected EXP and original-formula net mesos for 30 and 60 active minutes. Label estimates and handle zero/negative EXP pace.
 
 4. Potion efficiency
 Show HP/MP items consumed per minute, total supply cost per hour, and potion spending as a percentage of positive meso balance change.
@@ -39,3 +39,5 @@ Estimated total net = adjusted cash net + estimated unsold loot.
 Supply used = starting + cumulative additions - remaining.
 Source: https://meowdb.com/msclassic/formulas/leveling
 Item source: https://meowdb.com/msclassic/npc-shops
+
+Layout: timer and inputs use one aligned stack. Current-session results, forecasts, supply insights, and checkpoint trends appear only after Done, ending values, and Calculate. Editing or starting a new session hides that review again. Prior completed sessions stay available in history; an empty map-comparison panel is hidden.
