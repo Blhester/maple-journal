@@ -1,8 +1,25 @@
 (function (root) {
   'use strict';
   const catalog = {
-    hp: [{id:'red',name:'Red Potion',cost:50},{id:'orange',name:'Orange Potion',cost:150},{id:'white',name:'White Potion',cost:350},{id:'custom',name:'Custom HP potion',cost:0}],
-    mp: [{id:'blue',name:'Blue Potion',cost:220},{id:'lemon',name:'Lemon',cost:150},{id:'water',name:'Pure Water',cost:1120},{id:'custom',name:'Custom MP potion',cost:0}]
+    hp: [
+      {id:'meat',name:'Meat',cost:80},
+      {id:'red',name:'Red Potion',cost:50},
+      {id:'orange',name:'Orange Potion',cost:150},
+      {id:'white',name:'White Potion',cost:350},
+      {id:'apple',name:'Apple',cost:20},
+      {id:'fried-chicken',name:'Fried Chicken',cost:60},
+      {id:'hot-dog',name:'Hot Dog',cost:180},
+      {id:'unagi',name:'Unagi',cost:1000},
+      {id:'custom',name:'Custom HP item',cost:0}
+    ],
+    mp: [
+      {id:'lemon',name:'Lemon',cost:150},
+      {id:'blue',name:'Blue Potion',cost:220},
+      {id:'water',name:'Pure Water',cost:1120},
+      {id:'orange-fruit',name:'Orange',cost:50},
+      {id:'orange-juice',name:'Orange Juice',cost:540},
+      {id:'custom',name:'Custom MP item',cost:0}
+    ]
   };
   function integer(value, label) {
     if (typeof value === 'string' && !/^\d+$/.test(value.trim())) throw new Error(label + ' must be a whole number of 0 or more.');
