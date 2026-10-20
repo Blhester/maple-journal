@@ -65,6 +65,7 @@
     busy=value;$('ocr-progress-wrap').hidden=!value;
     for(const id of ['ocr-read','ocr-read-field','ocr-reset-tuning','ocr-file','ocr-example','ocr-region-field','ocr-save-layout','ocr-reset-layout','ocr-apply',...['x','y','w','h'].map(k=>'ocr-region-'+k),...tuningKeys.map(k=>'ocr-tune-'+k)])$(id).disabled=value;
     for(const button of $('ocr-review-fields').querySelectorAll('button'))button.disabled=value||button.dataset.unsupported==='true';
+    MaplePotionPicker.setBusy($('ocr-review-fields'),value);
     if(!value&&image)paintTuning();
     $('ocr-region-overlay').classList.toggle('ocr-reading',value);
   }
@@ -73,7 +74,7 @@
   }
   function clearImage(){if(objectUrl)URL.revokeObjectURL(objectUrl);objectUrl=null;image=null;drag=null;$('ocr-image').removeAttribute('src');for(const id of ['ocr-crop','ocr-processed']){$(id).width=1;$(id).height=1;}$('ocr-region-overlay').replaceChildren();$('ocr-workspace').hidden=true;}
   async function loadImage(file){
-    stop();clearImage();error('ocr-error','');invalidateReview();$('ocr-review-fields').replaceChildren();$('ocr-field-status').textContent='';
+    stop();clearImage();error('ocr-error','');invalidateReview();MaplePotionPicker.dispose($('ocr-review-fields'));$('ocr-review-fields').replaceChildren();$('ocr-field-status').textContent='';
     const token=run;
     if(file&&(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>15*1024*1024)){error('ocr-error','Choose a PNG, JPG, or WebP smaller than 15 MB.');return;}
     const img=new Image();
@@ -135,7 +136,7 @@
     finally{if(token===run){if(worker)await worker.terminate();worker=null;for(const url of workerUrls)URL.revokeObjectURL(url);workerUrls=[];setBusy(false);}}
   }
   function showReview(results,partial=false){
-    const container=$('ocr-review-fields');if(!partial)container.replaceChildren();
+    const container=$('ocr-review-fields');if(!partial){MaplePotionPicker.dispose(container);container.replaceChildren();}
     for(const field of activeFields()){
       const previous=$('ocr-review-'+field.id);if(partial&&previous&&!results[field.id])continue;
       const result=results[field.id]||C.select(field.id,[]),row=text('div','','ocr-review-field'),header=text('div','','ocr-review-field-heading'),use=document.createElement('input'),label=document.createElement('label');row.id='ocr-review-'+field.id;
@@ -150,9 +151,11 @@
         const supply=text('label','Count belongs to '),select=document.createElement('select');select.id='ocr-potion-'+field.id;select.setAttribute('aria-label',field.id.toUpperCase()+' supply in screenshot');select.replaceChildren(...MapleMath.catalog[field.id].map(item=>new Option(item.name,item.id)));select.value=previous?.querySelector('#ocr-potion-'+field.id)?.value||context[field.id+'Potion'];select.disabled=context.stage!=='setup';supply.append(select);row.append(supply);
       }
       row.append(text('small',!supported?'Starting level was not recorded. Keep using the manual level-up adjustment.':result.value===null?'No number or text found. Type it here or leave this field unchecked.':result.disagrees?'Readings differ. Check the enlarged crop carefully.':['hp','mp'].includes(field.id)?'Detected count is included. Choose the matching item and edit the number if needed.':result.confidence<70?'Small text: check the enlarged crop before applying.':'Review this value before applying.','ocr-review-note'));
-      const details=document.createElement('details');details.className='ocr-raw';details.append(text('summary','Recognized text'),text('p',result.raw||'No text recognized'));row.append(details);if(previous)previous.replaceWith(row);else container.append(row);
+      const details=document.createElement('details');details.className='ocr-raw';details.append(text('summary','Recognized text'),text('p',result.raw||'No text recognized'));row.append(details);if(previous){MaplePotionPicker.dispose(previous);previous.replaceWith(row);}else container.append(row);
     }
     $('ocr-review-form').hidden=false;$('ocr-empty-review').hidden=true;
+    for(const field of ['hp','mp']){const select=$('ocr-potion-'+field);if(select)MaplePotionPicker.enhance(select,field);}
+    MaplePotionPicker.syncAll();MaplePotionPicker.setBusy(container,busy);
   }
   function open(){
     context=options.getContext();if(!['setup','ending'].includes(context.stage))return;
@@ -165,7 +168,7 @@
     try{const saved=JSON.parse(localStorage.getItem(layoutKey));if(saved)for(const field of C.fields)regions[field.id]=C.region(saved[field.id]);}catch{regions=structuredClone(C.defaults);}
     try{const saved=JSON.parse(localStorage.getItem(tuningKey));if(saved)for(const field of C.fields)if(saved[field.id])tunings[field.id]=C.tuning(field.id,saved[field.id]);}catch{tunings={};}
     $('screenshot-start').addEventListener('click',open);$('screenshot-end').addEventListener('click',open);
-    $('ocr-close').addEventListener('click',()=>$('screenshot-dialog').close());$('screenshot-dialog').addEventListener('close',()=>{stop();clearImage();$('ocr-file').value='';$('ocr-file-name').textContent='PNG, JPG, or WebP · up to 15 MB';$('ocr-review-fields').replaceChildren();});
+    $('ocr-close').addEventListener('click',()=>$('screenshot-dialog').close());$('screenshot-dialog').addEventListener('close',()=>{stop();clearImage();$('ocr-file').value='';$('ocr-file-name').textContent='PNG, JPG, or WebP · up to 15 MB';MaplePotionPicker.dispose($('ocr-review-fields'));$('ocr-review-fields').replaceChildren();});
     $('ocr-file').addEventListener('change',event=>{if(event.target.files[0])void loadImage(event.target.files[0]);});$('ocr-example').addEventListener('click',()=>void loadImage(null));$('ocr-read').addEventListener('click',()=>void read());$('ocr-read-field').addEventListener('click',()=>void read(true));$('ocr-cancel').addEventListener('click',()=>{stop();$('ocr-progress-text').textContent='Reading cancelled. You can retry or enter values manually.';$('ocr-field-status').textContent=restoreReview()?'Reading cancelled. Other values were kept.':'Reading cancelled. You can retry or enter values manually.';});
     $('ocr-region-field').addEventListener('change',()=>{paintRegion();$('ocr-field-status').textContent='';});
     for(const key of tuningKeys)$('ocr-tune-'+key).addEventListener('input',()=>{const id=$('ocr-region-field').value;tunings[id]=C.tuning(id,Object.fromEntries(tuningKeys.map(k=>[k,k==='invert'?$('ocr-tune-'+k).checked:k==='mode'?$('ocr-tune-'+k).value:Number($('ocr-tune-'+k).value)])));paintTuning();invalidateReview(id);$('ocr-field-status').textContent='Preview updated. Re-read this field to update its value.';});

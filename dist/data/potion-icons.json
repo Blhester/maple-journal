@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-20T18:59:25.902Z",
+  "source": "https://meowdb.com/msclassic/item-db/use",
+  "scope": "Icons for the journal's existing 13 named HP/MP supplies. Exact English names and Use type verified against MeowDB Classic. Custom entries have no game icon. Icon metadata does not change supply costs.",
+  "items": [
+    {
+      "id": "238",
+      "key": "meat",
+      "kind": "hp",
+      "name": "Meat",
+      "iconKey": "2010003",
+      "icon": "assets/potions/meat.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/238",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/2010003"
+    },
+    {
+      "id": "270",
+      "key": "red",
+      "kind": "hp",
+      "name": "Red Potion",
+      "iconKey": "2000000",
+      "icon": "assets/potions/red.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/270",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/2000000"
+    },
+    {
+      "id": "271",
+      "key": "orange",
+      "kind": "hp",
+      "name": "Orange Potion",
+      "iconKey": "2000001",
+      "icon": "assets/potions/orange.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/271",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/2000001"
+    },
+    {
+      "id": "272",
+      "key": "white",
+      "kind": "hp",
+      "name": "White Potion",
+      "iconKey": "2000002",
+      "icon": "assets/potions/white.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/272",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/2000002"
+    },
+    {
+      "id": "236",
+      "key": "apple",
+      "kind": "hp",
+      "name": "Apple",
+      "iconKey": "2010001",
+      "icon": "assets/potions/apple.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/236",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/2010001"
+    },
+    {
+      "id": "248",
+      "key": "fried-chicken",
+      "kind": "hp",
+      "name": "Fried Chicken",
+      "iconKey": "2020001",
+      "icon": "assets/potions/fried-chicken.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/248",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/2020001"
+    },
+    {
+      "id": "252",
+      "key": "hot-dog",
+      "kind": "hp",
+      "name": "Hot Dog",
+      "iconKey": "2020005",
+      "icon": "assets/potions/hot-dog.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/252",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/2020005"
+    },
+    {
+      "id": "264",
+      "key": "unagi",
+      "kind": "hp",
+      "name": "Unagi",
+      "iconKey": "2022003",
+      "icon": "assets/potions/unagi.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/264",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/2022003"
+    },
+    {
+      "id": "240",
+      "key": "lemon",
+      "kind": "mp",
+      "name": "Lemon",
+      "iconKey": "2010005",
+      "icon": "assets/potions/lemon.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/240",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/2010005"
+    },
+    {
+      "id": "273",
+      "key": "blue",
+      "kind": "mp",
+      "name": "Blue Potion",
+      "iconKey": "2000003",
+      "icon": "assets/potions/blue.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/273",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/2000003"
+    },
+    {
+      "id": "261",
+      "key": "water",
+      "kind": "mp",
+      "name": "Pure Water",
+      "iconKey": "2022000",
+      "icon": "assets/potions/water.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/261",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/2022000"
+    },
+    {
+      "id": "239",
+      "key": "orange-fruit",
+      "kind": "mp",
+      "name": "Orange",
+      "iconKey": "2010004",
+      "icon": "assets/potions/orange-fruit.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/239",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/2010004"
+    },
+    {
+      "id": "256",
+      "key": "orange-juice",
+      "kind": "mp",
+      "name": "Orange Juice",
+      "iconKey": "2020009",
+      "icon": "assets/potions/orange-juice.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/256",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/2020009"
+    }
+  ]
+}
