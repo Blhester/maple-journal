@@ -32,3 +32,5 @@ Verification details and device/file-picker limits: VERIFICATION.txt.
 [x] Scrape and verify icons for all existing named HP/MP supplies; add accessible icon dropdowns to setup/OCR review and embed icons in offline downloads.
 
 [x] Replace unreliable general OCR for Classic potion counts with exact-font matching, local source assets, cancellable worker, and real/synthetic regression fixtures.
+
+[x] Cache MeowDB map names and add similarity matching and catalog search to screenshot review, including ambiguous map suffix and incorrect town-name regressions.

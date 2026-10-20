@@ -51,3 +51,5 @@ OCR tuning: per-field text-color presets, contrast/brightness/threshold/color-to
 Potion selectors: local MeowDB icons for all 13 named supplies, icon/name/price choices in setup and OCR review, generic custom-item marker, keyboard navigation/type-ahead, session-state locking, and embedded standalone icons. Prices and calculations are preserved.
 
 Classic potion digit matching defaults for HP/MP; original-color local worker, general OCR fallback selector, conservative blank on ambiguous font matches, offline embedded dataset.
+
+Training-map OCR matches both readings to an offline MeowDB map catalog; up to two canonical suggestions, searchable corrections, uncertain matches require choice, invalid OCR labels cannot be applied.

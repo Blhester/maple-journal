@@ -82,3 +82,5 @@ require('./test-ocr.cjs');
 require('./test-potions.cjs');
 
 require('./test-quantity.cjs');
+
+require('./test-maps.cjs');
