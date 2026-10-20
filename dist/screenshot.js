@@ -2,7 +2,7 @@
   'use strict';
   const $=id=>document.getElementById(id),C=MapleOcrCore,layoutKey='maple-journal-ocr-regions-v1',tuningKey='maple-journal-ocr-tuning-v1',tuningKeys=['reader','mode','contrast','brightness','threshold','chroma','scale','invert'];
   let options,context,image=null,regions=structuredClone(C.defaults),busy=false,worker=null,run=0,objectUrl=null,drag=null;
-  let libraryPromise=null,workerUrls=[],tunings={},digitCancel=null;
+  let libraryPromise=null,workerUrls=[],tunings={},digitCancel=null,captureController=null;
   const text=(tag,value,className)=>{const e=document.createElement(tag);e.textContent=value;if(className)e.className=className;return e;};
   function error(id,message){$(id).textContent=message||'';$(id).hidden=!message;}
   const activeFields=()=>C.fields.filter(field=>context.stage==='setup'||!['map','class'].includes(field.id));
@@ -64,14 +64,25 @@
   function restoreReview(){if(!$('ocr-review-fields').children.length)return false;$('ocr-review-form').hidden=false;$('ocr-empty-review').hidden=true;return true;}
   function setBusy(value){
     busy=value;$('ocr-progress-wrap').hidden=!value;
-    for(const id of ['ocr-read','ocr-read-field','ocr-reset-tuning','ocr-file','ocr-example','ocr-region-field','ocr-save-layout','ocr-reset-layout','ocr-apply',...['x','y','w','h'].map(k=>'ocr-region-'+k),...tuningKeys.map(k=>'ocr-tune-'+k)])$(id).disabled=value;
+    for(const id of ['ocr-read','ocr-read-field','ocr-reset-tuning','ocr-file','ocr-capture','ocr-example','ocr-region-field','ocr-save-layout','ocr-reset-layout','ocr-apply',...['x','y','w','h'].map(k=>'ocr-region-'+k),...tuningKeys.map(k=>'ocr-tune-'+k)])$(id).disabled=value;
     for(const button of $('ocr-review-fields').querySelectorAll('button'))button.disabled=value||button.dataset.unsupported==='true';
     MaplePotionPicker.setBusy($('ocr-review-fields'),value);
     if(!value&&image)paintTuning();
     $('ocr-region-overlay').classList.toggle('ocr-reading',value);
   }
   function stop(){
-    run++;if(digitCancel)digitCancel();if(worker){void worker.terminate();worker=null;}for(const url of workerUrls)URL.revokeObjectURL(url);workerUrls=[];setBusy(false);
+    run++;if(captureController){captureController.abort();captureController=null;}$('ocr-capture-cancel').hidden=true;if(digitCancel)digitCancel();if(worker){void worker.terminate();worker=null;}for(const url of workerUrls)URL.revokeObjectURL(url);workerUrls=[];setBusy(false);
+  }
+  async function captureScreen(){
+    if(busy||captureController)return;error('ocr-error','');
+    if(!MapleScreenCapture.supported()){$('ocr-capture-status').textContent='Screen capture is unavailable in this browser. Open grindjournal.com in desktop Chrome or Edge over HTTPS, or choose a screenshot file.';return;}
+    stop();const controller=new AbortController();captureController=controller;setBusy(true);$('ocr-progress-wrap').hidden=true;$('ocr-capture-cancel').hidden=false;$('ocr-capture-status').textContent='Choose your MapleStory window in the browser’s share picker. One snapshot will be taken, then sharing will stop. If no picker opens, use desktop Chrome or Edge, or upload.';
+    try{
+      const blob=await MapleScreenCapture.capture({signal:controller.signal});if(captureController!==controller)return;
+      captureController=null;$('ocr-capture-cancel').hidden=true;setBusy(false);
+      const loaded=await loadImage(new File([blob],'Screen capture.png',{type:'image/png'}));if(loaded&&$('screenshot-dialog').open)$('ocr-capture-status').textContent='Snapshot captured. Screen sharing has stopped. Check the read regions, then read the screenshot.';
+    }catch(e){if(captureController===controller){$('ocr-capture-status').textContent=['NotAllowedError','AbortError'].includes(e.name)?'Capture was cancelled or permission was denied. Your previous screenshot and reviewed values were kept. You can retry or upload instead.':['NotSupportedError','SecurityError'].includes(e.name)?'Screen capture is blocked or unsupported in this browser. Open grindjournal.com in desktop Chrome or Edge, or upload a screenshot. Your previous screenshot and reviewed values were kept.':e.message+' Your previous screenshot and reviewed values were kept.';}}
+    finally{if(captureController===controller){captureController=null;$('ocr-capture-cancel').hidden=true;setBusy(false);}}
   }
   function readDigits(id){
     const r=sourceRegion(id),scale=Math.min(1,96/r.w,32/r.h),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(r.w*scale));canvas.height=Math.max(1,Math.round(r.h*scale));
@@ -93,7 +104,7 @@
       if(file){objectUrl=URL.createObjectURL(file);img.src=objectUrl;}else img.src=$('ocr-guide').querySelector('img').src;
       await img.decode();if(token!==run)return;if(img.naturalWidth<320||img.naturalHeight<200||img.naturalWidth*img.naturalHeight>24000000)throw new Error('Use a screenshot between 320 × 200 and 24 megapixels.');
       image=img;$('ocr-image').src=img.src;$('ocr-workspace').hidden=false;$('ocr-guide').open=false;$('ocr-file-name').textContent=(file?.name||'Capture guide example')+' · '+img.naturalWidth+' × '+img.naturalHeight;paintRegion();
-      $('ocr-empty-review').textContent='Check the regions, then read your screenshot. Each field remains editable before applying.';
+      $('ocr-empty-review').textContent='Check the regions, then read your screenshot. Each field remains editable before applying.';return true;
     }catch(e){if(token===run){clearImage();error('ocr-error','The image could not be opened. '+e.message);}}
   }
   function loadLibrary(){
@@ -184,17 +195,19 @@
   }
   function open(){
     context=options.getContext();if(!['setup','ending'].includes(context.stage))return;
-    stop();clearImage();$('ocr-file').value='';$('ocr-file-name').textContent='PNG, JPG, or WebP · up to 15 MB';$('ocr-review-form').hidden=true;$('ocr-guide').open=true;
+    stop();clearImage();$('ocr-file').value='';$('ocr-file-name').textContent='PNG, JPG, or WebP · up to 15 MB';$('ocr-capture-status').textContent='';$('ocr-review-form').hidden=true;$('ocr-guide').open=true;
     $('ocr-context').textContent=context.stage==='setup'?'Fill your starting values from a screenshot taken before training.':'Fill ending values from your final screenshot. Map and class stay as recorded at the start.';
     $('ocr-region-field').replaceChildren(...activeFields().map(field=>new Option(field.label,field.id)));$('ocr-region-field').value='exp';error('ocr-error','');error('ocr-review-error','');$('screenshot-dialog').showModal();
   }
   function init(config){
     options=config;drawGuide();
+    $('ocr-capture-help').textContent=MapleScreenCapture.supported()?'Choose the game window rather than this journal tab. One frame only; no audio. Sharing stops after the snapshot.':'Screen capture may be unavailable in this browser. Open the site in desktop Chrome or Edge over HTTPS, or upload a screenshot.';
     try{const saved=JSON.parse(localStorage.getItem(layoutKey));if(saved)for(const field of C.fields)regions[field.id]=C.region(saved[field.id]);}catch{regions=structuredClone(C.defaults);}
     try{const saved=JSON.parse(localStorage.getItem(tuningKey));if(saved)for(const field of C.fields)if(saved[field.id])tunings[field.id]=C.tuning(field.id,saved[field.id]);}catch{tunings={};}
     $('screenshot-start').addEventListener('click',open);$('screenshot-end').addEventListener('click',open);
     $('ocr-close').addEventListener('click',()=>$('screenshot-dialog').close());$('screenshot-dialog').addEventListener('close',()=>{stop();clearImage();$('ocr-file').value='';$('ocr-file-name').textContent='PNG, JPG, or WebP · up to 15 MB';MaplePotionPicker.dispose($('ocr-review-fields'));$('ocr-review-fields').replaceChildren();});
-    $('ocr-file').addEventListener('change',event=>{if(event.target.files[0])void loadImage(event.target.files[0]);});$('ocr-example').addEventListener('click',()=>void loadImage(null));$('ocr-read').addEventListener('click',()=>void read());$('ocr-read-field').addEventListener('click',()=>void read(true));$('ocr-cancel').addEventListener('click',()=>{stop();$('ocr-progress-text').textContent='Reading cancelled. You can retry or enter values manually.';$('ocr-field-status').textContent=restoreReview()?'Reading cancelled. Other values were kept.':'Reading cancelled. You can retry or enter values manually.';});
+    $('ocr-capture').addEventListener('click',()=>void captureScreen());$('ocr-capture-cancel').addEventListener('click',()=>{stop();$('ocr-capture-status').textContent='Capture cancelled. Your previous screenshot and reviewed values were kept. If the browser picker is still open, dismiss it there too.';});
+    $('ocr-file').addEventListener('change',event=>{if(event.target.files[0]){$('ocr-capture-status').textContent='';void loadImage(event.target.files[0]);}});$('ocr-example').addEventListener('click',()=>{$('ocr-capture-status').textContent='';void loadImage(null);});$('ocr-read').addEventListener('click',()=>void read());$('ocr-read-field').addEventListener('click',()=>void read(true));$('ocr-cancel').addEventListener('click',()=>{stop();$('ocr-progress-text').textContent='Reading cancelled. You can retry or enter values manually.';$('ocr-field-status').textContent=restoreReview()?'Reading cancelled. Other values were kept.':'Reading cancelled. You can retry or enter values manually.';});
     $('ocr-region-field').addEventListener('change',()=>{paintRegion();$('ocr-field-status').textContent='';});
     for(const key of tuningKeys)$('ocr-tune-'+key).addEventListener('input',()=>{const id=$('ocr-region-field').value;tunings[id]=C.tuning(id,Object.fromEntries(tuningKeys.map(k=>[k,k==='invert'?$('ocr-tune-'+k).checked:['mode','reader'].includes(k)?$('ocr-tune-'+k).value:Number($('ocr-tune-'+k).value)])));paintTuning();invalidateReview(id);$('ocr-field-status').textContent='Preview updated. Re-read this field to update its value.';});
     $('ocr-reset-tuning').addEventListener('click',()=>{const id=$('ocr-region-field').value;delete tunings[id];paintTuning();invalidateReview(id);$('ocr-field-status').textContent='Default image settings restored for this field.';});

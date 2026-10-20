@@ -34,3 +34,5 @@ Verification details and device/file-picker limits: VERIFICATION.txt.
 [x] Replace unreliable general OCR for Classic potion counts with exact-font matching, local source assets, cancellable worker, and real/synthetic regression fixtures.
 
 [x] Cache MeowDB map names and add similarity matching and catalog search to screenshot review, including ambiguous map suffix and incorrect town-name regressions.
+
+[x] Add direct browser screen/window capture to starting and ending screenshot imports; stop sharing after one frame, preserve review on failure/cancel, embed in standalone, and test media lifecycle.

@@ -53,3 +53,5 @@ Potion selectors: local MeowDB icons for all 13 named supplies, icon/name/price 
 Classic potion digit matching defaults for HP/MP; original-color local worker, general OCR fallback selector, conservative blank on ambiguous font matches, offline embedded dataset.
 
 Training-map OCR matches both readings to an offline MeowDB map catalog; up to two canonical suggestions, searchable corrections, uncertain matches require choice, invalid OCR labels cannot be applied.
+
+Direct browser screenshot capture alongside file upload, with a one-frame local PNG, browser source chooser, no audio, prompt cancellation, stream cleanup, and upload fallback.

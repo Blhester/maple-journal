@@ -84,3 +84,5 @@ require('./test-potions.cjs');
 require('./test-quantity.cjs');
 
 require('./test-maps.cjs');
+
+require('./test-capture.cjs');
