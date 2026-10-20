@@ -27,6 +27,23 @@
   const endIds=['end-level','end-exp','end-mesos','end-hp','end-mp','extra-exp','hp-added','mp-added'];
   let state={stage:'setup',ledger:[],checkpoints:[]},timerInterval,latest=null;
   MapleEtc.init({getEntries:()=>state.ledger||[],onChange:entries=>{state.ledger=entries;persist();renderLedger();}});
+  MapleScreenshot.init({
+    getContext:()=>({stage:state.stage,hasLevel:!!state.start?.level,hpPotion:state.start?.hpPotion||$('hp-potion').value,mpPotion:state.start?.mpPotion||$('mp-potion').value}),
+    apply:incoming=>{
+      const setup=state.stage==='setup';if(!setup&&state.stage!=='ending')throw new Error('Screenshot values can only fill the setup or ending form.');
+      const prefix=setup?'start':'end',level=incoming.level??(setup?$('start-level').value:state.start.level?$('end-level').value:null),exp=incoming.exp??$(prefix+'-exp').value;
+      if(level&&exp!=='')M.position(level,exp);
+      if(!setup&&incoming.level&&Number(incoming.level)<state.start.level)throw new Error('Ending level cannot be below starting level.');
+      for(const [field,value]of Object.entries(incoming)){
+        if(['hpPotion','mpPotion'].includes(field))continue;
+        const id=field==='map'?'session-map':field==='class'?'session-class':prefix+'-'+field;
+        if(!setup&&['map','class'].includes(field))continue;
+        if(['hp','mp'].includes(field)&&setup){const select=$(field+'-potion'),item=incoming[field+'Potion'];if(item&&select.value!==item){select.value=item;select.dispatchEvent(new Event('change',{bubbles:true}));}}
+        $(id).value=value;$(id).dispatchEvent(new Event('input',{bubbles:true}));
+      }
+      persist();render();$('screenshot-applied').textContent='Screenshot values applied. Check your supply items and total quantities before continuing.';
+    }
+  });
   const format=n=>number.format(Math.abs(n)<.005?0:n);
   function duration(ms){const n=Math.max(0,Math.floor(ms/1000));return [Math.floor(n/3600),Math.floor(n/60)%60,n%60].map(x=>String(x).padStart(2,'0')).join(':');}
   function eta(ms){if(ms===null)return '—';if(ms===0)return 'Reached';if(ms<60000)return '< 1 minute';const min=Math.ceil(ms/60000);return min>=60?Math.floor(min/60)+'h '+min%60+'m':min+' min';}
@@ -97,7 +114,7 @@
   }
   function render(){
     const setup=state.stage==='setup',running=state.stage==='running',ending=state.stage==='ending',complete=state.stage==='complete',paused=!!state.pausedAt,hasLevel=!!state.start?.level;
-    $('start-form').hidden=!setup&&!running;$('start-fields').disabled=!setup;$('start-button').hidden=!setup;$('start-note').hidden=!setup;$('running-actions').hidden=!running;$('end-form').hidden=!ending;$('completed-actions').hidden=!complete;$('discard-button').hidden=setup||complete;$('discard-confirm').hidden=true;
+    $('ocr-start-actions').hidden=!setup;$('start-form').hidden=!setup&&!running;$('start-fields').disabled=!setup;$('start-button').hidden=!setup;$('start-note').hidden=!setup;$('running-actions').hidden=!running;$('end-form').hidden=!ending;$('completed-actions').hidden=!complete;$('discard-button').hidden=setup||complete;$('discard-confirm').hidden=true;
     $('stage-label').textContent=setup?'01 / PREPARE':running?'02 / TRAIN':'03 / REVIEW';$('session-title').textContent=setup?'Before the adventure':running?'Enjoy the adventure':ending?'Back from the adventure':'A session well spent';$('status').textContent=setup?'Ready when you are':running?(paused?'Taking a break':'Session in progress'):ending?'Timer stopped':'Session complete';
     for(let i=1;i<=3;i++)$('step-'+i).classList.toggle('active',i===(setup?1:running?2:3));
     $('timer-state').textContent=setup?'NOT STARTED':running?(paused?'PAUSED':'RECORDING'):complete?'COMPLETE':'STOPPED';$('timer-note').textContent=setup?'Your next adventure starts here.':running?(paused?'Take your time. Breaks do not count toward your pace.':'Every little bit of progress adds up.'):'Training time saved. Take your time with the numbers.';
@@ -132,7 +149,7 @@
     try{const end=readEnd('end');M.calculate(state.start,end,elapsed());state.checkpoints=state.checkpoints.filter(cp=>cp.elapsedMs<elapsed());M.intervals(state.start,state.checkpoints,end,elapsed());state.end=end;state.stage='complete';$('profit-metric').value=end.ledger.some(e=>e.kind==='loot')?'estimatedNet':end.ledger.length?'adjustedNet':'net';error('end-error','');persist();try{MapleHistory.save(state);}catch(e){error('history-error',e.message);}render();$('results-heading').setAttribute('tabindex','-1');$('results-heading').focus({preventScroll:true});}catch(e){error('end-error',e.message);}
   });
   $('edit-button').addEventListener('click',()=>{state.stage='ending';state.ledger=structuredClone(state.end.ledger||[]);persist();render();$('end-exp').focus();});
-  function reset(){MapleEtc.reset();state={stage:'setup',checkpoints:[],ledger:[]};$('start-form').reset();$('end-form').reset();$('checkpoint-form').reset();$('hp-potion').value='white';$('mp-potion').value='blue';$('hp-cost').value=350;$('mp-cost').value=220;for(const id of ['adjustments','ledger-details','checkpoint-details'])$(id).open=false;for(const id of ['end-error','start-error','cp-error','ledger-error'])error(id,'');$('cp-saved').textContent='';persist();render();$('start-exp').focus();}
+  function reset(){$('screenshot-applied').textContent='';MapleEtc.reset();state={stage:'setup',checkpoints:[],ledger:[]};$('start-form').reset();$('end-form').reset();$('checkpoint-form').reset();$('hp-potion').value='white';$('mp-potion').value='blue';$('hp-cost').value=350;$('mp-cost').value=220;for(const id of ['adjustments','ledger-details','checkpoint-details'])$(id).open=false;for(const id of ['end-error','start-error','cp-error','ledger-error'])error(id,'');$('cp-saved').textContent='';persist();render();$('start-exp').focus();}
   $('new-button').addEventListener('click',reset);$('discard-button').addEventListener('click',()=>{$('discard-confirm').hidden=false;$('keep-button').focus();});$('keep-button').addEventListener('click',()=>{$('discard-confirm').hidden=true;$('discard-button').focus();});$('confirm-discard').addEventListener('click',reset);
   for(const id of [...startIds,...endIds])$(id).addEventListener('input',()=>{persist();if(id==='start-level')updateLevelHint();});$('profit-metric').addEventListener('change',renderProfit);$('target-level').addEventListener('input',updateForecast);$('trend-metric').addEventListener('change',renderTrend);document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick();});
   try{

@@ -62,3 +62,14 @@ AWS deployment automation — October 20, 2026
 - Deployment uses pinned action commits and GitHub OIDC, restricted to master. Missing AWS configuration skips deployment with a setup summary.
 - One-time infrastructure template provides private S3 with CloudFront OAC, DNS-validated HTTPS, apex DNS aliases, and a role limited to the dedicated bucket and distribution.
 - AWS resources have not been created from this workspace, and custom-domain deployment has not been exercised: only the domain is registered and AWS repository variables are not yet configured. Follow AWS-SETUP.txt.
+
+Screenshot import — October 20, 2026
+- Added starting/ending screenshot import, an annotated example, adjustable read regions, editable field review, and explicit HP/MP supply selection. ETC entry stays manual.
+- Automated OCR parser checks cover grouped integers, zero mesos, excluding EXP percentages, level bounds, ambiguous/conflicting reads, conservative supply-count proposals, and normalized region validation. Existing calculation/history/ETC tests pass.
+- Pinned OCR assets pass SHA-256/byte-count verification; build validates hosted references and eight standalone scripts. The public build excludes internal documents.
+- Browser sample recognition returned map Dungeon · Ant Tunnel IV, Wizard (Ice, Lightning), level 58, EXP 268628, and mesos 0. Tiny HP/MP shortcut digits were unreliable and left unchecked or blank for confirmation/manual entry; potion identity is not inferred from icons.
+- Reviewed starting values were applied without starting the timer. Manually selected Meat/Lemon and confirmed counts 441/761. Starting, stopping, refreshing, and ending import preserved session behavior and supply types; ending import excluded map/class.
+- Reviewed ending values (EXP 300000, mesos 20000, HP 430, MP 750) filled the form without calculating. Calculate then produced EXP gained 31372 and original net 17470 (11 Meat at 80 plus 11 Lemon at 150).
+- Region percentage edits, remember/reset layout, cancellation, modal close/reopen, and light/dark guide layouts were exercised. Closing releases the image URL, displayed crop, file selection, recognition rows, and worker; only reviewed values and optional region coordinates persist locally.
+- Standalone OCR succeeded in a local HTTP preview that served only the single HTML and returned 404 for all other paths, using its embedded worker/core/language. No remote OCR API or key is used.
+- Browser QA used Try the example through the normal decode/crop/recognition flow. The native upload chooser, direct file: OCR, other screenshot layouts/resolutions, and a physical mobile device were not exercised. Region adjustment/manual correction remain necessary for different HUD layouts and small text.

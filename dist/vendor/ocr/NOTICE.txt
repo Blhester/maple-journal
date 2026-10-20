@@ -1,0 +1,27 @@
+Self-hosted screenshot OCR dependencies
+
+Tesseract.js 7.0.0 and tesseract.js-core 7.0.0
+https://github.com/naptha/tesseract.js
+https://github.com/naptha/tesseract.js-core
+Apache License 2.0; license text accompanies each package here.
+Bundled third-party notices are preserved in tesseract.min.js.LICENSE.txt
+and worker.min.js.LICENSE.txt.
+
+English LSTM traineddata: @tesseract.js-data/eng 1.0.0,
+4.0.0_best_int/eng.traineddata.gz
+https://github.com/naptha/tessdata
+The npm wrapper declares MIT; upstream traineddata is distributed under
+Apache License 2.0 (same license text supplied in LICENSE-core.txt).
+https://github.com/naptha/tessdata/blob/gh-pages/LICENSE
+
+Files are unmodified copies from the pinned npm packages. Exact package
+archive integrity and per-file SHA256 hashes are in the repository's
+scripts/ocr-assets.lock.json. Refresh or verify using
+node scripts/refresh-ocr-assets.cjs [--verify].
+
+Only the three LSTM core variants are shipped: baseline WASM, SIMD, and
+relaxed SIMD. Their .wasm.js files embed their WASM bytes; separate .wasm
+files are unnecessary. Use createWorker('eng', 1, {legacyCore:false,...}).
+Legacy OEM modes are not supported by this bundle. This directory is
+loaded from the website origin, not an external CDN. OCR processes image
+pixels in the visitor's browser; it does not upload images to a service.

@@ -1,0 +1,2 @@
+# Preserve the exact upstream bytes used by the OCR integrity checks on every OS.
+dist/vendor/ocr/** -text

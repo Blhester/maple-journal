@@ -77,3 +77,5 @@ const updatedEtc=M.mergeHistory(roundtripEtc,[{...normalizedEtc,end:{...normaliz
 const catalogEtc=require('./dist/data/etc-items.json');assert(catalogEtc.items.length>300);assert.equal(new Set(catalogEtc.items.map(i=>i.id)).size,catalogEtc.items.length);
 for(const item of catalogEtc.items){assert(Number.isSafeInteger(item.vendorPrice)&&item.vendorPrice>=0);assert(require('node:fs').existsSync('./dist/'+item.icon));}
 console.log('Passed: ETC quantity valuation, sale status, profit rates, zero prices, invalid inputs, snapshot preservation, JSON restore/upsert, and local catalog assets.');
+
+require('./test-ocr.cjs');
