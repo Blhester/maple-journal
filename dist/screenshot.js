@@ -149,7 +149,7 @@
         await ensureTextWorker();if(token!==run)return;
         const variants=field.id==='map'?['white','gray']:field.id==='level'?['orange','white']:field.id==='exp'?['original','neutral']:field.id==='mesos'?['dark','gray']:['hp','mp'].includes(field.id)?['neutral','white','original']:['gray','original'];
         const reads=[];
-        const enhanced=selectedOnly||Object.hasOwn(tunings,field.id),modes=field.numeric?['8','7','13']:field.id==='map'?['6','7']:['7','13'];
+        const enhanced=field.id==='level'||selectedOnly||Object.hasOwn(tunings,field.id),modes=field.numeric?['8','7','13']:field.id==='map'?['6','7']:['7','13'];
         const passes=enhanced?modes.map(mode=>({mode,label:'Adjusted image · '+(mode==='8'?'word':mode==='13'?'raw line':mode==='6'?'block':'line')})):variants.map(treatment=>({mode:field.id==='map'?'6':'7',treatment,label:treatment+' · line'}));
         passCount=passes.length;const prepared=enhanced?processedCrop(field.id):null;
         for(const [passIndex,pass]of passes.entries()){
