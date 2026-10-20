@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#213b32">
+  <meta name="description" content="Time your MapleStory Classic training. Calculate EXP and net mesos per hour, 10 minutes, and minute with MeowDB potion prices.">
+  <title>Maple Journal · Grind Calculator</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="core.js" defer></script><script src="app.js" defer></script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="./" aria-label="Maple Journal home"><span class="brand-icon">✳</span> maple journal<span class="brand-dot">.</span></a><span class="edition">MAPLESTORY CLASSIC <span class="edition-dot">●</span></span></header>
+<main>
+  <section class="intro"><div><div class="eyebrow">A LITTLE LESS GUESSWORK. A BETTER GRIND.</div><h1>Make every minute <em>count.</em></h1><p>Track your training. Know your EXP. Find your real profit.</p></div>
+    <svg class="landscape" viewBox="0 0 310 150" fill="none" aria-hidden="true"><circle cx="240" cy="39" r="24" fill="#e6b55e"/><path d="M20 135Q70 68 138 119Q220 42 300 129V150H20Z" fill="#d4dec8"/><path d="M0 150Q67 91 150 137Q235 92 310 150" fill="#b5c7af"/><path d="M247 132V78M247 83L228 99H266L247 69L226 87H269L247 50L224 79H270" stroke="#5c8069" stroke-width="3" fill="#72927a"/><path d="M76 139V113" stroke="#806c50" stroke-width="6"/><path d="M48 114C48 82 103 82 103 114Z" fill="#ca7955"/><circle cx="65" cy="102" r="5" fill="#f7ead4"/><circle cx="89" cy="105" r="4" fill="#f7ead4"/><path d="M149 137V102" stroke="#8f7859" stroke-width="9"/><path d="M111 105C111 57 188 57 188 105Z" fill="#d9a35b"/><circle cx="137" cy="86" r="7" fill="#fff1d8"/><circle cx="167" cy="91" r="6" fill="#fff1d8"/><path d="M192 137L196 128L201 137M37 138L40 131L44 138" stroke="#6a8d70" stroke-width="2"/><path d="M209 48L213 43L218 47M30 62L35 57L40 61" stroke="#9bac91" stroke-width="2"/></svg>
+  </section>
+  <div class="workspace">
+    <section class="panel session-panel" aria-labelledby="session-title">
+      <div class="panel-heading"><div><span class="eyebrow" id="stage-label">01 / PREPARE</span><h2 id="session-title">Before the adventure</h2></div><span id="status" class="badge">Ready when you are</span></div>
+      <ol class="steps" aria-label="Session progress"><li id="step-1" class="active"><span>1</span> Set up</li><li id="step-2"><span>2</span> Train</li><li id="step-3"><span>3</span> Review</li></ol>
+      <form id="start-form">
+        <fieldset id="start-fields">
+          <div class="two-col"><label>Starting EXP<input id="start-exp" type="number" min="0" step="1" placeholder="e.g. 12500" required><small>EXP shown on your character</small></label><label>Starting mesos<input id="start-mesos" type="number" min="0" step="1" placeholder="e.g. 100000" required><small>Your meso balance before training</small></label></div>
+          <div class="section-label">PACK YOUR POTIONS <span>Prices per potion, in mesos</span></div>
+          <div class="potion-block hp"><div class="potion-title"><span class="vial red" aria-hidden="true"></span><h3>HP supply</h3><a href="https://meowdb.com/msclassic/npc-shops" target="_blank" rel="noopener noreferrer" title="View prices on MeowDB">MeowDB ↗</a></div><label class="sr-only" for="hp-potion">HP potion</label><select id="hp-potion"></select><div class="two-col"><label>Starting quantity<input id="start-hp" type="number" min="0" step="1" placeholder="0" required></label><label>Cost per potion <span class="editable">editable</span><input id="hp-cost" type="number" min="0" step="1" required></label></div></div>
+          <div class="potion-block mp"><div class="potion-title"><span class="vial blue" aria-hidden="true"></span><h3>MP supply</h3><a href="https://meowdb.com/msclassic/npc-shops" target="_blank" rel="noopener noreferrer" title="View prices on MeowDB">MeowDB ↗</a></div><label class="sr-only" for="mp-potion">MP potion</label><select id="mp-potion"></select><div class="two-col"><label>Starting quantity<input id="start-mp" type="number" min="0" step="1" placeholder="0" required></label><label>Cost per potion <span class="editable">editable</span><input id="mp-cost" type="number" min="0" step="1" required></label></div></div>
+        </fieldset>
+        <p id="start-error" class="error" role="alert" hidden></p><button type="submit" class="primary wide" id="start-button"><span>▶</span> Start session <span class="button-tail">LET’S GO</span></button>
+        <p class="under-button" id="start-note">Stock up first, then start. Your session saves in this browser.</p>
+      </form>
+      <div id="running-actions" hidden><div class="running-note"><span class="live-dot"></span><div><strong>You’re on the clock.</strong><p>Go find your next level. Click Done when you finish training.</p></div></div><button id="done-button" class="primary wide">■ &nbsp; Done — stop timer</button></div>
+      <form id="end-form" hidden>
+        <p class="end-intro">Timer stopped. Enter your ending values to see how the session went.</p>
+        <div class="two-col"><label>Ending EXP<input id="end-exp" type="number" min="0" step="1" required></label><label>Ending mesos<input id="end-mesos" type="number" min="0" step="1" required></label><label id="end-hp-label">HP potions remaining<input id="end-hp" type="number" min="0" step="1" required></label><label id="end-mp-label">MP potions remaining<input id="end-mp" type="number" min="0" step="1" required></label></div>
+        <details id="adjustments"><summary>Adjustments <span>Level-ups, pickups & restocks</span></summary><label>EXP required by levels completed<input id="extra-exp" type="number" min="0" step="1" value="0"><small>Leveled up? Add together the full EXP requirements of every level completed. Gain = ending EXP − starting EXP + this amount.</small></label><div class="two-col"><label>HP potions added<input id="hp-added" type="number" min="0" step="1" value="0"></label><label>MP potions added<input id="mp-added" type="number" min="0" step="1" value="0"></label></div><small>Include pickups or restocks. Used = starting + added − remaining. For this formula, buy supplies before starting to avoid also counting purchases in your balance change.</small></details>
+        <p id="end-error" class="error" role="alert" hidden></p><button class="primary wide" type="submit">Calculate my session <span>↗</span></button>
+      </form>
+      <div id="completed-actions" hidden><p class="completion-note">Session complete. A little progress, all accounted for.</p><div class="two-col"><button type="button" id="edit-button" class="secondary">Edit ending values</button><button type="button" id="new-button" class="primary">New session ↗</button></div></div>
+      <button class="text-button" id="discard-button" type="button" hidden>Discard session</button>
+      <div id="discard-confirm" class="discard-confirm" hidden><p>Discard this session and its values?</p><button id="keep-button" class="secondary" type="button">Keep session</button> <button id="confirm-discard" class="secondary danger" type="button">Discard</button></div>
+      <p id="storage-warning" class="error" role="status" hidden>Browser storage is unavailable. Keep this tab open to retain this session.</p>
+    </section>
+    <aside class="right-column">
+      <section class="timer-card" aria-labelledby="timer-heading"><div class="timer-top"><span id="timer-heading">SESSION TIME</span><span id="timer-state">NOT STARTED</span></div><div id="timer" class="timer" role="timer" aria-label="Elapsed session time">00<span>:</span>00<span>:</span>00</div><div class="timer-bottom"><span class="tiny-leaf">✳</span><span id="timer-note">Your next adventure starts here.</span></div></section>
+      <section class="panel results-panel" aria-labelledby="results-heading"><div class="results-heading"><h2 id="results-heading">The session, in numbers</h2><span class="small-flower">✳</span></div><p class="muted" id="results-description">Your results will be waiting at the finish line.</p>
+        <div class="totals"><div><span>EXP GAINED</span><strong id="total-exp">—</strong></div><div><span>NET MESOS</span><strong id="total-net">—</strong></div></div>
+        <div class="table-wrap"><table><caption class="sr-only">EXP and net meso rates averaged over the session</caption><thead><tr><th scope="col">PACE</th><th scope="col">EXP</th><th scope="col">NET MESOS</th></tr></thead><tbody><tr class="hour-row"><th scope="row">Per hour <span>60 MIN</span></th><td id="exp-hour">—</td><td id="mesos-hour">—</td></tr><tr><th scope="row">Per 10 minutes</th><td id="exp-ten">—</td><td id="mesos-ten">—</td></tr><tr><th scope="row">Per minute</th><td id="exp-minute">—</td><td id="mesos-minute">—</td></tr></tbody></table></div>
+        <div class="breakdown"><div><span>Meso balance change</span><strong id="gross">—</strong></div><div><span>HP used <span id="hp-used"></span></span><strong id="hp-spend">—</strong></div><div><span>MP used <span id="mp-used"></span></span><strong id="mp-spend">—</strong></div><div class="net-line"><span>After potion costs</span><strong id="net-breakdown">—</strong></div></div><p class="rounding">Rates are session averages, rounded to 2 decimal places.</p>
+      </section>
+      <details class="method"><summary>A note on the math <span>＋</span></summary><p>Net mesos = (ending mesos − starting mesos) − (HP used × HP cost) − (MP used × MP cost).</p><p>Each rate = total gain ÷ elapsed seconds × 3,600, 600, or 60. Time spent entering ending values is excluded. Negative gains and losses are preserved.</p><p>Use one distinct supply per slot. For a potion that restores both HP and MP, count it in one slot only. Custom items require your own unit price.</p></details>
+    </aside>
+  </div>
+  <footer><span>Made for the long way to level up. <span class="footer-leaf">✳</span></span><span>Prices: <a href="https://meowdb.com/msclassic/npc-shops" target="_blank" rel="noopener noreferrer">MeowDB ↗</a> · checked Oct 20, 2026<br><span class="footer-fine">Community tool · Not affiliated with Nexon. Data stored locally in your browser.</span></span></footer>
+</main>
+</body></html>

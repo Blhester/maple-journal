@@ -1,0 +1,18 @@
+const assert=require('node:assert/strict');
+const {calculate,integer}=require('./dist/core.js');
+const start={exp:10000,mesos:100000,hp:100,mp:100,hpCost:350,mpCost:220};
+const end={exp:40000,mesos:150000,hp:80,mp:90};
+const r=calculate(start,end,1800000);
+assert.equal(r.net,40800);assert.equal(r.exp,30000);
+assert.equal(r.rates.hour.mesos,81600);assert.equal(r.rates.ten.mesos,13600);assert.equal(r.rates.minute.mesos,1360);
+assert.equal(r.rates.hour.exp,60000);assert.equal(r.rates.ten.exp,10000);assert.equal(r.rates.minute.exp,1000);
+assert.equal(calculate(start,{...end,mesos:99000},1800000).net,-10200);
+assert.equal(calculate(start,{...end,exp:1000,extraExp:20000},1800000).exp,11000);
+assert.equal(calculate(start,{...end,hp:120,hpAdded:30},1800000).hpUsed,10);
+assert.throws(()=>calculate(start,{...end,hp:101},1800000),/Ending potions/);
+assert.throws(()=>calculate(start,end,0),/positive elapsed/);
+assert.equal(calculate(start,{...end,exp:9000},1800000).exp,-1000);
+assert.equal(calculate({...start,hpCost:0,mpCost:0},end,1800000).net,50000);
+for(const invalid of ['', ' ', '-1', '1.5', 'abc', '1e4',Infinity,Number.MAX_SAFE_INTEGER+1])assert.throws(()=>integer(invalid,'Input'));
+assert.throws(()=>calculate({...start,hpCost:Number.MAX_SAFE_INTEGER},end,1800000),/too large/);
+console.log('Passed: rates, requested formula, losses, level-ups, added potions, free potions, invalid counts, zero duration, and numeric overflow.');
