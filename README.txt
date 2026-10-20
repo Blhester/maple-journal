@@ -35,10 +35,10 @@ STORAGE
 History, the active draft/checkpoints, and theme stay in this browser. The hosted site, localhost, and local-file copy use separate origin storage. No game/account connection or server-side history storage is used. Back up important runs with JSON. Restore merges matching session IDs and keeps other records. Filters do not limit exports. Comparisons do not normalize party size, gear, buffs, or map changes during a run.
 
 FILES
-FEATURES.txt: feature list and calculation contract.
-TODO.txt: implementation checklist.
+FEATURES.txt: internal feature list and calculation contract.
+TODO.txt: internal implementation checklist.
 VERIFICATION.txt: tests and verification limits.
-build-download.cjs: regenerate standalone HTML and hosted feature/TODO downloads.
+build-download.cjs: regenerate the standalone HTML. Maintainer documents and this README stay in the source repository and are excluded from the website and end-user downloads.
 
 CHECKS
 node test.cjs

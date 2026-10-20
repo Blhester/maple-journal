@@ -20,7 +20,7 @@
       event.preventDefault();selectView(next===1?'history':'session',{focus:true,updateHash:true});
     });
   }
-  window.addEventListener('hashchange',()=>{if(window.location.hash!=='#feature-list')selectView(viewFromHash());});
+  window.addEventListener('hashchange',()=>selectView(viewFromHash()));
   selectView(viewFromHash());
   const number=new Intl.NumberFormat('en-US',{maximumFractionDigits:2});
   const startIds=['session-map','session-class','start-level','start-exp','start-mesos','hp-potion','start-hp','hp-cost','mp-potion','start-mp','mp-cost'];

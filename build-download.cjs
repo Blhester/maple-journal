@@ -1,12 +1,10 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const root=__dirname,dist=path.join(root,'dist');
-for(const [source,target]of [['FEATURES.txt','features.txt'],['TODO.txt','todo.txt']])fs.copyFileSync(path.join(root,source),path.join(dist,target));
 let html=fs.readFileSync(path.join(dist,'index.html'),'utf8');
 html=html.replace('<link rel="stylesheet" href="styles.css">','<style>'+fs.readFileSync(path.join(dist,'styles.css'),'utf8')+'</style>');
 html=html.replace('<script src="theme.js"></script>','<script>'+fs.readFileSync(path.join(dist,'theme.js'),'utf8')+'</script>');
 for(const name of ['core','history','app'])html=html.replace('<script src="'+name+'.js" defer></script>','');
 html=html.replace('</body>', ['core','history','app'].map(name=>'<script>'+fs.readFileSync(path.join(dist,name+'.js'),'utf8')+'</script>').join('')+'</body>');
-for(const name of ['features','todo'])html=html.replace('href="'+name+'.txt"','href="data:text/plain;charset=utf-8;base64,'+fs.readFileSync(path.join(dist,name+'.txt')).toString('base64')+'"');
 const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];if(scripts.length!==4)throw new Error('Expected four embedded scripts.');for(const s of scripts)new vm.Script(s[1]);
 fs.writeFileSync(path.join(root,'..','maple-journal-calculator.html'),html);
-console.log('Standalone HTML and hosted feature/TODO documents updated; all four embedded scripts syntax checked.');
+console.log('Standalone HTML updated; all four embedded scripts syntax checked.');

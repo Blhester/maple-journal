@@ -40,3 +40,9 @@ Separate review tab — October 20, 2026
 - Verified mouse activation, Enter activation, Left arrow, Home, and End keyboard navigation.
 - The history URL fragment restored the selected tab on refresh.
 - Existing calculation tests and standalone script syntax checks passed.
+
+Internal documentation cleanup — October 20, 2026
+- Removed the feature/TODO panel from both views and its downloadable document copies from the hosted assets.
+- Verified the tracker now leads directly to the footer; history and comparison remain available in their own tab.
+- Preserved the internal FEATURES.txt, TODO.txt, and README.txt in the repository.
+- Rebuilt standalone HTML and the end-user ZIP without internal documents. Existing calculation tests and JavaScript syntax checks passed.
