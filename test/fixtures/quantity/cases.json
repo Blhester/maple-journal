@@ -1,0 +1,160 @@
+{
+  "description": "Five visible counts and six negatives cropped from the supplied capture; independent full-font fixtures on varied backgrounds/scales. Expected values are test labels only.",
+  "cases": [
+    {
+      "file": "sample-hp.png",
+      "expected": "441",
+      "kind": "provided screenshot crop"
+    },
+    {
+      "file": "sample-mp.png",
+      "expected": "761",
+      "kind": "provided screenshot crop"
+    },
+    {
+      "file": "sample-sword.png",
+      "expected": "52",
+      "kind": "provided screenshot crop"
+    },
+    {
+      "file": "sample-stars.png",
+      "expected": "31",
+      "kind": "provided screenshot crop"
+    },
+    {
+      "file": "sample-scroll.png",
+      "expected": "12",
+      "kind": "provided screenshot crop"
+    },
+    {
+      "file": "empty-shortcut.png",
+      "expected": null,
+      "kind": "provided screenshot crop"
+    },
+    {
+      "file": "lemon-icon.png",
+      "expected": null,
+      "kind": "provided screenshot crop"
+    },
+    {
+      "file": "meat-icon.png",
+      "expected": null,
+      "kind": "provided screenshot crop"
+    },
+    {
+      "file": "ground.png",
+      "expected": null,
+      "kind": "provided screenshot crop"
+    },
+    {
+      "file": "blank.png",
+      "expected": null,
+      "kind": "provided screenshot crop"
+    },
+    {
+      "file": "other-font.png",
+      "expected": null,
+      "kind": "provided screenshot crop"
+    },
+    {
+      "file": "rendered-0.png",
+      "expected": "0",
+      "kind": "independent rendered font fixture",
+      "scale": 2,
+      "background": "#24382b"
+    },
+    {
+      "file": "rendered-1.png",
+      "expected": "1",
+      "kind": "independent rendered font fixture",
+      "scale": 1.4,
+      "background": "#ddd7ce"
+    },
+    {
+      "file": "rendered-2.png",
+      "expected": "2",
+      "kind": "independent rendered font fixture",
+      "scale": 1,
+      "background": "#775244"
+    },
+    {
+      "file": "rendered-3.png",
+      "expected": "3",
+      "kind": "independent rendered font fixture",
+      "scale": 2,
+      "background": "#24382b"
+    },
+    {
+      "file": "rendered-4.png",
+      "expected": "4",
+      "kind": "independent rendered font fixture",
+      "scale": 1.4,
+      "background": "#ddd7ce"
+    },
+    {
+      "file": "rendered-5.png",
+      "expected": "5",
+      "kind": "independent rendered font fixture",
+      "scale": 1,
+      "background": "#775244"
+    },
+    {
+      "file": "rendered-6.png",
+      "expected": "6",
+      "kind": "independent rendered font fixture",
+      "scale": 2,
+      "background": "#24382b"
+    },
+    {
+      "file": "rendered-7.png",
+      "expected": "7",
+      "kind": "independent rendered font fixture",
+      "scale": 1.4,
+      "background": "#ddd7ce"
+    },
+    {
+      "file": "rendered-8.png",
+      "expected": "8",
+      "kind": "independent rendered font fixture",
+      "scale": 1,
+      "background": "#775244"
+    },
+    {
+      "file": "rendered-9.png",
+      "expected": "9",
+      "kind": "independent rendered font fixture",
+      "scale": 2,
+      "background": "#24382b"
+    },
+    {
+      "file": "rendered-1205.png",
+      "expected": "1205",
+      "kind": "independent rendered font fixture",
+      "scale": 1.4,
+      "background": "#ddd7ce"
+    },
+    {
+      "file": "rendered-9876.png",
+      "expected": "9876",
+      "kind": "independent rendered font fixture",
+      "scale": 1,
+      "background": "#775244"
+    },
+    {
+      "file": "rendered-111.png",
+      "expected": "111",
+      "kind": "independent rendered font fixture",
+      "scale": 2,
+      "background": "#24382b"
+    },
+    {
+      "file": "rendered-908.png",
+      "expected": null,
+      "kind": "independent rendered font fixture",
+      "scale": 1.4,
+      "background": "#ddd7ce",
+      "visibleCount": "908",
+      "note": "Ambiguous resampling must stay blank rather than guess."
+    }
+  ]
+}

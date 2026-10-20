@@ -2,7 +2,7 @@
   'use strict';
   const fields=[['map','Training map'],['class','Class / job'],['level','Level'],['exp','EXP'],['mesos','Mesos'],['hp','HP supply quantity'],['mp','MP supply quantity']].map(([id,label])=>({id,label,numeric:!['map','class'].includes(id)}));
   // Normalized regions from the capture guide. Users can redraw each region for their HUD.
-  const pixels={map:[67,36,235,49],class:[511,1031,182,27],level:[457,1044,41,22],exp:[1047,1037,66,17],mesos:[1608,597,197,16],hp:[1417,958,35,18],mp:[1467,958,36,18]};
+  const pixels={map:[67,36,235,49],class:[511,1031,182,27],level:[457,1044,41,22],exp:[1047,1037,66,17],mesos:[1608,597,197,16],hp:[1417,958,47,18],mp:[1467,958,47,18]};
   const defaults=Object.fromEntries(Object.entries(pixels).map(([id,[x,y,w,h]])=>[id,{x:x/1919,y:y/1079,w:w/1919,h:h/1079}]));
   function region(value){
     if(!value||!['x','y','w','h'].every(key=>Number.isFinite(value[key])))throw new Error('Invalid read region.');
@@ -53,7 +53,7 @@
     const mode={map:'light',class:'gray',level:'gold',exp:'light',mesos:'dark',hp:'neutral',mp:'neutral'}[id];
     if(!mode)throw new Error('Unknown screenshot field.');
     const number=(key,fallback,min,max)=>Number.isFinite(value[key])?Math.max(min,Math.min(max,value[key])):fallback;
-    return {mode:['gray','light','dark','neutral','gold'].includes(value.mode)?value.mode:mode,contrast:number('contrast',1.3,.5,3),brightness:number('brightness',0,-80,80),threshold:number('threshold',id==='mesos'?140:145,30,240),chroma:number('chroma',55,0,255),scale:Math.round(number('scale',4,2,6)),invert:!!value.invert};
+    return {reader:value.reader==='general'?'general':'classic',mode:['gray','light','dark','neutral','gold'].includes(value.mode)?value.mode:mode,contrast:number('contrast',1.3,.5,3),brightness:number('brightness',0,-80,80),threshold:number('threshold',id==='mesos'?140:145,30,240),chroma:number('chroma',55,0,255),scale:Math.round(number('scale',4,2,6)),invert:!!value.invert};
   }
   // Pure RGBA preprocessing. Input pixels are never modified or persisted.
   function processPixels(input,settings){

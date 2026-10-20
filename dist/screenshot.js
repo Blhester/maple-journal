@@ -1,8 +1,8 @@
 (() => {
   'use strict';
-  const $=id=>document.getElementById(id),C=MapleOcrCore,layoutKey='maple-journal-ocr-regions-v1',tuningKey='maple-journal-ocr-tuning-v1',tuningKeys=['mode','contrast','brightness','threshold','chroma','scale','invert'];
+  const $=id=>document.getElementById(id),C=MapleOcrCore,layoutKey='maple-journal-ocr-regions-v1',tuningKey='maple-journal-ocr-tuning-v1',tuningKeys=['reader','mode','contrast','brightness','threshold','chroma','scale','invert'];
   let options,context,image=null,regions=structuredClone(C.defaults),busy=false,worker=null,run=0,objectUrl=null,drag=null;
-  let libraryPromise=null,workerUrls=[],tunings={};
+  let libraryPromise=null,workerUrls=[],tunings={},digitCancel=null;
   const text=(tag,value,className)=>{const e=document.createElement(tag);e.textContent=value;if(className)e.className=className;return e;};
   function error(id,message){$(id).textContent=message||'';$(id).hidden=!message;}
   const activeFields=()=>C.fields.filter(field=>context.stage==='setup'||!['map','class'].includes(field.id));
@@ -44,9 +44,10 @@
   }
   function paintTuning(){
     if(!image)return;const id=$('ocr-region-field').value,settings=C.tuning(id,tunings[id]);
+    const quantity=['hp','mp'].includes(id);$('ocr-reader-wrap').hidden=!quantity;$('ocr-general-controls').hidden=quantity&&settings.reader==='classic';
     for(const key of tuningKeys){const control=$('ocr-tune-'+key);if(key==='invert')control.checked=settings[key];else control.value=String(settings[key]);if($('ocr-out-'+key))$('ocr-out-'+key).textContent=settings[key]+(key==='contrast'?'×':'');}
     $('ocr-tune-chroma').disabled=busy||settings.mode!=='neutral';$('ocr-tune-threshold').disabled=busy||settings.mode==='gray';
-    const canvas=$('ocr-processed'),source=processedCrop(id);canvas.width=source.width;canvas.height=source.height;canvas.getContext('2d').drawImage(source,0,0);
+    const canvas=$('ocr-processed');if(quantity&&settings.reader==='classic'){canvas.width=canvas.height=1;return;}const source=processedCrop(id);canvas.width=source.width;canvas.height=source.height;canvas.getContext('2d').drawImage(source,0,0);
   }
   function paintRegion(){
     if(!image)return;const id=$('ocr-region-field').value,r=regions[id],overlay=$('ocr-region-overlay');
@@ -70,7 +71,17 @@
     $('ocr-region-overlay').classList.toggle('ocr-reading',value);
   }
   function stop(){
-    run++;if(worker){void worker.terminate();worker=null;}for(const url of workerUrls)URL.revokeObjectURL(url);workerUrls=[];setBusy(false);
+    run++;if(digitCancel)digitCancel();if(worker){void worker.terminate();worker=null;}for(const url of workerUrls)URL.revokeObjectURL(url);workerUrls=[];setBusy(false);
+  }
+  function readDigits(id){
+    const r=sourceRegion(id),scale=Math.min(1,96/r.w,32/r.h),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(r.w*scale));canvas.height=Math.max(1,Math.round(r.h*scale));
+    const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,r.x,r.y,r.w,r.h,0,0,canvas.width,canvas.height);const pixels=ctx.getImageData(0,0,canvas.width,canvas.height);
+    return new Promise((resolve,reject)=>{
+      const url=URL.createObjectURL(new Blob([MapleQuantityReader.workerSource()],{type:'text/javascript'}));let reader;
+      const cleanup=()=>{reader?.terminate();URL.revokeObjectURL(url);if(digitCancel===cancel)digitCancel=null;};
+      const cancel=()=>{cleanup();reject(new Error('Reading cancelled.'));};digitCancel=cancel;
+      try{reader=new Worker(url);reader.onmessage=event=>{cleanup();if(event.data.error)reject(new Error(event.data.error));else resolve(event.data.result);};reader.onerror=()=>{cleanup();reject(new Error('The local quantity reader could not run.'));};reader.postMessage({data:pixels.data,width:pixels.width,height:pixels.height},[pixels.data.buffer]);}catch(e){cleanup();reject(e);}
+    });
   }
   function clearImage(){if(objectUrl)URL.revokeObjectURL(objectUrl);objectUrl=null;image=null;drag=null;$('ocr-image').removeAttribute('src');for(const id of ['ocr-crop','ocr-processed']){$(id).width=1;$(id).height=1;}$('ocr-region-overlay').replaceChildren();$('ocr-workspace').hidden=true;}
   async function loadImage(file){
@@ -110,14 +121,21 @@
   async function read(selectedOnly=false){
     if(!image||busy)return;const token=++run,results={},fields=activeFields().filter(field=>!selectedOnly||field.id===$('ocr-region-field').value);error('ocr-error','');error('ocr-review-error','');if(!selectedOnly)invalidateReview();setBusy(true);$('ocr-progress').value=0;$('ocr-progress-text').textContent='Loading local text recognition…';$('ocr-field-status').textContent='';
     let currentField=0,currentPass=0,passCount=1;
-    try{
+    async function ensureTextWorker(){
+      if(worker)return;
       await loadLibrary();if(token!==run)return;
       const created=await Tesseract.createWorker('eng',1,workerOptions(message=>{if(token===run&&message.status==='recognizing text')$('ocr-progress').value=Math.min(1,(currentField+(currentPass+(message.progress||0))/passCount)/fields.length);}));
       if(token!==run){await created.terminate();return;}worker=created;
+    }
+    try{
       for(const [index,field]of fields.entries()){
         if(token!==run)return;
         currentField=index;if(selectedOnly)tunings[field.id]=C.tuning(field.id,tunings[field.id]);
         $('ocr-progress-text').textContent='Reading '+field.label.toLowerCase()+' · '+(index+1)+' of '+fields.length;
+        if(['hp','mp'].includes(field.id)&&C.tuning(field.id,tunings[field.id]).reader==='classic'){
+          results[field.id]=await readDigits(field.id);if(token!==run)return;$('ocr-progress').value=(index+1)/fields.length;continue;
+        }
+        await ensureTextWorker();if(token!==run)return;
         const variants=field.id==='map'?['white','gray']:field.id==='level'?['orange','white']:field.id==='exp'?['original','neutral']:field.id==='mesos'?['dark','gray']:['hp','mp'].includes(field.id)?['neutral','white','original']:['gray','original'];
         const reads=[];
         const enhanced=selectedOnly||Object.hasOwn(tunings,field.id),modes=field.numeric?['8','7','13']:field.id==='map'?['6','7']:['7','13'];
@@ -150,7 +168,7 @@
       if(['hp','mp'].includes(field.id)){
         const supply=text('label','Count belongs to '),select=document.createElement('select');select.id='ocr-potion-'+field.id;select.setAttribute('aria-label',field.id.toUpperCase()+' supply in screenshot');select.replaceChildren(...MapleMath.catalog[field.id].map(item=>new Option(item.name,item.id)));select.value=previous?.querySelector('#ocr-potion-'+field.id)?.value||context[field.id+'Potion'];select.disabled=context.stage!=='setup';supply.append(select);row.append(supply);
       }
-      row.append(text('small',!supported?'Starting level was not recorded. Keep using the manual level-up adjustment.':result.value===null?'No number or text found. Type it here or leave this field unchecked.':result.disagrees?'Readings differ. Check the enlarged crop carefully.':['hp','mp'].includes(field.id)?'Detected count is included. Choose the matching item and edit the number if needed.':result.confidence<70?'Small text: check the enlarged crop before applying.':'Review this value before applying.','ocr-review-note'));
+      row.append(text('small',!supported?'Starting level was not recorded. Keep using the manual level-up adjustment.':result.method==='classic-digits'?(result.value===null?'No clear Classic count matched. Draw a tight box around the full number, try General text OCR for another font, or type it here.':'Classic quantity digits matched. Check the count and choose its item.'):result.value===null?'No number or text found. Type it here or leave this field unchecked.':result.disagrees?'Readings differ. Check the enlarged crop carefully.':['hp','mp'].includes(field.id)?'Detected count is included. Choose the matching item and edit the number if needed.':result.confidence<70?'Small text: check the enlarged crop before applying.':'Review this value before applying.','ocr-review-note'));
       const details=document.createElement('details');details.className='ocr-raw';details.append(text('summary','Recognized text'),text('p',result.raw||'No text recognized'));row.append(details);if(previous){MaplePotionPicker.dispose(previous);previous.replaceWith(row);}else container.append(row);
     }
     $('ocr-review-form').hidden=false;$('ocr-empty-review').hidden=true;
@@ -171,7 +189,7 @@
     $('ocr-close').addEventListener('click',()=>$('screenshot-dialog').close());$('screenshot-dialog').addEventListener('close',()=>{stop();clearImage();$('ocr-file').value='';$('ocr-file-name').textContent='PNG, JPG, or WebP · up to 15 MB';MaplePotionPicker.dispose($('ocr-review-fields'));$('ocr-review-fields').replaceChildren();});
     $('ocr-file').addEventListener('change',event=>{if(event.target.files[0])void loadImage(event.target.files[0]);});$('ocr-example').addEventListener('click',()=>void loadImage(null));$('ocr-read').addEventListener('click',()=>void read());$('ocr-read-field').addEventListener('click',()=>void read(true));$('ocr-cancel').addEventListener('click',()=>{stop();$('ocr-progress-text').textContent='Reading cancelled. You can retry or enter values manually.';$('ocr-field-status').textContent=restoreReview()?'Reading cancelled. Other values were kept.':'Reading cancelled. You can retry or enter values manually.';});
     $('ocr-region-field').addEventListener('change',()=>{paintRegion();$('ocr-field-status').textContent='';});
-    for(const key of tuningKeys)$('ocr-tune-'+key).addEventListener('input',()=>{const id=$('ocr-region-field').value;tunings[id]=C.tuning(id,Object.fromEntries(tuningKeys.map(k=>[k,k==='invert'?$('ocr-tune-'+k).checked:k==='mode'?$('ocr-tune-'+k).value:Number($('ocr-tune-'+k).value)])));paintTuning();invalidateReview(id);$('ocr-field-status').textContent='Preview updated. Re-read this field to update its value.';});
+    for(const key of tuningKeys)$('ocr-tune-'+key).addEventListener('input',()=>{const id=$('ocr-region-field').value;tunings[id]=C.tuning(id,Object.fromEntries(tuningKeys.map(k=>[k,k==='invert'?$('ocr-tune-'+k).checked:['mode','reader'].includes(k)?$('ocr-tune-'+k).value:Number($('ocr-tune-'+k).value)])));paintTuning();invalidateReview(id);$('ocr-field-status').textContent='Preview updated. Re-read this field to update its value.';});
     $('ocr-reset-tuning').addEventListener('click',()=>{const id=$('ocr-region-field').value;delete tunings[id];paintTuning();invalidateReview(id);$('ocr-field-status').textContent='Default image settings restored for this field.';});
     for(const key of ['x','y','w','h'])$('ocr-region-'+key).addEventListener('change',()=>{try{const id=$('ocr-region-field').value;regions[id]=C.region(Object.fromEntries(['x','y','w','h'].map(k=>[k,Number($('ocr-region-'+k).value)/100])));paintRegion();invalidateReview(id);error('ocr-error','');}catch(e){error('ocr-error',e.message);paintRegion();}});
     $('ocr-save-layout').addEventListener('click',()=>{try{localStorage.setItem(layoutKey,JSON.stringify(regions));localStorage.setItem(tuningKey,JSON.stringify(tunings));$('ocr-layout-status').textContent='Read regions and image settings remembered in this browser. The screenshot is not saved.';}catch{$('ocr-layout-status').textContent='Browser storage is unavailable; settings remain for this visit.';}});

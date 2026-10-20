@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-20T19:28:09.779Z",
+  "source": "https://maplestory.io",
+  "region": "GMS",
+  "version": "83",
+  "path": "UI/Basic.img/ItemNo",
+  "attribution": "MapleStory UI sprites are the property of Nexon. Provided by the public MapleStory.io WZ API; https://maplestory.io/ states ownership and Terms of Service.",
+  "scope": "Unmodified digits 0–9 from the Classic inventory/shortcut quantity bitmap font. Local template matching only; no screenshots are sent to the asset provider.",
+  "glyphs": [
+    {
+      "digit": "0",
+      "width": 8,
+      "height": 11,
+      "icon": "assets/quantity-font/0.png",
+      "bytes": 410,
+      "sha256": "d7c54e9b162e36b39509896def0420a97a02b30cbdb22ad9d884822cb946e882",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/Basic.img/ItemNo/0"
+    },
+    {
+      "digit": "1",
+      "width": 5,
+      "height": 11,
+      "icon": "assets/quantity-font/1.png",
+      "bytes": 378,
+      "sha256": "d3381049ac9708cfe65431175f14e74e8bae9799b6a1bab120e55b73df6f86a0",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/Basic.img/ItemNo/1"
+    },
+    {
+      "digit": "2",
+      "width": 8,
+      "height": 11,
+      "icon": "assets/quantity-font/2.png",
+      "bytes": 427,
+      "sha256": "a1c36d4a7fa9023cf6f8f99d7c03e8c09225577cf85fa595910f29e7aacd3b2c",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/Basic.img/ItemNo/2"
+    },
+    {
+      "digit": "3",
+      "width": 8,
+      "height": 11,
+      "icon": "assets/quantity-font/3.png",
+      "bytes": 424,
+      "sha256": "d63eda0552472a8922571d42ec762fa48a9bd1395efbba756078dd9e2f73872b",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/Basic.img/ItemNo/3"
+    },
+    {
+      "digit": "4",
+      "width": 8,
+      "height": 11,
+      "icon": "assets/quantity-font/4.png",
+      "bytes": 411,
+      "sha256": "d41d27ef5ea9e3dab2d73af4de16e22da516c4bd708dc144ee0d8a71c9e50fd1",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/Basic.img/ItemNo/4"
+    },
+    {
+      "digit": "5",
+      "width": 8,
+      "height": 11,
+      "icon": "assets/quantity-font/5.png",
+      "bytes": 417,
+      "sha256": "0d5edb2005c49585defac2c54a2c8dc08f78d9771ca8bceff014a5340edfe2fb",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/Basic.img/ItemNo/5"
+    },
+    {
+      "digit": "6",
+      "width": 8,
+      "height": 11,
+      "icon": "assets/quantity-font/6.png",
+      "bytes": 419,
+      "sha256": "09ce6be470fa963d6fced4547afa9ebb142f54a10f153adf0a8fe880a9763c67",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/Basic.img/ItemNo/6"
+    },
+    {
+      "digit": "7",
+      "width": 8,
+      "height": 11,
+      "icon": "assets/quantity-font/7.png",
+      "bytes": 408,
+      "sha256": "f37cdef6b77c87a27fce0b431794368f9fe618d8dfb3fee8540f26190ea95b07",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/Basic.img/ItemNo/7"
+    },
+    {
+      "digit": "8",
+      "width": 8,
+      "height": 11,
+      "icon": "assets/quantity-font/8.png",
+      "bytes": 424,
+      "sha256": "3b07d3633829189192881449106ca5d6082c0952d4417f5d688609c974788e63",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/Basic.img/ItemNo/8"
+    },
+    {
+      "digit": "9",
+      "width": 8,
+      "height": 11,
+      "icon": "assets/quantity-font/9.png",
+      "bytes": 420,
+      "sha256": "d9100ffd02bb68b1c1cbf9117c4bb1bdea5011b72437f1cbca22e77ebf42beea",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/Basic.img/ItemNo/9"
+    }
+  ]
+}

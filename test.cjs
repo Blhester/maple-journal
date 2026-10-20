@@ -80,3 +80,5 @@ console.log('Passed: ETC quantity valuation, sale status, profit rates, zero pri
 
 require('./test-ocr.cjs');
 require('./test-potions.cjs');
+
+require('./test-quantity.cjs');
