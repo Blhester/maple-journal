@@ -46,4 +46,4 @@ Navigation: Session tracker contains the current timer, forms, and completed-ses
 
 ETC vendor loot: local searchable icon/name/price catalog; quantities, merged additions, editable sale status, vendor subtotal, saved price snapshots, history review, JSON restore, and CSV summary. Main result rates can include unsold vendor estimates while preserving original cash net.
 
-Screenshot import: on-device recognition of map, job, level, EXP and mesos; conservative HP/MP proposals with explicit confirmation; capture guide; per-field adjustable regions; local layout memory; editable opt-in review; starting/ending integration; cancellation and embedded standalone runtime. ETC stays manual.
+Screenshot import: on-device recognition of map, job, level, EXP and mesos; automatic HP/MP count proposals with user-selected items; capture guide; per-field adjustable regions; local layout memory; editable opt-in review; starting/ending integration; cancellation and embedded standalone runtime. ETC stays manual.

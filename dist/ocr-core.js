@@ -45,9 +45,6 @@
     const score=value=>candidates.filter(read=>read.value===value).length;
     candidates.sort((a,b)=>score(b.value)-score(a.value));
     const best=candidates[0];
-    // Tiny shortcut digits often collapse into one confident but incorrect glyph.
-    // Only propose a multi-digit count when separate treatments agree; users still confirm it.
-    if(['hp','mp'].includes(id)&&(best.value.length<2||score(best.value)<2||new Set(candidates.map(read=>read.value)).size>1))return {value:null,raw:reads.map(read=>read.text.trim()).filter(Boolean).join(' / '),confidence:0,disagrees:true};
     return {value:best.value,raw:best.text.trim(),confidence:best.confidence||0,disagrees:new Set(candidates.map(read=>read.value)).size>1};
   }
   root.MapleOcrCore={fields,defaults,region,parse,select};

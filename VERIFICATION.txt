@@ -73,3 +73,10 @@ Screenshot import — October 20, 2026
 - Region percentage edits, remember/reset layout, cancellation, modal close/reopen, and light/dark guide layouts were exercised. Closing releases the image URL, displayed crop, file selection, recognition rows, and worker; only reviewed values and optional region coordinates persist locally.
 - Standalone OCR succeeded in a local HTTP preview that served only the single HTML and returned 404 for all other paths, using its embedded worker/core/language. No remote OCR API or key is used.
 - Browser QA used Try the example through the normal decode/crop/recognition flow. The native upload chooser, direct file: OCR, other screenshot layouts/resolutions, and a physical mobile device were not exercised. Region adjustment/manual correction remain necessary for different HUD layouts and small text.
+
+Automatic supply-count selection — October 20, 2026
+- Replaced conservative blank/unchecked supply proposals with the best parsed numeric proposal, checked by default, including zero/single-digit counts and conflicting reads. Missing reads stay blank. Item identity remains user-selected; no icon classifier is used.
+- Updated review copy and internal docs. Existing parser checks now cover single valid reads, single digits, zero, and majority proposals with disagreement flags. Full test suite and standalone/site build passed.
+- Browser: a detected ending MP proposal was already checked and one Apply transferred it without toggling its checkbox. An unread HP count stayed unchecked and preserved the existing form value. Ending item types remained locked to the session.
+- Browser: corrected example counts to 441/761, selected Meat/Lemon, and applied once. Both items, quantities, and corresponding 80/150 costs transferred; timer stayed unstarted. No per-count confirmation was required.
+- This change reduces confirmation steps; it does not improve OCR accuracy. The example's small shortcut digits still needed correction (HP unread, MP misread as 4). The crop preview and editable fields remain available. Previous conservative-count notes above describe the superseded behavior.

@@ -112,7 +112,7 @@
     for(const field of activeFields()){
       const result=results[field.id],row=text('div','','ocr-review-field'),header=text('div','','ocr-review-field-heading'),use=document.createElement('input'),label=document.createElement('label');
       const supported=field.id!=='level'||context.stage==='setup'||!!context.hasLevel;
-      use.type='checkbox';use.id='ocr-use-'+field.id;use.checked=result.value!==null&&supported&&!['hp','mp'].includes(field.id);use.disabled=!supported;label.htmlFor=use.id;label.textContent=field.label;header.append(use,label);
+      use.type='checkbox';use.id='ocr-use-'+field.id;use.checked=result.value!==null&&supported;use.disabled=!supported;label.htmlFor=use.id;label.textContent=field.label;header.append(use,label);
       const check=text('button','View crop','text-button');check.type='button';check.addEventListener('click',()=>{$('ocr-region-field').value=field.id;paintRegion();});header.append(check);row.append(header);
       const input=document.createElement('input');input.id='ocr-value-'+field.id;input.type=field.numeric?'number':'text';input.setAttribute('aria-label','Recognized '+field.label);input.value=result.value??'';input.disabled=!supported;
       if(field.numeric){input.min=field.id==='level'?'1':'0';input.step='1';if(field.id==='level')input.max='100';}else input.maxLength=80;
@@ -120,7 +120,7 @@
       if(['hp','mp'].includes(field.id)){
         const supply=text('label','Count belongs to '),select=document.createElement('select');select.id='ocr-potion-'+field.id;select.setAttribute('aria-label',field.id.toUpperCase()+' supply in screenshot');select.replaceChildren(...MapleMath.catalog[field.id].map(item=>new Option(item.name,item.id)));select.value=context[field.id+'Potion'];select.disabled=context.stage!=='setup';supply.append(select);row.append(supply);
       }
-      row.append(text('small',!supported?'Starting level was not recorded. Keep using the manual level-up adjustment.':result.value===null?'No reliable value found. Type it here or leave this field unchecked.':['hp','mp'].includes(field.id)?'Confirm this count against the crop, select the matching item, then check the box to use it.':result.disagrees?'Readings differ. Check the enlarged crop carefully.':result.confidence<70?'Small text: check the enlarged crop before applying.':'Review this value before applying.','ocr-review-note'));
+      row.append(text('small',!supported?'Starting level was not recorded. Keep using the manual level-up adjustment.':result.value===null?'No number or text found. Type it here or leave this field unchecked.':result.disagrees?'Readings differ. Check the enlarged crop carefully.':['hp','mp'].includes(field.id)?'Detected count is included. Choose the matching item and edit the number if needed.':result.confidence<70?'Small text: check the enlarged crop before applying.':'Review this value before applying.','ocr-review-note'));
       const details=document.createElement('details');details.className='ocr-raw';details.append(text('summary','Recognized text'),text('p',result.raw||'No text recognized'));row.append(details);container.append(row);
     }
     $('ocr-review-form').hidden=false;$('ocr-empty-review').hidden=true;
