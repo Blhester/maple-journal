@@ -2,6 +2,7 @@ MAPLE JOURNAL — MapleStory Classic calculator
 
 Open dist/index.html directly in a browser, or run node preview.cjs and visit http://127.0.0.1:4173.
 No installation or build is needed. JavaScript calculations work offline; Google Fonts fall back to system fonts.
+Use the header slider to switch between light and dark mode. The sun becomes a moon in dark mode. Your choice is saved separately from session data; a first visit follows the system theme.
 
 1. Enter starting EXP, mesos, potion types, quantities, and unit costs.
 2. Start the session. Done freezes the timer immediately.
