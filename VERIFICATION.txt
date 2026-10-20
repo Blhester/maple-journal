@@ -32,3 +32,11 @@ Current-session analytics are now intentionally deferred. This replaces the earl
 - Inspected dark and light themes at the available browser width. The setup form now leads directly into history without the former empty column.
 - Existing completed history remains accessible. Map comparison is hidden when there are no saved completed runs.
 - Existing calculation tests and syntax/HTML-reference checks passed.
+
+Separate review tab — October 20, 2026
+- Verified Session tracker hides history/comparison and History & comparison hides the current session UI.
+- Typed a map and EXP draft, switched tabs, and verified both values were preserved.
+- Started a session, switched to history, refreshed, and returned to a still-running timer with the original values.
+- Verified mouse activation, Enter activation, Left arrow, Home, and End keyboard navigation.
+- The history URL fragment restored the selected tab on refresh.
+- Existing calculation tests and standalone script syntax checks passed.

@@ -20,3 +20,5 @@ Acceptance: all requested features functional, existing net formula preserved, n
 Verification details and device/file-picker limits: VERIFICATION.txt.
 
 [x] Remove uneven tracker columns and defer all current-session analytics until final calculation.
+
+[x] Separate history and map comparison into a dedicated accessible tab; preserve the running timer and form values across navigation.

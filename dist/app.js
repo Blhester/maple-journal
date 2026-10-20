@@ -1,6 +1,27 @@
 (() => {
   'use strict';
   const $=id=>document.getElementById(id),M=MapleMath,storageKey='maple-journal-session-v1';
+  // Switch views without rebuilding the tracker or interrupting an active timer.
+  const viewTabs=[$('session-tab'),$('history-tab')];
+  function selectView(name,{focus=false,updateHash=false}={}){
+    const history=name==='history';
+    for(const tab of viewTabs){const selected=tab.id===(history?'history-tab':'session-tab');tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1;}
+    $('session-view').hidden=history;$('history-view').hidden=!history;
+    if(focus)$(history?'history-tab':'session-tab').focus();
+    if(updateHash)window.history.replaceState(null,'',history?'#history':'#session');
+  }
+  function viewFromHash(){return ['#history','#history-view','#history-section','#comparison-section'].includes(window.location.hash)?'history':'session';}
+  for(const [index,tab]of viewTabs.entries()){
+    tab.addEventListener('click',()=>selectView(index===1?'history':'session',{updateHash:true}));
+    tab.addEventListener('keydown',event=>{
+      let next;
+      if(event.key==='ArrowRight'||event.key==='ArrowLeft')next=1-index;
+      else if(event.key==='Home')next=0;else if(event.key==='End')next=1;else return;
+      event.preventDefault();selectView(next===1?'history':'session',{focus:true,updateHash:true});
+    });
+  }
+  window.addEventListener('hashchange',()=>{if(window.location.hash!=='#feature-list')selectView(viewFromHash());});
+  selectView(viewFromHash());
   const number=new Intl.NumberFormat('en-US',{maximumFractionDigits:2});
   const startIds=['session-map','session-class','start-level','start-exp','start-mesos','hp-potion','start-hp','hp-cost','mp-potion','start-mp','mp-cost'];
   const endIds=['end-level','end-exp','end-mesos','end-hp','end-mp','extra-exp','hp-added','mp-added'];
@@ -31,7 +52,7 @@
     catch(e){$('target-eta').textContent='—';$('target-detail').textContent=e.message;}
   }
   function renderResults(){
-    const complete=state.stage==='complete';$('session-results').hidden=!complete;$('review-link').hidden=!complete;latest=null;if(!complete)return;const snap=snapshot();
+    const complete=state.stage==='complete';$('session-results').hidden=!complete;$('review-link').hidden=!complete;$('session-nav').hidden=!complete;latest=null;if(!complete)return;const snap=snapshot();
     for(const id of ['total-exp','total-net','gross','hp-spend','mp-spend','net-breakdown','adjusted-net','estimated-net','loot-total',...['hour','ten','minute'].flatMap(p=>['exp-'+p,'mesos-'+p])]){$(id).textContent='—';$(id).classList.remove('negative');}
     $('hp-used').textContent='';$('mp-used').textContent='';$('ledger-totals').hidden=true;
     for(const id of ['hp-efficiency','mp-efficiency','supply-cost','supply-share','hp-runway','mp-runway','target-eta','projection-exp-30','projection-mesos-30','projection-exp-60','projection-mesos-60'])$(id).textContent='—';
