@@ -1,0 +1,20 @@
+MAPLE JOURNAL — Implementation TODO
+Scope approved October 20, 2026: implement all proposed grind-insight features.
+
+[x] Define features, formulas, data storage, and comparison rules.
+[x] Implement Classic EXP requirements, level-spanning gains, and target-level estimates.
+[x] Implement pause/resume with refresh-safe active time and wall time.
+[x] Add map/class metadata and preserve existing saved sessions.
+[x] Add optional checkpoint snapshots, 10-minute reminders, and interval trends.
+[x] Add potion efficiency, supply runway, and 30/60-minute projections.
+[x] Add separate loot/income/expense adjustments without changing original net.
+[x] Save completed history and upsert edits without duplicate records.
+[x] Add filters, time-weighted map comparisons, and EXP/profit chart.
+[x] Add history review, CSV export, and validated JSON backup/restore.
+[x] Check calculations and migration/recovery behavior.
+[x] Verify desktop browser workflows, dark styling, and responsive layout rules. See VERIFICATION.txt for device/file-picker limits.
+[x] Update the standalone HTML and prepare the downloadable source bundle and Site deployment.
+
+Acceptance: all requested features functional, existing net formula preserved, no fabricated history, estimates labeled, data sources linked, and verification results documented.
+
+Verification details and device/file-picker limits: VERIFICATION.txt.

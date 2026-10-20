@@ -22,29 +22,135 @@
     ]
   };
   function integer(value, label) {
+    if (value === null || value === undefined || typeof value === 'boolean') throw new Error(label + ' must be a whole number of 0 or more.');
     if (typeof value === 'string' && !/^\d+$/.test(value.trim())) throw new Error(label + ' must be a whole number of 0 or more.');
     const n = Number(value);
     if (!Number.isSafeInteger(n) || n < 0) throw new Error(label + ' must be a safe whole number of 0 or more.');
     return n;
+  }
+  // Classic launch formulas: https://meowdb.com/msclassic/formulas/leveling
+  const expTable = [0];
+  const cumulative = [0,0];
+  for (let level=1;level<=99;level++) {
+    const q=Math.floor(level*level/3);
+    expTable[level]=level<=5?(Math.floor(level*level/2)+15)*level:level<=50?(q+19)*q:level<=89?Math.floor(expTable[level-1]*10548/10000):Math.floor(expTable[level-1]*21/10);
+    cumulative[level+1]=cumulative[level]+expTable[level];
+  }
+  function levelNumber(value) {
+    const n=integer(value,'Level');
+    if(n<1||n>100)throw new Error('Levels must be between 1 and 100.');
+    return n;
+  }
+  function position(level,exp) {
+    const n=levelNumber(level), xp=integer(exp,'EXP');
+    if((n===100&&xp!==0)||(n<100&&xp>=expTable[n]))throw new Error('At level '+n+', EXP must be '+(n===100?'0.':'between 0 and '+(expTable[n]-1).toLocaleString('en-US')+'.'));
+    return cumulative[n]+xp;
+  }
+  function activeElapsed(session,now=Date.now()) {
+    if(!session.startedAt)return 0;
+    const endpoint=session.stoppedAt ?? session.pausedAt ?? now;
+    return Math.max(0,endpoint-session.startedAt-(session.pausedMs||0));
+  }
+  function ledgerTotals(entries=[]) {
+    if(!Array.isArray(entries)||entries.length>1000)throw new Error('The ledger must contain no more than 1,000 entries.');
+    const totals={loot:0,income:0,expense:0};
+    for(const entry of entries){
+      if(!entry||!Object.hasOwn(totals,entry.kind))throw new Error('Unknown ledger entry type.');
+      totals[entry.kind]+=integer(entry.value,'Ledger value');
+    }
+    if(!Object.values(totals).every(Number.isSafeInteger))throw new Error('Ledger totals are too large.');
+    return totals;
   }
   function calculate(start, end, durationMs) {
     if (!Number.isFinite(durationMs) || durationMs <= 0) throw new Error('The session needs a positive elapsed time.');
     const values = {};
     for (const key of ['exp','mesos','hp','mp']) values[key] = integer(end[key], 'Ending ' + key);
     const extraExp = integer(end.extraExp ?? 0, 'Level-up EXP');
-    const hpUsed = start.hp + integer(end.hpAdded ?? 0, 'HP potions added') - values.hp;
-    const mpUsed = start.mp + integer(end.mpAdded ?? 0, 'MP potions added') - values.mp;
+    const initial={};for(const key of ['exp','mesos','hp','mp','hpCost','mpCost'])initial[key]=integer(start[key],'Starting '+key);
+    const hpUsed = initial.hp + integer(end.hpAdded ?? 0, 'HP potions added') - values.hp;
+    const mpUsed = initial.mp + integer(end.mpAdded ?? 0, 'MP potions added') - values.mp;
     if (hpUsed < 0 || mpUsed < 0) throw new Error('Ending potions exceed your starting supply. Enter pickups or restocks under Adjustments.');
-    const hpCost = hpUsed * start.hpCost, mpCost = mpUsed * start.mpCost;
-    const gross = values.mesos - start.mesos;
+    const hpCost = hpUsed * initial.hpCost, mpCost = mpUsed * initial.mpCost;
+    const gross = values.mesos - initial.mesos;
     const net = gross - hpCost - mpCost;
-    const exp = values.exp - start.exp + extraExp;
+    let exp = values.exp - initial.exp + extraExp;
+    const hasLevel=start.level!==undefined&&start.level!==null&&start.level!=='';
+    if(hasLevel){
+      const from=levelNumber(start.level), to=levelNumber(end.level);
+      if(to<from)throw new Error('Ending level cannot be below starting level.');
+      if(extraExp!==0)throw new Error('Leave manual level-up EXP at 0 when using starting and ending levels.');
+      exp=position(to,values.exp)-position(from,initial.exp);
+    }
     if (![hpUsed,mpUsed,hpCost,mpCost,gross,net,exp].every(Number.isSafeInteger)) throw new Error('These totals are too large. Use smaller values.');
     const per = ms => ({exp: exp * ms / durationMs, mesos: net * ms / durationMs});
     const rates = {hour:per(3600000),ten:per(600000),minute:per(60000)};
     if (!Object.values(rates).every(r => Number.isFinite(r.exp) && Number.isFinite(r.mesos))) throw new Error('Rates could not be calculated. Check your elapsed time.');
-    return {hpUsed,mpUsed,hpCost,mpCost,gross,net,exp,durationMs,rates};
+    const ledger=ledgerTotals(end.ledger||[]);
+    const adjustedNet=net+ledger.income-ledger.expense,estimatedNet=adjustedNet+ledger.loot;
+    if(![adjustedNet,estimatedNet].every(Number.isSafeInteger))throw new Error('Adjusted totals are too large.');
+    return {hpUsed,mpUsed,hpCost,mpCost,gross,net,exp,durationMs,rates,ledger,adjustedNet,estimatedNet,
+      hpPerMinute:hpUsed*60000/durationMs,mpPerMinute:mpUsed*60000/durationMs,
+      supplyCostPerHour:(hpCost+mpCost)*3600000/durationMs,
+      supplyShare:gross>0?(hpCost+mpCost)*100/gross:null,
+      hpRunwayMs:values.hp===0?0:hpUsed>0?values.hp*durationMs/hpUsed:null,
+      mpRunwayMs:values.mp===0?0:mpUsed>0?values.mp*durationMs/mpUsed:null};
   }
-  root.MapleMath = {catalog,integer,calculate};
+  function forecast(end,result,target) {
+    const projections=[30,60].map(minutes=>({minutes,exp:result.exp*minutes*60000/result.durationMs,mesos:result.net*minutes*60000/result.durationMs}));
+    if(end.level===null||end.level===undefined||end.level==='')return {projections,remaining:null,etaMs:null,reason:'Add starting and ending levels for a leveling estimate.'};
+    const current=levelNumber(end.level), to=target?levelNumber(target):Math.min(100,current+1);
+    const remaining=Math.max(0,cumulative[to]-position(current,end.exp));
+    const etaMs=remaining===0?0:result.exp>0?remaining*result.durationMs/result.exp:null;
+    return {projections,remaining,etaMs,target:to,reason:etaMs===null?'A positive EXP pace is needed for an ETA.':current===100?'Level 100 table endpoint reached.':to<=current?'Target already reached.':''};
+  }
+  function intervals(start,checkpoints,end,durationMs) {
+    const points=[...(checkpoints||[])];
+    if(end&&durationMs>0)points.push({end,elapsedMs:durationMs,final:true});
+    let previous={exp:0,net:0,time:0};const rows=[];
+    for(const point of points){
+      if(!Number.isFinite(point.elapsedMs)||point.elapsedMs<=previous.time)throw new Error('Checkpoint times must increase.');
+      const total=calculate(start,point.end,point.elapsedMs),span=point.elapsedMs-previous.time;
+      rows.push({from:previous.time,to:point.elapsedMs,exp:total.exp-previous.exp,net:total.net-previous.net,expHour:(total.exp-previous.exp)*3600000/span,netHour:(total.net-previous.net)*3600000/span,final:!!point.final});
+      previous={exp:total.exp,net:total.net,time:point.elapsedMs};
+    }
+    return rows;
+  }
+  function groupMaps(sessions,metric='net') {
+    if(!['net','adjustedNet','estimatedNet'].includes(metric))throw new Error('Unknown profit metric.');
+    const groups=new Map();
+    for(const session of sessions){
+      const name=(session.meta?.map||'Unspecified map').trim()||'Unspecified map',key=name.toLocaleLowerCase('en-US');
+      const r=calculate(session.start,session.end,activeElapsed(session));
+      const g=groups.get(key)||{map:name,runs:0,time:0,exp:0,mesos:0};
+      g.runs++;g.time+=r.durationMs;g.exp+=r.exp;g.mesos+=r[metric];groups.set(key,g);
+    }
+    return [...groups.values()].map(g=>({...g,expHour:g.exp*3600000/g.time,netHour:g.mesos*3600000/g.time})).sort((a,b)=>b.expHour-a.expHour);
+  }
+  function normalizeSession(raw) {
+    if(!raw||typeof raw!=='object')throw new Error('Invalid session record.');
+    const startedAt=integer(raw.startedAt,'Start time'),stoppedAt=integer(raw.stoppedAt,'Stop time'),pausedMs=integer(raw.pausedMs??0,'Paused time');
+    if(startedAt<=0||stoppedAt<=startedAt||pausedMs>=stoppedAt-startedAt)throw new Error('Invalid session timing.');
+    const start={};for(const k of ['exp','mesos','hp','mp','hpCost','mpCost'])start[k]=integer(raw.start?.[k],'Starting '+k);
+    start.level=raw.start.level!==undefined&&raw.start.level!==null&&raw.start.level!==''?levelNumber(raw.start.level):null;
+    for(const type of ['hp','mp'])start[type+'Potion']=String(raw.start[type+'Potion']||'custom').slice(0,40);
+    function cleanEnd(e){
+      if(!e||typeof e!=='object')throw new Error('Missing ending values.');
+      const out={};for(const k of ['exp','mesos','hp','mp'])out[k]=integer(e[k],'Ending '+k);
+      for(const k of ['hpAdded','mpAdded','extraExp'])out[k]=integer(e[k]??0,k);
+      out.level=start.level?levelNumber(e.level):null;ledgerTotals(e.ledger||[]);
+      out.ledger=(e.ledger||[]).map(item=>({kind:item.kind,value:integer(item.value,'Ledger value'),label:String(item.label||'Untitled').slice(0,100)}));return out;
+    }
+    const record={stage:'complete',id:String(raw.id||'run-'+startedAt).slice(0,100),startedAt,stoppedAt,pausedMs,start,end:cleanEnd(raw.end),meta:{map:String(raw.meta?.map||'').slice(0,80),class:String(raw.meta?.class||'').slice(0,80)},checkpoints:[]};
+    if(!Array.isArray(raw.checkpoints??[])||(raw.checkpoints?.length||0)>5000)throw new Error('Invalid checkpoint list.');
+    record.checkpoints=(raw.checkpoints||[]).map(cp=>({elapsedMs:integer(cp.elapsedMs,'Checkpoint time'),end:cleanEnd(cp.end)}));
+    const time=activeElapsed(record);calculate(start,record.end,time);intervals(start,record.checkpoints,record.end,time);return record;
+  }
+  function mergeHistory(current,incoming) {
+    if(!Array.isArray(incoming)||incoming.length>5000)throw new Error('Import up to 5,000 session records at a time.');
+    const clean=incoming.map(normalizeSession), records=new Map(current.map(r=>[r.id,r]));
+    for(const record of clean)records.set(record.id,record);
+    return [...records.values()].sort((a,b)=>b.stoppedAt-a.stoppedAt);
+  }
+  root.MapleMath = {catalog,integer,calculate,expTable,cumulative,levelNumber,position,activeElapsed,ledgerTotals,forecast,intervals,groupMaps,normalizeSession,mergeHistory};
   if (typeof module !== 'undefined') module.exports = root.MapleMath;
 })(typeof window !== 'undefined' ? window : globalThis);

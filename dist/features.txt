@@ -1,0 +1,41 @@
+MAPLE JOURNAL — Feature list
+Updated October 20, 2026
+
+1. Session history and map comparison
+Save completed sessions with map, class, starting/ending level, active time, and results. Filter history by class and starting-level range. Compare maps using total gains divided by total active time so short runs do not skew averages. Export/import JSON backups and export CSV.
+
+2. EXP versus profit
+Plot each map's EXP/hour against net mesos/hour. Choose original net, adjusted cash net, or estimated net including unsold loot. Show the fastest training map and highest-profit map for the selected history.
+
+3. Leveling estimates and projections
+Estimate time to the next level or a chosen target using the latest checkpoint or final pace. Show projected EXP and original-formula net mesos for 30 and 60 active minutes. Label estimates and handle zero/negative EXP pace.
+
+4. Potion efficiency
+Show HP/MP items consumed per minute, total supply cost per hour, and potion spending as a percentage of positive meso balance change.
+
+5. Supply runway
+Estimate remaining HP and MP training time at the observed usage rate. Distinguish empty supplies from a supply that has no recorded consumption.
+
+6. Checkpoints and pace trends
+Record level, EXP, mesos, supplies remaining, and cumulative additions while training. Offer an inline reminder every 10 active minutes. Compare consecutive intervals in a table and chart. Measurements are manual snapshots, not a live game connection.
+
+7. Loot and expense ledger
+Track estimated unsold loot, income not yet in the entered balance, and expenses not yet in the entered balance. Keep the requested original net formula unchanged. Present adjusted cash and estimated loot-inclusive totals separately. Never add a sale or expense twice if already reflected in the ending balance.
+
+8. Automatic level-up handling
+Use starting/ending levels plus within-level EXP to calculate gains across one or more levels. Use MeowDB Classic formulas for levels 1–99 and level 100 as the table endpoint. Preserve manual extra-EXP adjustment for older sessions without level metadata.
+
+9. Pause/resume
+Exclude breaks from every rate and estimate. Show active and wall time, preserve pauses through refresh, and allow Done while paused.
+
+Existing features retained
+Start/Done flow, EXP and original-formula mesos per hour/10 minutes/minute, editable MeowDB supplies including Meat/Lemon, custom supply prices, negative gains, refresh recovery, light/dark slider, sun/moon icons, and a standalone HTML copy.
+
+Data and calculation notes
+History, drafts, theme, and checkpoints are stored in the current browser only. Local files and the hosted website use separate browser storage. Back up important history. Compare runs of similar level/class/buffs/party conditions; the tool does not normalize game conditions.
+Original net = ending mesos - starting mesos - HP used * HP unit price - MP used * MP unit price.
+Adjusted cash net = original net + uncounted income - uncounted expenses.
+Estimated total net = adjusted cash net + estimated unsold loot.
+Supply used = starting + cumulative additions - remaining.
+Source: https://meowdb.com/msclassic/formulas/leveling
+Item source: https://meowdb.com/msclassic/npc-shops

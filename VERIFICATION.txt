@@ -1,0 +1,23 @@
+MAPLE JOURNAL — Verification record, October 20, 2026
+
+Automated: node test.cjs
+Passed original net and EXP rates, zero and negative gains, free supplies, restocks, input bounds, overflow, Classic formula boundaries (including 50/51 and 89/90), one/multiple level-ups, invalid within-level EXP, level-100 endpoint, target ETA/projections, zero/negative pace, paused active time, distinct ledger totals, efficiency/runway, interval trends, history normalization/upserts, invalid import rejection without changing existing records, legacy records without levels, and time-weighted map grouping.
+
+Browser checks on a local HTTP preview
+- Created a map/class-tagged level-30 session.
+- Paused, refreshed, and verified frozen active time and restored metadata.
+- Resumed and saved a checkpoint; live results, supply insights, ETA, and interval chart populated.
+- Paused again and clicked Done; ending-value entry did not count as training time.
+- Entered a level-31 ending snapshot and verified 6,700 EXP gained across the level-up.
+- Verified original net 40,800 and loot-inclusive estimate 50,800 for a 10,000-meso unsold item.
+- Edited the same run to original net 30,800; an uncounted 2,000-meso expense produced adjusted cash 28,800 and estimated total 38,800.
+- History remained at one record after editing. Review showed the saved metadata, ledger, and breaks.
+- Starting-level filters updated history and map comparisons together.
+- Switching the chart to loot-inclusive profit changed its rate without changing original net.
+- Refreshed a completed run; history, ledger, checkpoint, and projections restored.
+- Inspected desktop dark-mode tracker, history, charts, and light-mode controls.
+
+Responsive layouts use narrow-screen media rules, wrapping navigation, and horizontally scrollable wide tables. A physical mobile device was not available for testing.
+JSON schema/merge validation and legacy migration are covered by automated tests; the native file-picker restore flow was not exercised in the browser.
+
+No QA sessions are bundled or uploaded to the hosted website. Tests use local preview browser storage. History remains local to each origin, including separate storage for the standalone HTML.
