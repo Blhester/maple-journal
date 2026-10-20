@@ -33,7 +33,7 @@ assert.deepEqual(Array.from(filtered),[0,0,0,255,255,255,255,255,255,255,255,255
 assert.deepEqual(Array.from(pixels),before);
 const tone=(value,options)=>C.processPixels(new Uint8ClampedArray([value,value,value,255]),C.tuning('exp',{mode:'gray',contrast:1,...options}))[0];
 assert.equal(tone(100,{contrast:2}),72);assert.equal(tone(100,{brightness:20}),120);assert.equal(tone(20,{invert:true}),235);
-assert.equal(C.processPixels(new Uint8ClampedArray([100,100,100,255]),C.tuning('mesos',{contrast:1,threshold:140}))[0],0);
+assert.equal(C.processPixels(new Uint8ClampedArray([100,100,100,255]),C.tuning('mesos',{contrast:1,brightness:0,threshold:140,invert:false}))[0],0);
 assert.equal(C.processPixels(new Uint8ClampedArray([240,160,30,255]),C.tuning('level',{mode:'gold',contrast:1,brightness:0,threshold:145}))[0],0);
 assert.equal(C.tuning('exp',{contrast:Infinity,scale:100}).contrast,1.3);assert.equal(C.tuning('hp',{scale:100}).scale,6);
 assert.equal(C.tuning('mp',{mode:'bad',threshold:-20}).mode,'neutral');assert.equal(C.tuning('mp',{threshold:-20}).threshold,30);

@@ -129,3 +129,8 @@ Level preset defaults — October 20, 2026
 - Set only the level defaults to neutral white/remove-color, contrast 3, brightness 80, threshold 115, and chroma tolerance 255. Existing 4x enlargement and inversion-off remain. Full screenshot reads now use the level preset even without stored tuning; selected-field rereads already use it. Saved per-field values retain precedence.
 - Full test suite and standalone/static builds pass. The existing gold-mask unit check now supplies its own explicit gold settings instead of relying on level defaults. Browser controls show all five requested values on a fresh origin.
 - Browser full example read with the default preset returned level 58, mesos 0, HP 441 and MP 761. The level-specific full read uses adjusted-image passes instead of bypassing its default preset.
+
+Mesos preset defaults — October 20, 2026
+- Set Dark text, contrast 0.5, brightness 5, threshold 145 and inversion enabled for mesos only. Full screenshot reads use the mesos preset even without stored tuning; remembered values, including explicit invert:false, retain precedence. Level and other field presets are unchanged.
+- Existing tests and standalone/static build checks pass. The dark-mask unit check now supplies explicit brightness/inversion so it tests the mask independently of defaults. Browser controls on a fresh origin show all requested values and inversion checked.
+- Browser full example read returned mesos 0, level 58, and HP/MP 441/761 with the requested defaults.

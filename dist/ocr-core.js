@@ -53,7 +53,7 @@
     const mode={map:'light',class:'gray',level:'neutral',exp:'light',mesos:'dark',hp:'neutral',mp:'neutral'}[id];
     if(!mode)throw new Error('Unknown screenshot field.');
     const number=(key,fallback,min,max)=>Number.isFinite(value[key])?Math.max(min,Math.min(max,value[key])):fallback;
-    return {reader:value.reader==='general'?'general':'classic',mode:['gray','light','dark','neutral','gold'].includes(value.mode)?value.mode:mode,contrast:number('contrast',id==='level'?3:1.3,.5,3),brightness:number('brightness',id==='level'?80:0,-80,80),threshold:number('threshold',id==='level'?115:id==='mesos'?140:145,30,240),chroma:number('chroma',id==='level'?255:55,0,255),scale:Math.round(number('scale',4,2,6)),invert:!!value.invert};
+    return {reader:value.reader==='general'?'general':'classic',mode:['gray','light','dark','neutral','gold'].includes(value.mode)?value.mode:mode,contrast:number('contrast',id==='level'?3:id==='mesos'?.5:1.3,.5,3),brightness:number('brightness',id==='level'?80:id==='mesos'?5:0,-80,80),threshold:number('threshold',id==='level'?115:145,30,240),chroma:number('chroma',id==='level'?255:55,0,255),scale:Math.round(number('scale',4,2,6)),invert:value.invert===undefined?id==='mesos':!!value.invert};
   }
   // Pure RGBA preprocessing. Input pixels are never modified or persisted.
   function processPixels(input,settings){
