@@ -40,13 +40,36 @@
   }
   function select(id,reads){
     const candidates=reads.map(read=>({...read,value:parse(id,read.text)})).filter(read=>read.value!==null);
-    if(!candidates.length)return {value:null,raw:reads.map(read=>read.text.trim()).filter(Boolean).join(' / '),confidence:0,disagrees:false};
+    const raw=reads.map(read=>(read.label?read.label+': ':'')+read.text.trim()).filter(Boolean).join('\n');
+    if(!candidates.length)return {value:null,raw,confidence:0,disagrees:false,alternatives:[]};
     // Agreement wins. A tie retains the field-specific first treatment, not OCR confidence.
     const score=value=>candidates.filter(read=>read.value===value).length;
     candidates.sort((a,b)=>score(b.value)-score(a.value));
     const best=candidates[0];
-    return {value:best.value,raw:best.text.trim(),confidence:best.confidence||0,disagrees:new Set(candidates.map(read=>read.value)).size>1};
+    const alternatives=[...new Set(candidates.map(read=>read.value))].filter(value=>value!==best.value);
+    return {value:best.value,raw,confidence:best.confidence||0,disagrees:alternatives.length>0,alternatives};
   }
-  root.MapleOcrCore={fields,defaults,region,parse,select};
+  function tuning(id,value={}){
+    const mode={map:'light',class:'gray',level:'gold',exp:'light',mesos:'dark',hp:'neutral',mp:'neutral'}[id];
+    if(!mode)throw new Error('Unknown screenshot field.');
+    const number=(key,fallback,min,max)=>Number.isFinite(value[key])?Math.max(min,Math.min(max,value[key])):fallback;
+    return {mode:['gray','light','dark','neutral','gold'].includes(value.mode)?value.mode:mode,contrast:number('contrast',1.3,.5,3),brightness:number('brightness',0,-80,80),threshold:number('threshold',id==='mesos'?140:145,30,240),chroma:number('chroma',55,0,255),scale:Math.round(number('scale',4,2,6)),invert:!!value.invert};
+  }
+  // Pure RGBA preprocessing. Input pixels are never modified or persisted.
+  function processPixels(input,settings){
+    const d=new Uint8ClampedArray(input.length),adjust=v=>Math.max(0,Math.min(255,(v-128)*settings.contrast+128+settings.brightness));
+    for(let i=0;i<input.length;i+=4){
+      if(input[i+3]===0){d[i]=d[i+1]=d[i+2]=settings.invert?0:255;d[i+3]=255;continue;}
+      // Composite transparent screenshots on white before filtering.
+      const alpha=input[i+3]/255,r=adjust(input[i]*alpha+255*(1-alpha)),g=adjust(input[i+1]*alpha+255*(1-alpha)),b=adjust(input[i+2]*alpha+255*(1-alpha));
+      const light=.299*r+.587*g+.114*b,low=Math.min(r,g,b),high=Math.max(r,g,b);let value;
+      if(settings.mode==='gray')value=settings.invert?255-light:light;
+      else {const ink=settings.mode==='light'?low>=settings.threshold:settings.mode==='neutral'?low>=settings.threshold&&high-low<=settings.chroma:settings.mode==='gold'?r>=settings.threshold&&g>=settings.threshold*.45&&r>g*1.06&&g>b*1.25:light<settings.threshold;value=ink?0:255;if(settings.invert)value=255-value;}
+      d[i]=d[i+1]=d[i+2]=value;d[i+3]=255;
+    }
+    return d;
+  }
+  const scaleFor=(width,height,preferred)=>Math.min(preferred,Math.sqrt(2000000/(width*height)),6000/width,6000/height);
+  root.MapleOcrCore={fields,defaults,region,parse,select,tuning,processPixels,scaleFor};
   if(typeof module!=='undefined')module.exports=root.MapleOcrCore;
 })(typeof window!=='undefined'?window:globalThis);

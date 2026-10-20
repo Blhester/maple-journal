@@ -28,3 +28,4 @@ Verification details and device/file-picker limits: VERIFICATION.txt.
 [x] Add local MeowDB ETC JSON and icons, searchable ending-session picker, quantity valuation, sold/unsold accounting, loot-inclusive rates, persistence, exports, and catalog refresh tooling.
 
 [x] Add private on-device screenshot recognition, a labeled example, adjustable read regions, reviewed starting/ending values, automatic count proposals with editable item selection, local OCR assets, standalone support, and parsing/integration verification.
+[x] Add local OCR image adjustments and processed preview, selected-field rereads, alternative readings, setting memory/reset, and preservation of reviewed values.
