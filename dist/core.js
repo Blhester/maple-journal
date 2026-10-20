@@ -51,12 +51,26 @@
     const endpoint=session.stoppedAt ?? session.pausedAt ?? now;
     return Math.max(0,endpoint-session.startedAt-(session.pausedMs||0));
   }
+  function ledgerValue(entry) {
+    if(entry.source!=='etc')return integer(entry.value,'Ledger value');
+    if(!['loot','income'].includes(entry.kind)||!/^\d{1,10}$/.test(String(entry.itemId)))throw new Error('Invalid ETC loot entry.');
+    const quantity=integer(entry.quantity,'ETC quantity'),price=integer(entry.unitPrice,'ETC vendor price');
+    if(quantity===0)throw new Error('ETC quantity must be at least 1.');
+    const value=quantity*price;
+    if(!Number.isSafeInteger(value))throw new Error('ETC value is too large.');
+    if(integer(entry.value,'ETC total')!==value)throw new Error('ETC total must match quantity × vendor price.');
+    return value;
+  }
+  function profitRates(result,metric='net') {
+    if(!['net','adjustedNet','estimatedNet'].includes(metric))throw new Error('Unknown profit metric.');
+    return Object.fromEntries([['hour',3600000],['ten',600000],['minute',60000]].map(([key,ms])=>[key,result[metric]*ms/result.durationMs]));
+  }
   function ledgerTotals(entries=[]) {
     if(!Array.isArray(entries)||entries.length>1000)throw new Error('The ledger must contain no more than 1,000 entries.');
     const totals={loot:0,income:0,expense:0};
     for(const entry of entries){
       if(!entry||!Object.hasOwn(totals,entry.kind))throw new Error('Unknown ledger entry type.');
-      totals[entry.kind]+=integer(entry.value,'Ledger value');
+      totals[entry.kind]+=ledgerValue(entry);
     }
     if(!Object.values(totals).every(Number.isSafeInteger))throw new Error('Ledger totals are too large.');
     return totals;
@@ -138,7 +152,7 @@
       const out={};for(const k of ['exp','mesos','hp','mp'])out[k]=integer(e[k],'Ending '+k);
       for(const k of ['hpAdded','mpAdded','extraExp'])out[k]=integer(e[k]??0,k);
       out.level=start.level?levelNumber(e.level):null;ledgerTotals(e.ledger||[]);
-      out.ledger=(e.ledger||[]).map(item=>({kind:item.kind,value:integer(item.value,'Ledger value'),label:String(item.label||'Untitled').slice(0,100)}));return out;
+      out.ledger=(e.ledger||[]).map(item=>({kind:item.kind,value:ledgerValue(item),label:String(item.label||'Untitled').slice(0,100),...(item.source==='etc'?{source:'etc',itemId:String(item.itemId),quantity:integer(item.quantity,'ETC quantity'),unitPrice:integer(item.unitPrice,'ETC vendor price')}: {})}));return out;
     }
     const record={stage:'complete',id:String(raw.id||'run-'+startedAt).slice(0,100),startedAt,stoppedAt,pausedMs,start,end:cleanEnd(raw.end),meta:{map:String(raw.meta?.map||'').slice(0,80),class:String(raw.meta?.class||'').slice(0,80)},checkpoints:[]};
     if(!Array.isArray(raw.checkpoints??[])||(raw.checkpoints?.length||0)>5000)throw new Error('Invalid checkpoint list.');
@@ -151,6 +165,6 @@
     for(const record of clean)records.set(record.id,record);
     return [...records.values()].sort((a,b)=>b.stoppedAt-a.stoppedAt);
   }
-  root.MapleMath = {catalog,integer,calculate,expTable,cumulative,levelNumber,position,activeElapsed,ledgerTotals,forecast,intervals,groupMaps,normalizeSession,mergeHistory};
+  root.MapleMath = {catalog,integer,calculate,expTable,cumulative,levelNumber,position,activeElapsed,ledgerValue,ledgerTotals,profitRates,forecast,intervals,groupMaps,normalizeSession,mergeHistory};
   if (typeof module !== 'undefined') module.exports = root.MapleMath;
 })(typeof window !== 'undefined' ? window : globalThis);

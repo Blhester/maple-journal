@@ -24,3 +24,5 @@ Verification details and device/file-picker limits: VERIFICATION.txt.
 [x] Separate history and map comparison into a dedicated accessible tab; preserve the running timer and form values across navigation.
 
 [x] Remove the end-user feature/TODO panel and public document copies; retain maintainer documents and README in the source repository.
+
+[x] Add local MeowDB ETC JSON and icons, searchable ending-session picker, quantity valuation, sold/unsold accounting, loot-inclusive rates, persistence, exports, and catalog refresh tooling.

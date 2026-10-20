@@ -46,3 +46,12 @@ Internal documentation cleanup — October 20, 2026
 - Verified the tracker now leads directly to the footer; history and comparison remain available in their own tab.
 - Preserved the internal FEATURES.txt, TODO.txt, and README.txt in the repository.
 - Rebuilt standalone HTML and the end-user ZIP without internal documents. Existing calculation tests and JavaScript syntax checks passed.
+
+ETC catalog and loot accounting — October 20, 2026
+- Scraped MeowDB's public Classic ETC API (non-Ossyria scope) into 331 priced records and downloaded all 331 PNG icons. Four entries had no published sell-back price and were excluded; explicit zero prices were retained. Source URLs and refresh metadata remain in the catalog.
+- Existing math tests and new quantity/value, sold/unsold, rate, zero-price, overflow, metadata preservation, JSON round-trip/upsert, and catalog/icon checks passed.
+- Browser: stopped a session, searched Snail Shell with the keyboard, added 200 twice (merged to 400), edited to 600, and added 100 Squishy Liquid. Local icons and current vendor values appeared.
+- Marked 600-meso Snail Shells sold after balance and kept 600-meso Squishy Liquid unsold. Original net remained 40,800, adjusted cash became 41,400, and loot-inclusive net became 42,000. Main rates defaulted to loot-inclusive and could switch to the original formula.
+- Reload restored both entries and totals; history review preserved quantities, price snapshots, sale status, and icons. Switching tabs preserved the current session.
+- Inspected light and dark picker/drop rows, keyboard selection, empty search results, and source item links. Physical mobile and native file-picker import were not exercised. JSON payload round-trips are covered by automated checks.
+- Standalone generation embeds the full catalog and all icons and syntax-checks six scripts. The hosted app has no runtime requests to MeowDB. No QA history is included in deployed assets.

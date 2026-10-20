@@ -37,7 +37,7 @@
     box.append(text('p',new Date(record.stoppedAt).toLocaleString()+' · '+(record.meta.class||'Unspecified class')+' · '+(record.start.level?'Lv '+record.start.level+' → '+record.end.level:'No level metadata'),'form-note'));
     const stats=document.createElement('div');stats.className='insight-grid';
     for(const [label,value]of [['Active / breaks',time(r.durationMs)+' / '+time(record.pausedMs)],['EXP gained',fmt(r.exp)],['Original net',fmt(r.net)],['Adjusted cash net',fmt(r.adjustedNet)],['Estimated net with loot',fmt(r.estimatedNet)],['Checkpoints',String(record.checkpoints.length)]]){const div=document.createElement('div');div.append(text('span',label),text('strong',value));stats.append(div);}box.append(stats);
-    const list=document.createElement('ul');for(const item of record.end.ledger||[])list.append(text('li',item.label+' · '+item.kind+' · '+fmt(item.value)+' mesos'));box.append(list);
+    const list=document.createElement('ul');list.className='review-ledger';for(const item of record.end.ledger||[]){const li=document.createElement('li');if(item.source==='etc')li.append(MapleEtc.icon(item.itemId),text('span',MapleEtc.describe(item)));else li.append(text('span',item.label+' · '+item.kind+' · '+fmt(item.value)+' mesos'));list.append(li);}box.append(list);
     const close=text('button','Close review','secondary');close.type='button';close.addEventListener('click',()=>{selected=null;box.hidden=true;});box.append(close);
   }
   function render(){
@@ -75,8 +75,8 @@
   $('export-json').addEventListener('click',()=>download('maple-journal-history.json','application/json',JSON.stringify({schemaVersion:1,exportedAt:new Date().toISOString(),sessions:records},null,2)));
   function csvCell(value){let s=String(value??'');if(/^\s*[=+@\-]/.test(s)||/^[\t\r]/.test(s))s="'"+s;return '"'+s.replaceAll('"','""')+'"';}
   $('export-csv').addEventListener('click',()=>{
-    const header=['Date','Map','Class','Starting level','Ending level','Active seconds','Paused seconds','EXP gained','Original net','Adjusted cash net','Estimated net with loot','EXP/hour','Net mesos/hour'];
-    const lines=records.map(s=>{const r=M.calculate(s.start,s.end,M.activeElapsed(s));return [new Date(s.stoppedAt).toISOString(),s.meta.map,s.meta.class,s.start.level,s.end.level,r.durationMs/1000,s.pausedMs/1000,r.exp,r.net,r.adjustedNet,r.estimatedNet,r.rates.hour.exp,r.rates.hour.mesos].map((v,i)=>i<3?csvCell(v):String(v??'')).join(',');});download('maple-journal-history.csv','text/csv;charset=utf-8','\uFEFF'+[header.join(','),...lines].join('\r\n'));
+    const header=['Date','Map','Class','Starting level','Ending level','Active seconds','Paused seconds','EXP gained','Original net','Adjusted cash net','Estimated net with loot','EXP/hour','Net mesos/hour','Net with loot/hour','ETC unsold estimate','ETC sold after balance'];
+    const lines=records.map(s=>{const r=M.calculate(s.start,s.end,M.activeElapsed(s));return [new Date(s.stoppedAt).toISOString(),s.meta.map,s.meta.class,s.start.level,s.end.level,r.durationMs/1000,s.pausedMs/1000,r.exp,r.net,r.adjustedNet,r.estimatedNet,r.rates.hour.exp,r.rates.hour.mesos,M.profitRates(r,'estimatedNet').hour,M.ledgerTotals(s.end.ledger.filter(e=>e.source==='etc')).loot,M.ledgerTotals(s.end.ledger.filter(e=>e.source==='etc')).income].map((v,i)=>i<3?csvCell(v):String(v??'')).join(',');});download('maple-journal-history.csv','text/csv;charset=utf-8','\uFEFF'+[header.join(','),...lines].join('\r\n'));
   });
   $('import-json').addEventListener('change',async event=>{
     const file=event.target.files[0];if(!file)return;

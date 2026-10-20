@@ -26,6 +26,7 @@
   const startIds=['session-map','session-class','start-level','start-exp','start-mesos','hp-potion','start-hp','hp-cost','mp-potion','start-mp','mp-cost'];
   const endIds=['end-level','end-exp','end-mesos','end-hp','end-mp','extra-exp','hp-added','mp-added'];
   let state={stage:'setup',ledger:[],checkpoints:[]},timerInterval,latest=null;
+  MapleEtc.init({getEntries:()=>state.ledger||[],onChange:entries=>{state.ledger=entries;persist();renderLedger();}});
   const format=n=>number.format(Math.abs(n)<.005?0:n);
   function duration(ms){const n=Math.max(0,Math.floor(ms/1000));return [Math.floor(n/3600),Math.floor(n/60)%60,n%60].map(x=>String(x).padStart(2,'0')).join(':');}
   function eta(ms){if(ms===null)return '—';if(ms===0)return 'Reached';if(ms<60000)return '< 1 minute';const min=Math.ceil(ms/60000);return min>=60?Math.floor(min/60)+'h '+min%60+'m':min+' min';}
@@ -51,6 +52,15 @@
     try{const plan=M.forecast(latest.end,latest.result,$('target-level').value);$('target-eta').textContent=eta(plan.etaMs);$('target-detail').textContent=plan.reason||(format(plan.remaining)+' EXP remaining to level '+plan.target+'. Based on the observed active-time pace.');for(const p of plan.projections){paint('projection-exp-'+p.minutes,p.exp);paint('projection-mesos-'+p.minutes,p.mesos);}}
     catch(e){$('target-eta').textContent='—';$('target-detail').textContent=e.message;}
   }
+  function renderProfit(){
+    if(!latest)return;
+    const r=latest.result,metric=$('profit-metric').value,rates=M.profitRates(r,metric);
+    paint('total-net',r[metric]);
+    for(const p of ['hour','ten','minute'])paint('mesos-'+p,rates[p]);
+    $('profit-total-label').textContent=metric==='estimatedNet'?'TOTAL NET WITH LOOT':metric==='adjustedNet'?'ADJUSTED CASH NET':'NET MESOS';
+    $('profit-column-label').textContent=metric==='estimatedNet'?'NET + LOOT':'NET MESOS';
+    $('profit-note').textContent=metric==='estimatedNet'?'Includes unsold loot at its vendor estimate. Cash and estimated value are separated in the breakdown below.':metric==='adjustedNet'?'Includes sales and expenses recorded outside your ending balance. Unsold items are excluded.':'Your ending balance change minus potion costs. Loot and extra ledger entries are excluded.';
+  }
   function renderResults(){
     const complete=state.stage==='complete';$('session-results').hidden=!complete;$('review-link').hidden=!complete;$('session-nav').hidden=!complete;latest=null;if(!complete)return;const snap=snapshot();
     for(const id of ['total-exp','total-net','gross','hp-spend','mp-spend','net-breakdown','adjusted-net','estimated-net','loot-total',...['hour','ten','minute'].flatMap(p=>['exp-'+p,'mesos-'+p])]){$(id).textContent='—';$(id).classList.remove('negative');}
@@ -66,7 +76,7 @@
       $('hp-efficiency').textContent=format(r.hpPerMinute);$('mp-efficiency').textContent=format(r.mpPerMinute);$('supply-cost').textContent=format(r.supplyCostPerHour);$('supply-share').textContent=r.supplyShare===null?'N/A':format(r.supplyShare)+'%';
       $('hp-runway').textContent=r.hpRunwayMs===0?'Empty':r.hpRunwayMs===null?'No use recorded':eta(r.hpRunwayMs);$('mp-runway').textContent=r.mpRunwayMs===0?'Empty':r.mpRunwayMs===null?'No use recorded':eta(r.mpRunwayMs);
       if(snap.end.ledger?.length){$('ledger-totals').hidden=false;$('ledger-cash').textContent='+'+format(r.ledger.income)+' / −'+format(r.ledger.expense);paint('adjusted-net',r.adjustedNet);paint('estimated-net',r.estimatedNet);paint('loot-total',r.ledger.loot);}
-      updateForecast();
+      renderProfit();updateForecast();
     }
     renderTrend();
   }
@@ -79,7 +89,9 @@
   }
   function renderLedger(){
     const ul=$('ledger-list');ul.replaceChildren();
+    MapleEtc.render(state.ledger||[]);
     for(const [index,item]of(state.ledger||[]).entries()){
+      if(item.source==='etc')continue;
       const li=document.createElement('li'),span=document.createElement('span'),button=document.createElement('button');span.textContent=({loot:'Estimated loot',income:'Uncounted income',expense:'Uncounted expense'})[item.kind]+' · '+item.label+' · '+format(item.value)+' mesos';button.type='button';button.className='text-button';button.textContent='Remove';button.setAttribute('aria-label','Remove '+item.label);button.addEventListener('click',()=>{state.ledger.splice(index,1);persist();renderLedger();});li.append(span,button);ul.append(li);
     }
   }
@@ -117,12 +129,12 @@
   });
   $('end-form').addEventListener('submit',event=>{
     event.preventDefault();if(state.stage!=='ending')return;
-    try{const end=readEnd('end');M.calculate(state.start,end,elapsed());state.checkpoints=state.checkpoints.filter(cp=>cp.elapsedMs<elapsed());M.intervals(state.start,state.checkpoints,end,elapsed());state.end=end;state.stage='complete';error('end-error','');persist();try{MapleHistory.save(state);}catch(e){error('history-error',e.message);}render();$('results-heading').setAttribute('tabindex','-1');$('results-heading').focus({preventScroll:true});}catch(e){error('end-error',e.message);}
+    try{const end=readEnd('end');M.calculate(state.start,end,elapsed());state.checkpoints=state.checkpoints.filter(cp=>cp.elapsedMs<elapsed());M.intervals(state.start,state.checkpoints,end,elapsed());state.end=end;state.stage='complete';$('profit-metric').value=end.ledger.some(e=>e.kind==='loot')?'estimatedNet':end.ledger.length?'adjustedNet':'net';error('end-error','');persist();try{MapleHistory.save(state);}catch(e){error('history-error',e.message);}render();$('results-heading').setAttribute('tabindex','-1');$('results-heading').focus({preventScroll:true});}catch(e){error('end-error',e.message);}
   });
   $('edit-button').addEventListener('click',()=>{state.stage='ending';state.ledger=structuredClone(state.end.ledger||[]);persist();render();$('end-exp').focus();});
-  function reset(){state={stage:'setup',checkpoints:[],ledger:[]};$('start-form').reset();$('end-form').reset();$('checkpoint-form').reset();$('hp-potion').value='white';$('mp-potion').value='blue';$('hp-cost').value=350;$('mp-cost').value=220;for(const id of ['adjustments','ledger-details','checkpoint-details'])$(id).open=false;for(const id of ['end-error','start-error','cp-error','ledger-error'])error(id,'');$('cp-saved').textContent='';persist();render();$('start-exp').focus();}
+  function reset(){MapleEtc.reset();state={stage:'setup',checkpoints:[],ledger:[]};$('start-form').reset();$('end-form').reset();$('checkpoint-form').reset();$('hp-potion').value='white';$('mp-potion').value='blue';$('hp-cost').value=350;$('mp-cost').value=220;for(const id of ['adjustments','ledger-details','checkpoint-details'])$(id).open=false;for(const id of ['end-error','start-error','cp-error','ledger-error'])error(id,'');$('cp-saved').textContent='';persist();render();$('start-exp').focus();}
   $('new-button').addEventListener('click',reset);$('discard-button').addEventListener('click',()=>{$('discard-confirm').hidden=false;$('keep-button').focus();});$('keep-button').addEventListener('click',()=>{$('discard-confirm').hidden=true;$('discard-button').focus();});$('confirm-discard').addEventListener('click',reset);
-  for(const id of [...startIds,...endIds])$(id).addEventListener('input',()=>{persist();if(id==='start-level')updateLevelHint();});$('target-level').addEventListener('input',updateForecast);$('trend-metric').addEventListener('change',renderTrend);document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick();});
+  for(const id of [...startIds,...endIds])$(id).addEventListener('input',()=>{persist();if(id==='start-level')updateLevelHint();});$('profit-metric').addEventListener('change',renderProfit);$('target-level').addEventListener('input',updateForecast);$('trend-metric').addEventListener('change',renderTrend);document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick();});
   try{
     const saved=JSON.parse(localStorage.getItem(storageKey));
     if(saved&&['setup','running','ending','complete'].includes(saved.stage)){
@@ -130,7 +142,7 @@
       if(saved.stage!=='setup'){
         for(const k of ['exp','mesos','hp','mp','hpCost','mpCost'])M.integer(saved.start[k],k);if(!Number.isSafeInteger(saved.startedAt)||saved.startedAt<=0)throw new Error('Invalid start time');M.integer(saved.pausedMs,'Paused time');if(saved.pausedAt&&(!Number.isSafeInteger(saved.pausedAt)||saved.pausedAt<saved.startedAt))throw new Error('Invalid paused time');if(saved.stage!=='running'&&(!Number.isSafeInteger(saved.stoppedAt)||M.activeElapsed(saved)<=0))throw new Error('Invalid stop time');if(saved.pausedMs>(saved.stoppedAt??saved.pausedAt??Date.now())-saved.startedAt)throw new Error('Invalid pause duration');if((saved.checkpoints.at(-1)?.elapsedMs||0)>M.activeElapsed(saved))throw new Error('Checkpoint is beyond session time');if(saved.start.level)M.position(saved.start.level,saved.start.exp);M.intervals(saved.start,saved.checkpoints,saved.stage==='complete'?saved.end:null,saved.stage==='complete'?M.activeElapsed(saved):0);if(saved.stage==='complete')M.calculate(saved.start,saved.end,M.activeElapsed(saved));saved.id??='run-'+saved.startedAt;saved.meta??={map:saved.startFields?.['session-map']||'',class:saved.startFields?.['session-class']||''};
       }
-      state=saved;restoreFields(saved.startFields);restoreFields(saved.endFields);if(saved.start?.level){$('end-level').value=saved.endFields?.['end-level']||saved.end?.level||saved.start.level;$('cp-level').value=saved.checkpoints.at(-1)?.end.level||saved.start.level;}if(saved.stage==='complete')MapleHistory.save(saved);
+      state=saved;restoreFields(saved.startFields);restoreFields(saved.endFields);if(saved.start?.level){$('end-level').value=saved.endFields?.['end-level']||saved.end?.level||saved.start.level;$('cp-level').value=saved.checkpoints.at(-1)?.end.level||saved.start.level;}if(saved.stage==='complete'){$('profit-metric').value=saved.end.ledger?.some(e=>e.kind==='loot')?'estimatedNet':saved.end.ledger?.length?'adjustedNet':'net';MapleHistory.save(saved);}
     }
   }catch(e){error('history-error','A saved session could not be fully restored: '+e.message+'. Your saved history is kept separately.');}
   render();

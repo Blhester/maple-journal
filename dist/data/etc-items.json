@@ -1,0 +1,3926 @@
+{
+  "source": "https://meowdb.com/msclassic/item-db/etc",
+  "checkedAt": "2026-10-20T16:46:10.975Z",
+  "schemaVersion": 1,
+  "priceBasis": "MeowDB Classic item stats.price: NPC Sell-back per unit, not NPC purchase price or player market value.",
+  "scope": "All ETC items returned with ossyria=0. Includes quest items and entries without a known source. Zero sell-back values are retained; absent or invalid prices are excluded.",
+  "sourceItemCount": 335,
+  "excludedItemIds": [
+    518,
+    519,
+    2692,
+    2697
+  ],
+  "items": [
+    {
+      "id": "3126",
+      "name": "A Gift for JM",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3126.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3126",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031128",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "3125",
+      "name": "A Gift for Nella",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3125.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3125",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031127",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "423",
+      "name": "Adamantium Ingot",
+      "vendorPrice": 300,
+      "icon": "assets/etc/423.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/423",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4010103",
+      "subtype": "Ore & Mineral",
+      "sources": [
+        "craft"
+      ]
+    },
+    {
+      "id": "416",
+      "name": "Adamantium Ore",
+      "vendorPrice": 60,
+      "icon": "assets/etc/416.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/416",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4010003",
+      "subtype": "Ore & Mineral",
+      "sources": [
+        "mob",
+        "quest"
+      ]
+    },
+    {
+      "id": "3124",
+      "name": "Alex's Gift Sack",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3124.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3124",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031126",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "516",
+      "name": "Alligator Skin Pouch",
+      "vendorPrice": 1,
+      "icon": "assets/etc/516.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/516",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031078",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "3134",
+      "name": "Amended Ledger",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3134.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3134",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031136",
+      "subtype": "Quest Item",
+      "maxStack": 1,
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "330",
+      "name": "Amethyst",
+      "vendorPrice": 1000,
+      "icon": "assets/etc/330.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/330",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4020101",
+      "subtype": "Gem",
+      "sources": [
+        "craft",
+        "quest"
+      ]
+    },
+    {
+      "id": "321",
+      "name": "Amethyst Ore",
+      "vendorPrice": 200,
+      "icon": "assets/etc/321.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/321",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4020001",
+      "subtype": "Gem",
+      "sources": [
+        "mob",
+        "quest"
+      ]
+    },
+    {
+      "id": "435",
+      "name": "Ancient Scroll",
+      "vendorPrice": 1,
+      "icon": "assets/etc/435.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/435",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001007",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "506",
+      "name": "Animal Fossil",
+      "vendorPrice": 1,
+      "icon": "assets/etc/506.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/506",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031068",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "409",
+      "name": "Animal Fur Bundle",
+      "vendorPrice": 10,
+      "icon": "assets/etc/409.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/409",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000062",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "331",
+      "name": "Aquamarine",
+      "vendorPrice": 200,
+      "icon": "assets/etc/331.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/331",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4020102",
+      "subtype": "Gem",
+      "sources": [
+        "craft",
+        "quest"
+      ]
+    },
+    {
+      "id": "322",
+      "name": "Aquamarine Ore",
+      "vendorPrice": 40,
+      "icon": "assets/etc/322.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/322",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4020002",
+      "subtype": "Gem",
+      "sources": [
+        "mob",
+        "quest"
+      ]
+    },
+    {
+      "id": "401",
+      "name": "Aqumander Tail",
+      "vendorPrice": 43,
+      "icon": "assets/etc/401.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/401",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000054",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "448",
+      "name": "Arcon's Blood",
+      "vendorPrice": 0,
+      "icon": "assets/etc/448.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/448",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031010",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "2722",
+      "name": "Armor Crafting Catalyst",
+      "vendorPrice": 1000,
+      "icon": "assets/etc/2722.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2722",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4130002",
+      "maxStack": 100,
+      "sources": [
+        "mob",
+        "quest"
+      ]
+    },
+    {
+      "id": "428",
+      "name": "Arwen's Glass Shoe",
+      "vendorPrice": 250,
+      "icon": "assets/etc/428.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/428",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001000",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "3121",
+      "name": "Athena Pierce's Box",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3121.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3121",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031123",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "453",
+      "name": "Athena Pierce's Letter",
+      "vendorPrice": 0,
+      "icon": "assets/etc/453.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/453",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031015",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "515",
+      "name": "Ayan's Letter",
+      "vendorPrice": 1,
+      "icon": "assets/etc/515.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/515",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031077",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "514",
+      "name": "Ayan's Toy Sword",
+      "vendorPrice": 1,
+      "icon": "assets/etc/514.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/514",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031076",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "473",
+      "name": "Bartos's Letter",
+      "vendorPrice": 1,
+      "icon": "assets/etc/473.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/473",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031035",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "2714",
+      "name": "Betty's report",
+      "vendorPrice": 1,
+      "icon": "assets/etc/2714.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2714",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031110",
+      "sources": []
+    },
+    {
+      "id": "2657",
+      "name": "Binding Bridle",
+      "vendorPrice": 89,
+      "icon": "assets/etc/2657.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2657",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000140",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "337",
+      "name": "Black Crystal",
+      "vendorPrice": 2500,
+      "icon": "assets/etc/337.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/337",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4020108",
+      "subtype": "Gem",
+      "sources": [
+        "craft"
+      ]
+    },
+    {
+      "id": "328",
+      "name": "Black Crystal Ore",
+      "vendorPrice": 500,
+      "icon": "assets/etc/328.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/328",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4020008",
+      "subtype": "Gem",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "315",
+      "name": "Black Dye",
+      "vendorPrice": 250,
+      "icon": "assets/etc/315.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/315",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003010",
+      "subtype": "Crafting Material",
+      "maxStack": 100,
+      "sources": [
+        "npc"
+      ]
+    },
+    {
+      "id": "471",
+      "name": "Black Feather",
+      "vendorPrice": 1000,
+      "icon": "assets/etc/471.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/471",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031033",
+      "subtype": "Quest Item",
+      "sources": [
+        "craft"
+      ]
+    },
+    {
+      "id": "434",
+      "name": "Blackbull's Deed to the Land",
+      "vendorPrice": 1,
+      "icon": "assets/etc/434.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/434",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001006",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2601",
+      "name": "Bloctopus Key Chain",
+      "vendorPrice": 35,
+      "icon": "assets/etc/2601.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2601",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000084",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "319",
+      "name": "Blue Dye",
+      "vendorPrice": 250,
+      "icon": "assets/etc/319.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/319",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003014",
+      "subtype": "Crafting Material",
+      "maxStack": 100,
+      "sources": [
+        "npc"
+      ]
+    },
+    {
+      "id": "363",
+      "name": "Blue Mushroom Cap",
+      "vendorPrice": 19,
+      "icon": "assets/etc/363.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/363",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000016",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "3114",
+      "name": "Blue Primrose Seed",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3114.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3114",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001022",
+      "subtype": "Quest Item",
+      "maxStack": 1,
+      "sources": []
+    },
+    {
+      "id": "349",
+      "name": "Blue Snail Shell",
+      "vendorPrice": 2,
+      "icon": "assets/etc/349.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/349",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000002",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2623",
+      "name": "Blue Toy Block",
+      "vendorPrice": 45,
+      "icon": "assets/etc/2623.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2623",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000106",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "481",
+      "name": "Blue Viola",
+      "vendorPrice": 1000,
+      "icon": "assets/etc/481.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/481",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031043",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "3118",
+      "name": "Bound Ledger",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3118.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3118",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031120",
+      "subtype": "Quest Item",
+      "maxStack": 1,
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "445",
+      "name": "Broken Mirror Glass",
+      "vendorPrice": 0,
+      "icon": "assets/etc/445.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/445",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031007",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "3122",
+      "name": "Broken Wooden Bow",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3122.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3122",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031124",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "420",
+      "name": "Bronze Ingot",
+      "vendorPrice": 100,
+      "icon": "assets/etc/420.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/420",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4010100",
+      "subtype": "Ore & Mineral",
+      "sources": [
+        "craft",
+        "quest"
+      ]
+    },
+    {
+      "id": "413",
+      "name": "Bronze Ore",
+      "vendorPrice": 20,
+      "icon": "assets/etc/413.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/413",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4010000",
+      "subtype": "Ore & Mineral",
+      "sources": [
+        "mob",
+        "quest"
+      ]
+    },
+    {
+      "id": "3112",
+      "name": "Brown Primrose Seed",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3112.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3112",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001020",
+      "subtype": "Quest Item",
+      "maxStack": 1,
+      "sources": []
+    },
+    {
+      "id": "2716",
+      "name": "Bruce's Special Cake",
+      "vendorPrice": 1,
+      "icon": "assets/etc/2716.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2716",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031112",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "361",
+      "name": "Bubbling's Huge Bubble",
+      "vendorPrice": 15,
+      "icon": "assets/etc/361.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/361",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000014",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2649",
+      "name": "Buffoon's Grandpa Clock",
+      "vendorPrice": 74,
+      "icon": "assets/etc/2649.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2649",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000132",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2639",
+      "name": "Buffy Hat",
+      "vendorPrice": 62,
+      "icon": "assets/etc/2639.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2639",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000122",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "367",
+      "name": "Charm of the Undead",
+      "vendorPrice": 24,
+      "icon": "assets/etc/367.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/367",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000020",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2614",
+      "name": "Cheap Battery",
+      "vendorPrice": 41,
+      "icon": "assets/etc/2614.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2614",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000097",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2666",
+      "name": "Chief Gray's Sign",
+      "vendorPrice": 490,
+      "icon": "assets/etc/2666.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2666",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000149",
+      "maxStack": 200,
+      "sources": []
+    },
+    {
+      "id": "2721",
+      "name": "Chief Stan's Hammer",
+      "vendorPrice": 1,
+      "icon": "assets/etc/2721.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2721",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031117",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "2696",
+      "name": "Chief Stan's Letter",
+      "vendorPrice": 0,
+      "icon": "assets/etc/2696.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2696",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031092",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "387",
+      "name": "Clang Claw",
+      "vendorPrice": 49,
+      "icon": "assets/etc/387.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/387",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000040",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2599",
+      "name": "Clock Spring",
+      "vendorPrice": 34,
+      "icon": "assets/etc/2599.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2599",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000082",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "408",
+      "name": "Coconut",
+      "vendorPrice": 10,
+      "icon": "assets/etc/408.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/408",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000061",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "brk"
+      ]
+    },
+    {
+      "id": "2606",
+      "name": "Cog",
+      "vendorPrice": 37,
+      "icon": "assets/etc/2606.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2606",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000089",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "381",
+      "name": "Cold Eye Tail",
+      "vendorPrice": 41,
+      "icon": "assets/etc/381.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/381",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000034",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "429",
+      "name": "Coupon",
+      "vendorPrice": 0,
+      "icon": "assets/etc/429.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/429",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001001",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "388",
+      "name": "Croco Skin",
+      "vendorPrice": 52,
+      "icon": "assets/etc/388.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/388",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000041",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "374",
+      "name": "Curse Eye Tail",
+      "vendorPrice": 33,
+      "icon": "assets/etc/374.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/374",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000027",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "380",
+      "name": "Cursed Doll",
+      "vendorPrice": 40,
+      "icon": "assets/etc/380.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/380",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000033",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "451",
+      "name": "Dances with Balrog's Letter",
+      "vendorPrice": 0,
+      "icon": "assets/etc/451.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/451",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031013",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "2694",
+      "name": "Dances with Balrog's Letter",
+      "vendorPrice": 0,
+      "icon": "assets/etc/2694.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2694",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031090",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "2683",
+      "name": "Dark Crystal",
+      "vendorPrice": 8000,
+      "icon": "assets/etc/2683.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2683",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003024",
+      "sources": []
+    },
+    {
+      "id": "2678",
+      "name": "Dark Crystal Ore",
+      "vendorPrice": 3500,
+      "icon": "assets/etc/2678.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2678",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003019",
+      "sources": []
+    },
+    {
+      "id": "459",
+      "name": "Dark Marble (Bowman)",
+      "vendorPrice": 0,
+      "icon": "assets/etc/459.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/459",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031021",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "457",
+      "name": "Dark Marble (Magician)",
+      "vendorPrice": 0,
+      "icon": "assets/etc/457.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/457",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031019",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "461",
+      "name": "Dark Marble (Thief)",
+      "vendorPrice": 0,
+      "icon": "assets/etc/461.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/461",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031023",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "455",
+      "name": "Dark Marble (Warrior)",
+      "vendorPrice": 0,
+      "icon": "assets/etc/455.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/455",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031017",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2625",
+      "name": "Dark Nependeath Seed (Alt)",
+      "vendorPrice": 47,
+      "icon": "assets/etc/2625.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2625",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000108",
+      "maxStack": 200,
+      "sources": []
+    },
+    {
+      "id": "2641",
+      "name": "Dark Pepe Beak",
+      "vendorPrice": 64,
+      "icon": "assets/etc/2641.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2641",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000124",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "391",
+      "name": "Dark Stone Golem Rubble",
+      "vendorPrice": 58,
+      "icon": "assets/etc/391.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/391",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000044",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2645",
+      "name": "Dark Yeti Horn",
+      "vendorPrice": 68,
+      "icon": "assets/etc/2645.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2645",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000128",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "406",
+      "name": "Decayed Charm",
+      "vendorPrice": 52,
+      "icon": "assets/etc/406.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/406",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000059",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "3133",
+      "name": "Deciphered Document",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3133.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3133",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031135",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "2652",
+      "name": "Deep Buffoon's Rock Piece",
+      "vendorPrice": 77,
+      "icon": "assets/etc/2652.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2652",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000135",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2681",
+      "name": "Dexterity Crystal",
+      "vendorPrice": 5000,
+      "icon": "assets/etc/2681.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2681",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003022",
+      "sources": []
+    },
+    {
+      "id": "336",
+      "name": "Diamond",
+      "vendorPrice": 1200,
+      "icon": "assets/etc/336.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/336",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4020107",
+      "subtype": "Gem",
+      "sources": [
+        "craft",
+        "quest"
+      ]
+    },
+    {
+      "id": "327",
+      "name": "Diamond Ore",
+      "vendorPrice": 240,
+      "icon": "assets/etc/327.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/327",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4020007",
+      "subtype": "Gem",
+      "sources": [
+        "mob",
+        "quest"
+      ]
+    },
+    {
+      "id": "464",
+      "name": "Double-Rooted Red Ginseng",
+      "vendorPrice": 2000,
+      "icon": "assets/etc/464.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/464",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031026",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "397",
+      "name": "Dragon Skin",
+      "vendorPrice": 200,
+      "icon": "assets/etc/397.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/397",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000050",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "383",
+      "name": "Drake Skull",
+      "vendorPrice": 45,
+      "icon": "assets/etc/383.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/383",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000036",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2656",
+      "name": "Dual Pirate's Propeller",
+      "vendorPrice": 87,
+      "icon": "assets/etc/2656.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2656",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000139",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "404",
+      "name": "Duskmander Tail",
+      "vendorPrice": 49,
+      "icon": "assets/etc/404.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/404",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000057",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "402",
+      "name": "Echopus Leg",
+      "vendorPrice": 44,
+      "icon": "assets/etc/402.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/402",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000055",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "332",
+      "name": "Emerald",
+      "vendorPrice": 400,
+      "icon": "assets/etc/332.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/332",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4020103",
+      "subtype": "Gem",
+      "sources": [
+        "craft",
+        "quest"
+      ]
+    },
+    {
+      "id": "323",
+      "name": "Emerald Ore",
+      "vendorPrice": 80,
+      "icon": "assets/etc/323.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/323",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4020003",
+      "subtype": "Gem",
+      "sources": [
+        "mob",
+        "quest"
+      ]
+    },
+    {
+      "id": "3129",
+      "name": "Encrypted Document",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3129.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3129",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031131",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "3130",
+      "name": "Encrypted Document (Alt)",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3130.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3130",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031132",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "2669",
+      "name": "Eos Rock Scroll",
+      "vendorPrice": 1000,
+      "icon": "assets/etc/2669.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2669",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001011",
+      "sources": []
+    },
+    {
+      "id": "443",
+      "name": "Estelle's Special Sauce",
+      "vendorPrice": 0,
+      "icon": "assets/etc/443.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/443",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031005",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "437",
+      "name": "Event Trophy",
+      "vendorPrice": 5000,
+      "icon": "assets/etc/437.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/437",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001009",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "369",
+      "name": "Evil Eye Tail",
+      "vendorPrice": 27,
+      "icon": "assets/etc/369.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/369",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000022",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2651",
+      "name": "Evil Spirit",
+      "vendorPrice": 76,
+      "icon": "assets/etc/2651.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2651",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000134",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2672",
+      "name": "Eye of Fire",
+      "vendorPrice": 1,
+      "icon": "assets/etc/2672.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2672",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001014",
+      "sources": []
+    },
+    {
+      "id": "310",
+      "name": "Fairy Wing",
+      "vendorPrice": 5000,
+      "icon": "assets/etc/310.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/310",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003005",
+      "subtype": "Crafting Material",
+      "sources": [
+        "mob",
+        "quest"
+      ]
+    },
+    {
+      "id": "371",
+      "name": "Fairy's Tentacle",
+      "vendorPrice": 29,
+      "icon": "assets/etc/371.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/371",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000024",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "373",
+      "name": "Fire Boar's Tooth",
+      "vendorPrice": 32,
+      "icon": "assets/etc/373.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/373",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000026",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2673",
+      "name": "Fire Ore",
+      "vendorPrice": 1,
+      "icon": "assets/etc/2673.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2673",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001015",
+      "sources": []
+    },
+    {
+      "id": "362",
+      "name": "Firewood",
+      "vendorPrice": 17,
+      "icon": "assets/etc/362.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/362",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000015",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "436",
+      "name": "Flaming Feather",
+      "vendorPrice": 1,
+      "icon": "assets/etc/436.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/436",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001008",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "517",
+      "name": "Flying Medicine",
+      "vendorPrice": 1,
+      "icon": "assets/etc/517.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/517",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031079",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "509",
+      "name": "Fossil Box",
+      "vendorPrice": 1,
+      "icon": "assets/etc/509.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/509",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031071",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "512",
+      "name": "Fossil Report",
+      "vendorPrice": 1,
+      "icon": "assets/etc/512.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/512",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031074",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "410",
+      "name": "Fragment of Magic",
+      "vendorPrice": 10,
+      "icon": "assets/etc/410.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/410",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000063",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2644",
+      "name": "Free Spirit",
+      "vendorPrice": 67,
+      "icon": "assets/etc/2644.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2644",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000127",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "469",
+      "name": "Fresh Milk",
+      "vendorPrice": 500,
+      "icon": "assets/etc/469.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/469",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031031",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "329",
+      "name": "Garnet",
+      "vendorPrice": 200,
+      "icon": "assets/etc/329.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/329",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4020100",
+      "subtype": "Gem",
+      "sources": [
+        "craft",
+        "quest"
+      ]
+    },
+    {
+      "id": "320",
+      "name": "Garnet Ore",
+      "vendorPrice": 40,
+      "icon": "assets/etc/320.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/320",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4020000",
+      "subtype": "Gem",
+      "sources": [
+        "mob",
+        "quest"
+      ]
+    },
+    {
+      "id": "2663",
+      "name": "Gatekeeper Armband",
+      "vendorPrice": 108,
+      "icon": "assets/etc/2663.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2663",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000146",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2654",
+      "name": "Ghost Pirate Key",
+      "vendorPrice": 83,
+      "icon": "assets/etc/2654.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2654",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000137",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "405",
+      "name": "Giant Tree's Bough",
+      "vendorPrice": 51,
+      "icon": "assets/etc/405.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/405",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000058",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "407",
+      "name": "Giant Tree's Rotten Bough",
+      "vendorPrice": 54,
+      "icon": "assets/etc/407.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/407",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000060",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2661",
+      "name": "Gigantic Viking Hat",
+      "vendorPrice": 98,
+      "icon": "assets/etc/2661.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2661",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000144",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "398",
+      "name": "Glowing Mushroom Spore",
+      "vendorPrice": 39,
+      "icon": "assets/etc/398.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/398",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000051",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "426",
+      "name": "Gold Ingot",
+      "vendorPrice": 300,
+      "icon": "assets/etc/426.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/426",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4010106",
+      "subtype": "Ore & Mineral",
+      "sources": [
+        "craft"
+      ]
+    },
+    {
+      "id": "419",
+      "name": "Gold Ore",
+      "vendorPrice": 60,
+      "icon": "assets/etc/419.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/419",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4010006",
+      "subtype": "Ore & Mineral",
+      "sources": [
+        "mob",
+        "quest"
+      ]
+    },
+    {
+      "id": "400",
+      "name": "Golden Stirge Wing",
+      "vendorPrice": 42,
+      "icon": "assets/etc/400.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/400",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000053",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "360",
+      "name": "Green Mushroom Cap",
+      "vendorPrice": 14,
+      "icon": "assets/etc/360.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/360",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000013",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "3109",
+      "name": "Green Primrose Seed",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3109.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3109",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001017",
+      "subtype": "Quest Item",
+      "maxStack": 1,
+      "sources": []
+    },
+    {
+      "id": "452",
+      "name": "Grendel the Really Old's Letter",
+      "vendorPrice": 0,
+      "icon": "assets/etc/452.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/452",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031014",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "3127",
+      "name": "Halloween Candies",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3127.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3127",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031129",
+      "subtype": "Quest Item",
+      "maxStack": 100,
+      "sources": []
+    },
+    {
+      "id": "2598",
+      "name": "Hard Walnut",
+      "vendorPrice": 34,
+      "icon": "assets/etc/2598.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2598",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000081",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "465",
+      "name": "Hero's Gladius",
+      "vendorPrice": 0,
+      "icon": "assets/etc/465.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/465",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031027",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "366",
+      "name": "Horny Mushroom Cap",
+      "vendorPrice": 22,
+      "icon": "assets/etc/366.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/366",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000019",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2662",
+      "name": "Ice Piece",
+      "vendorPrice": 99,
+      "icon": "assets/etc/2662.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2662",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000145",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "3117",
+      "name": "Incomplete Ledger",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3117.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3117",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031119",
+      "subtype": "Quest Item",
+      "maxStack": 1,
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "3131",
+      "name": "Ink of Truth",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3131.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3131",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031133",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "370",
+      "name": "Iron Hog's Metal Hoof",
+      "vendorPrice": 28,
+      "icon": "assets/etc/370.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/370",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000023",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "421",
+      "name": "Iron Ingot",
+      "vendorPrice": 100,
+      "icon": "assets/etc/421.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/421",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4010101",
+      "subtype": "Ore & Mineral",
+      "sources": [
+        "craft",
+        "quest"
+      ]
+    },
+    {
+      "id": "414",
+      "name": "Iron Ore",
+      "vendorPrice": 20,
+      "icon": "assets/etc/414.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/414",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4010001",
+      "subtype": "Ore & Mineral",
+      "sources": [
+        "mob",
+        "quest"
+      ]
+    },
+    {
+      "id": "376",
+      "name": "Jr. Boogie Horn",
+      "vendorPrice": 35,
+      "icon": "assets/etc/376.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/376",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000029",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "365",
+      "name": "Jr. Necki Skin",
+      "vendorPrice": 21,
+      "icon": "assets/etc/365.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/365",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000018",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "347",
+      "name": "Jr. Sentinel Shellpiece",
+      "vendorPrice": 0,
+      "icon": "assets/etc/347.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/347",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000000",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2584",
+      "name": "Jr. Sentinel Shellpiece",
+      "vendorPrice": 26,
+      "icon": "assets/etc/2584.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2584",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000067",
+      "maxStack": 200,
+      "sources": []
+    },
+    {
+      "id": "2643",
+      "name": "Lazy Buffy Marble",
+      "vendorPrice": 66,
+      "icon": "assets/etc/2643.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2643",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000126",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "358",
+      "name": "Leaf",
+      "vendorPrice": 11,
+      "icon": "assets/etc/358.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/358",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000011",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "396",
+      "name": "Leather",
+      "vendorPrice": 10,
+      "icon": "assets/etc/396.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/396",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000049",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2693",
+      "name": "Lewis's Letter",
+      "vendorPrice": 0,
+      "icon": "assets/etc/2693.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2693",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031089",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "2695",
+      "name": "Lewis's Letter",
+      "vendorPrice": 0,
+      "icon": "assets/etc/2695.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2695",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031091",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "472",
+      "name": "Life Scroll",
+      "vendorPrice": 1,
+      "icon": "assets/etc/472.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/472",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031034",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "372",
+      "name": "Ligator Skin",
+      "vendorPrice": 31,
+      "icon": "assets/etc/372.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/372",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000025",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "379",
+      "name": "Lorang Claw",
+      "vendorPrice": 38,
+      "icon": "assets/etc/379.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/379",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000032",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "440",
+      "name": "Lucas's Letter",
+      "vendorPrice": 0,
+      "icon": "assets/etc/440.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/440",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031002",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "2682",
+      "name": "Luck Crystal",
+      "vendorPrice": 5000,
+      "icon": "assets/etc/2682.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2682",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003023",
+      "sources": []
+    },
+    {
+      "id": "377",
+      "name": "Lupin Doll",
+      "vendorPrice": 100,
+      "icon": "assets/etc/377.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/377",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000030",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "378",
+      "name": "Lupin's Banana",
+      "vendorPrice": 37,
+      "icon": "assets/etc/378.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/378",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000031",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "505",
+      "name": "Magic Box",
+      "vendorPrice": 1,
+      "icon": "assets/etc/505.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/505",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031067",
+      "subtype": "Quest Item",
+      "maxStack": 1,
+      "sources": []
+    },
+    {
+      "id": "389",
+      "name": "Malady's Experimental Frog",
+      "vendorPrice": 55,
+      "icon": "assets/etc/389.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/389",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000042",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "3132",
+      "name": "Maple Leaf",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3132.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3132",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031134",
+      "subtype": "Quest Item",
+      "maxStack": 100,
+      "sources": []
+    },
+    {
+      "id": "439",
+      "name": "Maria's Letter",
+      "vendorPrice": 1,
+      "icon": "assets/etc/439.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/439",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031001",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "2615",
+      "name": "Mateon's Tentacle",
+      "vendorPrice": 41,
+      "icon": "assets/etc/2615.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2615",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000098",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2626",
+      "name": "Mecateon's Laser Gun",
+      "vendorPrice": 48,
+      "icon": "assets/etc/2626.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2626",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000109",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2621",
+      "name": "Mechanical Heart",
+      "vendorPrice": 44,
+      "icon": "assets/etc/2621.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2621",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000104",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "386",
+      "name": "Medicine With Weird Vibes",
+      "vendorPrice": 48,
+      "icon": "assets/etc/386.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/386",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000039",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "422",
+      "name": "Mithril Ingot",
+      "vendorPrice": 200,
+      "icon": "assets/etc/422.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/422",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4010102",
+      "subtype": "Ore & Mineral",
+      "sources": [
+        "mob",
+        "craft"
+      ]
+    },
+    {
+      "id": "415",
+      "name": "Mithril Ore",
+      "vendorPrice": 40,
+      "icon": "assets/etc/415.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/415",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4010002",
+      "subtype": "Ore & Mineral",
+      "sources": [
+        "mob",
+        "quest"
+      ]
+    },
+    {
+      "id": "483",
+      "name": "Monster Card",
+      "vendorPrice": 1,
+      "icon": "assets/etc/483.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/483",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031045",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "3115",
+      "name": "Moon Bunny's Rice Cake",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3115.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3115",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001023",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "427",
+      "name": "Moon Rock",
+      "vendorPrice": 2000,
+      "icon": "assets/etc/427.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/427",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4010107",
+      "subtype": "Ore & Mineral",
+      "sources": [
+        "craft"
+      ]
+    },
+    {
+      "id": "2605",
+      "name": "Motor",
+      "vendorPrice": 37,
+      "icon": "assets/etc/2605.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2605",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000088",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2715",
+      "name": "Mrs. Ming Ming's Cooking Recipe",
+      "vendorPrice": 1,
+      "icon": "assets/etc/2715.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2715",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031111",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "2667",
+      "name": "MT-09's Fuel",
+      "vendorPrice": 540,
+      "icon": "assets/etc/2667.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2667",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000150",
+      "maxStack": 200,
+      "sources": []
+    },
+    {
+      "id": "395",
+      "name": "Mushmom Spore",
+      "vendorPrice": 400,
+      "icon": "assets/etc/395.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/395",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000048",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "350",
+      "name": "Mushroom Spore",
+      "vendorPrice": 3,
+      "icon": "assets/etc/350.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/350",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000003",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2616",
+      "name": "Nependeath Seed (Alt)",
+      "vendorPrice": 42,
+      "icon": "assets/etc/2616.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2616",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000099",
+      "maxStack": 200,
+      "sources": []
+    },
+    {
+      "id": "343",
+      "name": "Octopus & Mushroom Omok Set",
+      "vendorPrice": 1,
+      "icon": "assets/etc/343.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/343",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4080004",
+      "subtype": "Misc",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "359",
+      "name": "Octopus Leg",
+      "vendorPrice": 12,
+      "icon": "assets/etc/359.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/359",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000012",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2720",
+      "name": "Old Chief Stan's Hammer",
+      "vendorPrice": 1,
+      "icon": "assets/etc/2720.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2720",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031116",
+      "sources": []
+    },
+    {
+      "id": "433",
+      "name": "Old Gold Watch",
+      "vendorPrice": 1,
+      "icon": "assets/etc/433.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/433",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001005",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "444",
+      "name": "Old Gold Watch",
+      "vendorPrice": 0,
+      "icon": "assets/etc/444.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/444",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031006",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "442",
+      "name": "Old Wooden Board",
+      "vendorPrice": 0,
+      "icon": "assets/etc/442.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/442",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031004",
+      "subtype": "Quest Item",
+      "sources": [
+        "brk"
+      ]
+    },
+    {
+      "id": "467",
+      "name": "Ominous Rotten Branch",
+      "vendorPrice": 0,
+      "icon": "assets/etc/467.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/467",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031029",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "486",
+      "name": "Omok Piece: Mushroom",
+      "vendorPrice": 1,
+      "icon": "assets/etc/486.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/486",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031048",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "495",
+      "name": "Omok Piece: Mushroom",
+      "vendorPrice": 1,
+      "icon": "assets/etc/495.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/495",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031057",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "498",
+      "name": "Omok Piece: Mushroom",
+      "vendorPrice": 1,
+      "icon": "assets/etc/498.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/498",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031060",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "492",
+      "name": "Omok Piece: Octopus",
+      "vendorPrice": 1,
+      "icon": "assets/etc/492.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/492",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031054",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "497",
+      "name": "Omok Piece: Octopus",
+      "vendorPrice": 1,
+      "icon": "assets/etc/497.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/497",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031059",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "501",
+      "name": "Omok Piece: Octopus",
+      "vendorPrice": 1,
+      "icon": "assets/etc/501.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/501",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031063",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "489",
+      "name": "Omok Piece: Pig",
+      "vendorPrice": 1,
+      "icon": "assets/etc/489.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/489",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031051",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "494",
+      "name": "Omok Piece: Pig",
+      "vendorPrice": 1,
+      "icon": "assets/etc/494.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/494",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031056",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "500",
+      "name": "Omok Piece: Pig",
+      "vendorPrice": 1,
+      "icon": "assets/etc/500.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/500",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031062",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "485",
+      "name": "Omok Piece: Slime",
+      "vendorPrice": 1,
+      "icon": "assets/etc/485.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/485",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031047",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "488",
+      "name": "Omok Piece: Slime",
+      "vendorPrice": 1,
+      "icon": "assets/etc/488.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/488",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031050",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "491",
+      "name": "Omok Piece: Slime",
+      "vendorPrice": 1,
+      "icon": "assets/etc/491.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/491",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031053",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "484",
+      "name": "Omok Table",
+      "vendorPrice": 1,
+      "icon": "assets/etc/484.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/484",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031046",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "487",
+      "name": "Omok Table",
+      "vendorPrice": 1,
+      "icon": "assets/etc/487.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/487",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031049",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "490",
+      "name": "Omok Table",
+      "vendorPrice": 1,
+      "icon": "assets/etc/490.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/490",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031052",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "493",
+      "name": "Omok Table",
+      "vendorPrice": 1,
+      "icon": "assets/etc/493.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/493",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031055",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "496",
+      "name": "Omok Table",
+      "vendorPrice": 1,
+      "icon": "assets/etc/496.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/496",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031058",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "499",
+      "name": "Omok Table",
+      "vendorPrice": 1,
+      "icon": "assets/etc/499.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/499",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031061",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "520",
+      "name": "One-Handed Weapon Crafting Catalyst",
+      "vendorPrice": 1000,
+      "icon": "assets/etc/520.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/520",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4130000",
+      "subtype": "Stimulator",
+      "maxStack": 100,
+      "sources": [
+        "mob",
+        "quest"
+      ]
+    },
+    {
+      "id": "333",
+      "name": "Opal",
+      "vendorPrice": 800,
+      "icon": "assets/etc/333.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/333",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4020104",
+      "subtype": "Gem",
+      "sources": [
+        "craft",
+        "quest"
+      ]
+    },
+    {
+      "id": "324",
+      "name": "Opal Ore",
+      "vendorPrice": 160,
+      "icon": "assets/etc/324.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/324",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4020004",
+      "subtype": "Gem",
+      "sources": [
+        "mob",
+        "quest"
+      ]
+    },
+    {
+      "id": "356",
+      "name": "Orange Mushroom Cap",
+      "vendorPrice": 8,
+      "icon": "assets/etc/356.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/356",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000009",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "425",
+      "name": "Orihalcon Ingot",
+      "vendorPrice": 500,
+      "icon": "assets/etc/425.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/425",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4010105",
+      "subtype": "Ore & Mineral",
+      "sources": [
+        "craft"
+      ]
+    },
+    {
+      "id": "418",
+      "name": "Orihalcon Ore",
+      "vendorPrice": 100,
+      "icon": "assets/etc/418.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/418",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4010005",
+      "subtype": "Ore & Mineral",
+      "sources": [
+        "mob",
+        "quest"
+      ]
+    },
+    {
+      "id": "2603",
+      "name": "Panda Doll",
+      "vendorPrice": 36,
+      "icon": "assets/etc/2603.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2603",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000086",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2670",
+      "name": "Paper Document",
+      "vendorPrice": 1,
+      "icon": "assets/etc/2670.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2670",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001012",
+      "sources": []
+    },
+    {
+      "id": "430",
+      "name": "Pass",
+      "vendorPrice": 0,
+      "icon": "assets/etc/430.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/430",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001002",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2638",
+      "name": "Pepe Beak",
+      "vendorPrice": 60,
+      "icon": "assets/etc/2638.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2638",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000121",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "346",
+      "name": "Pet Ability Transfer Scroll",
+      "vendorPrice": 5000,
+      "icon": "assets/etc/346.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/346",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4160000",
+      "subtype": "Misc",
+      "maxStack": 1,
+      "sources": []
+    },
+    {
+      "id": "309",
+      "name": "Piece of Ice",
+      "vendorPrice": 400,
+      "icon": "assets/etc/309.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/309",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003004",
+      "subtype": "Crafting Material",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "342",
+      "name": "Pig & Mushroom Omok Set",
+      "vendorPrice": 1,
+      "icon": "assets/etc/342.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/342",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4080003",
+      "subtype": "Misc",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "344",
+      "name": "Pig & Octopus Omok Set",
+      "vendorPrice": 1,
+      "icon": "assets/etc/344.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/344",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4080005",
+      "subtype": "Misc",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "355",
+      "name": "Pig's Head",
+      "vendorPrice": 7,
+      "icon": "assets/etc/355.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/355",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000008",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "357",
+      "name": "Pig's Ribbon",
+      "vendorPrice": 10,
+      "icon": "assets/etc/357.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/357",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000010",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "463",
+      "name": "Pink Anthurium",
+      "vendorPrice": 1000,
+      "icon": "assets/etc/463.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/463",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031025",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "3111",
+      "name": "Pink Primrose Seed",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3111.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3111",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001019",
+      "subtype": "Quest Item",
+      "maxStack": 1,
+      "sources": []
+    },
+    {
+      "id": "480",
+      "name": "Pink Viola",
+      "vendorPrice": 1000,
+      "icon": "assets/etc/480.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/480",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031042",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "2608",
+      "name": "Plane Controller",
+      "vendorPrice": 38,
+      "icon": "assets/etc/2608.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2608",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000091",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "507",
+      "name": "Plant Fossil",
+      "vendorPrice": 1,
+      "icon": "assets/etc/507.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/507",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031069",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "510",
+      "name": "Plant Sample",
+      "vendorPrice": 1,
+      "icon": "assets/etc/510.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/510",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031072",
+      "subtype": "Quest Item",
+      "sources": [
+        "brk"
+      ]
+    },
+    {
+      "id": "2607",
+      "name": "Plastic Crown",
+      "vendorPrice": 38,
+      "icon": "assets/etc/2607.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2607",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000090",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2620",
+      "name": "Plateon's Helmet",
+      "vendorPrice": 44,
+      "icon": "assets/etc/2620.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2620",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000103",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "411",
+      "name": "Poisonous Mushroom",
+      "vendorPrice": 500,
+      "icon": "assets/etc/411.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/411",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000064",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2679",
+      "name": "Power Crystal",
+      "vendorPrice": 5000,
+      "icon": "assets/etc/2679.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2679",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003020",
+      "sources": []
+    },
+    {
+      "id": "313",
+      "name": "Processed Cloth",
+      "vendorPrice": 10,
+      "icon": "assets/etc/313.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/313",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003008",
+      "subtype": "Crafting Material",
+      "sources": [
+        "craft"
+      ]
+    },
+    {
+      "id": "311",
+      "name": "Processed Leather",
+      "vendorPrice": 10,
+      "icon": "assets/etc/311.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/311",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003006",
+      "subtype": "Crafting Material",
+      "sources": [
+        "craft"
+      ]
+    },
+    {
+      "id": "314",
+      "name": "Processed Parchment",
+      "vendorPrice": 10,
+      "icon": "assets/etc/314.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/314",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003009",
+      "subtype": "Crafting Material",
+      "sources": [
+        "craft"
+      ]
+    },
+    {
+      "id": "306",
+      "name": "Processed Wood",
+      "vendorPrice": 10,
+      "icon": "assets/etc/306.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/306",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003001",
+      "subtype": "Crafting Material",
+      "sources": [
+        "craft"
+      ]
+    },
+    {
+      "id": "2604",
+      "name": "Propeller",
+      "vendorPrice": 36,
+      "icon": "assets/etc/2604.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2604",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000087",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "3110",
+      "name": "Purple Primrose Seed",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3110.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3110",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001018",
+      "subtype": "Quest Item",
+      "maxStack": 1,
+      "sources": []
+    },
+    {
+      "id": "399",
+      "name": "Raffle Petal",
+      "vendorPrice": 40,
+      "icon": "assets/etc/399.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/399",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000052",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "403",
+      "name": "Rafflesia Petal",
+      "vendorPrice": 47,
+      "icon": "assets/etc/403.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/403",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000056",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2593",
+      "name": "Rat Trap",
+      "vendorPrice": 32,
+      "icon": "assets/etc/2593.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2593",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000076",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2624",
+      "name": "Receiving Apparatus",
+      "vendorPrice": 46,
+      "icon": "assets/etc/2624.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2624",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000107",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "502",
+      "name": "Red Cape",
+      "vendorPrice": 1,
+      "icon": "assets/etc/502.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/502",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031064",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "317",
+      "name": "Red Dye",
+      "vendorPrice": 250,
+      "icon": "assets/etc/317.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/317",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003012",
+      "subtype": "Crafting Material",
+      "maxStack": 100,
+      "sources": [
+        "npc"
+      ]
+    },
+    {
+      "id": "351",
+      "name": "Red Snail Shell",
+      "vendorPrice": 4,
+      "icon": "assets/etc/351.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/351",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000004",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "3123",
+      "name": "Repaired Wooden Bow",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3123.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3123",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031125",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "468",
+      "name": "Rina's Unagi Special",
+      "vendorPrice": 550,
+      "icon": "assets/etc/468.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/468",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031030",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "2665",
+      "name": "Rombot's Memory Card",
+      "vendorPrice": 470,
+      "icon": "assets/etc/2665.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2665",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000148",
+      "maxStack": 200,
+      "sources": []
+    },
+    {
+      "id": "412",
+      "name": "Rotten Mushmom Cap",
+      "vendorPrice": 600,
+      "icon": "assets/etc/412.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/412",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000065",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "441",
+      "name": "Rusty Screw",
+      "vendorPrice": 0,
+      "icon": "assets/etc/441.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/441",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031003",
+      "subtype": "Quest Item",
+      "sources": [
+        "brk"
+      ]
+    },
+    {
+      "id": "334",
+      "name": "Sapphire",
+      "vendorPrice": 600,
+      "icon": "assets/etc/334.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/334",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4020105",
+      "subtype": "Gem",
+      "sources": [
+        "craft",
+        "quest"
+      ]
+    },
+    {
+      "id": "325",
+      "name": "Sapphire Ore",
+      "vendorPrice": 120,
+      "icon": "assets/etc/325.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/325",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4020005",
+      "subtype": "Gem",
+      "sources": [
+        "mob",
+        "quest"
+      ]
+    },
+    {
+      "id": "2719",
+      "name": "Scorched Arcon Scroll",
+      "vendorPrice": 1,
+      "icon": "assets/etc/2719.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2719",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031115",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "305",
+      "name": "Screw",
+      "vendorPrice": 1,
+      "icon": "assets/etc/305.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/305",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003000",
+      "subtype": "Crafting Material",
+      "sources": [
+        "craft",
+        "quest"
+      ]
+    },
+    {
+      "id": "2723",
+      "name": "Scroll Crafting Catalyst",
+      "vendorPrice": 1000,
+      "icon": "assets/etc/2723.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2723",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4130003",
+      "maxStack": 100,
+      "sources": [
+        "mob",
+        "quest"
+      ]
+    },
+    {
+      "id": "503",
+      "name": "Scroll of Secrets",
+      "vendorPrice": 1,
+      "icon": "assets/etc/503.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/503",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031065",
+      "subtype": "Quest Item",
+      "maxStack": 1,
+      "sources": []
+    },
+    {
+      "id": "2660",
+      "name": "Sealed Bottle",
+      "vendorPrice": 95,
+      "icon": "assets/etc/2660.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2660",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000143",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2655",
+      "name": "Sealed Teddy Bear",
+      "vendorPrice": 85,
+      "icon": "assets/etc/2655.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2655",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000138",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2646",
+      "name": "Sealed-up Grandpa Clock",
+      "vendorPrice": 71,
+      "icon": "assets/etc/2646.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2646",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000129",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "470",
+      "name": "Secret Book",
+      "vendorPrice": 150,
+      "icon": "assets/etc/470.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/470",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031032",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "438",
+      "name": "Sera's Mirror",
+      "vendorPrice": 0,
+      "icon": "assets/etc/438.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/438",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031000",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "345",
+      "name": "Set of Match Cards",
+      "vendorPrice": 1,
+      "icon": "assets/etc/345.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/345",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4080100",
+      "subtype": "Misc",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "477",
+      "name": "Shumi's Coin",
+      "vendorPrice": 50,
+      "icon": "assets/etc/477.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/477",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031039",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "478",
+      "name": "Shumi's Roll of Cash",
+      "vendorPrice": 100,
+      "icon": "assets/etc/478.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/478",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031040",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "479",
+      "name": "Shumi's Sack of Cash",
+      "vendorPrice": 1000,
+      "icon": "assets/etc/479.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/479",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031041",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "424",
+      "name": "Silver Ingot",
+      "vendorPrice": 400,
+      "icon": "assets/etc/424.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/424",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4010104",
+      "subtype": "Ore & Mineral",
+      "sources": [
+        "craft"
+      ]
+    },
+    {
+      "id": "417",
+      "name": "Silver Ore",
+      "vendorPrice": 80,
+      "icon": "assets/etc/417.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/417",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4010004",
+      "subtype": "Ore & Mineral",
+      "sources": [
+        "mob",
+        "quest"
+      ]
+    },
+    {
+      "id": "339",
+      "name": "Slime & Mushroom Omok Set",
+      "vendorPrice": 1,
+      "icon": "assets/etc/339.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/339",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4080000",
+      "subtype": "Misc",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "341",
+      "name": "Slime & Octopus Omok Set",
+      "vendorPrice": 1,
+      "icon": "assets/etc/341.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/341",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4080002",
+      "subtype": "Misc",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "340",
+      "name": "Slime & Pig Omok Set",
+      "vendorPrice": 1,
+      "icon": "assets/etc/340.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/340",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4080001",
+      "subtype": "Misc",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "354",
+      "name": "Slime Bubble",
+      "vendorPrice": 50,
+      "icon": "assets/etc/354.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/354",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000007",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2609",
+      "name": "Small Egg",
+      "vendorPrice": 39,
+      "icon": "assets/etc/2609.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2609",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000092",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2618",
+      "name": "Small Spaceship",
+      "vendorPrice": 42,
+      "icon": "assets/etc/2618.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2618",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000101",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "3119",
+      "name": "Smooth Horn Marble",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3119.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3119",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031121",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "348",
+      "name": "Snail Shell",
+      "vendorPrice": 1,
+      "icon": "assets/etc/348.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/348",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000001",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "308",
+      "name": "Soft Feather",
+      "vendorPrice": 10,
+      "icon": "assets/etc/308.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/308",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003003",
+      "subtype": "Crafting Material",
+      "sources": []
+    },
+    {
+      "id": "2612",
+      "name": "Space Food",
+      "vendorPrice": 40,
+      "icon": "assets/etc/2612.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2612",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000095",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "446",
+      "name": "Sparkling Glass Marble",
+      "vendorPrice": 0,
+      "icon": "assets/etc/446.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/446",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031008",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "449",
+      "name": "Sparkling Rock",
+      "vendorPrice": 0,
+      "icon": "assets/etc/449.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/449",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031011",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "2718",
+      "name": "Special Stirge Phobia Cure",
+      "vendorPrice": 1,
+      "icon": "assets/etc/2718.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2718",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031114",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "2583",
+      "name": "Spiderweb",
+      "vendorPrice": 25,
+      "icon": "assets/etc/2583.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2583",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000066",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "312",
+      "name": "Spool of Thread",
+      "vendorPrice": 1,
+      "icon": "assets/etc/312.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/312",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003007",
+      "subtype": "Crafting Material",
+      "sources": [
+        "craft"
+      ]
+    },
+    {
+      "id": "353",
+      "name": "Squishy Liquid",
+      "vendorPrice": 6,
+      "icon": "assets/etc/353.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/353",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000006",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "3128",
+      "name": "Stamped Ledger",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3128.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3128",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031130",
+      "subtype": "Quest Item",
+      "maxStack": 1,
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "338",
+      "name": "Star Rock",
+      "vendorPrice": 4000,
+      "icon": "assets/etc/338.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/338",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4020109",
+      "subtype": "Gem",
+      "sources": [
+        "craft",
+        "quest"
+      ]
+    },
+    {
+      "id": "2585",
+      "name": "Sticky Spiderweb",
+      "vendorPrice": 28,
+      "icon": "assets/etc/2585.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2585",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000068",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "307",
+      "name": "Stiff Feather",
+      "vendorPrice": 10,
+      "icon": "assets/etc/307.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/307",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003002",
+      "subtype": "Crafting Material",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "364",
+      "name": "Stirge Wing",
+      "vendorPrice": 20,
+      "icon": "assets/etc/364.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/364",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000017",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "390",
+      "name": "Stone Golem Rubble",
+      "vendorPrice": 56,
+      "icon": "assets/etc/390.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/390",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000043",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "511",
+      "name": "Stuffed Drake Skull",
+      "vendorPrice": 1,
+      "icon": "assets/etc/511.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/511",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031073",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "513",
+      "name": "Stump's Teardrop",
+      "vendorPrice": 1,
+      "icon": "assets/etc/513.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/513",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031075",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2611",
+      "name": "Table Clock",
+      "vendorPrice": 40,
+      "icon": "assets/etc/2611.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2611",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000094",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "375",
+      "name": "Tablecloth",
+      "vendorPrice": 34,
+      "icon": "assets/etc/375.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/375",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000028",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2664",
+      "name": "Tanathos Strap",
+      "vendorPrice": 108,
+      "icon": "assets/etc/2664.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2664",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000147",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "393",
+      "name": "Tauromacis Horn",
+      "vendorPrice": 70,
+      "icon": "assets/etc/393.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/393",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000046",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "394",
+      "name": "Taurospear Horn",
+      "vendorPrice": 75,
+      "icon": "assets/etc/394.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/394",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000047",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2589",
+      "name": "Teddy's Cotton",
+      "vendorPrice": 30,
+      "icon": "assets/etc/2589.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2589",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000072",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2592",
+      "name": "Teddy's Yellow Ribbon",
+      "vendorPrice": 32,
+      "icon": "assets/etc/2592.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2592",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000075",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "454",
+      "name": "The Dark Lord's Letter",
+      "vendorPrice": 0,
+      "icon": "assets/etc/454.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/454",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031016",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "432",
+      "name": "The Girl Next Door",
+      "vendorPrice": 150,
+      "icon": "assets/etc/432.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/432",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001004",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "2671",
+      "name": "The Key",
+      "vendorPrice": 1,
+      "icon": "assets/etc/2671.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2671",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001013",
+      "sources": []
+    },
+    {
+      "id": "2684",
+      "name": "The Magic Rock",
+      "vendorPrice": 1,
+      "icon": "assets/etc/2684.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2684",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4006000",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "460",
+      "name": "The Proof of a Hero (Bowman)",
+      "vendorPrice": 0,
+      "icon": "assets/etc/460.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/460",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031022",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "458",
+      "name": "The Proof of a Hero (Magician)",
+      "vendorPrice": 0,
+      "icon": "assets/etc/458.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/458",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031020",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "462",
+      "name": "The Proof of a Hero (Thief)",
+      "vendorPrice": 0,
+      "icon": "assets/etc/462.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/462",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031024",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "456",
+      "name": "The Proof of a Hero (Warrior)",
+      "vendorPrice": 0,
+      "icon": "assets/etc/456.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/456",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031018",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "2685",
+      "name": "The Summoning Rock",
+      "vendorPrice": 1,
+      "icon": "assets/etc/2685.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2685",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4006001",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "474",
+      "name": "Ticket to Construction Site B1",
+      "vendorPrice": 1,
+      "icon": "assets/etc/474.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/474",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031036",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "475",
+      "name": "Ticket to Construction Site B2",
+      "vendorPrice": 1,
+      "icon": "assets/etc/475.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/475",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031037",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "476",
+      "name": "Ticket to Construction Site B3",
+      "vendorPrice": 1,
+      "icon": "assets/etc/476.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/476",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031038",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "2688",
+      "name": "Ticket to Ellinia (Basic)",
+      "vendorPrice": 1,
+      "icon": "assets/etc/2688.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2688",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031084",
+      "sources": []
+    },
+    {
+      "id": "2689",
+      "name": "Ticket to Ellinia (Regular)",
+      "vendorPrice": 1,
+      "icon": "assets/etc/2689.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2689",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031085",
+      "sources": []
+    },
+    {
+      "id": "2690",
+      "name": "Ticket to Ludibrium (Basic)",
+      "vendorPrice": 1,
+      "icon": "assets/etc/2690.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2690",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031086",
+      "sources": []
+    },
+    {
+      "id": "2691",
+      "name": "Ticket to Ludibrium (Regular)",
+      "vendorPrice": 1,
+      "icon": "assets/etc/2691.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2691",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031087",
+      "sources": []
+    },
+    {
+      "id": "2686",
+      "name": "Ticket to Orbis (Basic)",
+      "vendorPrice": 1,
+      "icon": "assets/etc/2686.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2686",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031082",
+      "sources": []
+    },
+    {
+      "id": "2687",
+      "name": "Ticket to Orbis (Regular)",
+      "vendorPrice": 1,
+      "icon": "assets/etc/2687.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2687",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031083",
+      "sources": []
+    },
+    {
+      "id": "335",
+      "name": "Topaz",
+      "vendorPrice": 400,
+      "icon": "assets/etc/335.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/335",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4020106",
+      "subtype": "Gem",
+      "sources": [
+        "craft",
+        "quest"
+      ]
+    },
+    {
+      "id": "326",
+      "name": "Topaz Ore",
+      "vendorPrice": 80,
+      "icon": "assets/etc/326.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/326",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4020006",
+      "subtype": "Gem",
+      "sources": [
+        "mob",
+        "quest"
+      ]
+    },
+    {
+      "id": "3116",
+      "name": "Torn Ledger Pages",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3116.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3116",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031118",
+      "subtype": "Quest Item",
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "3120",
+      "name": "Torn Note",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3120.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3120",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031122",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "384",
+      "name": "Tortie Shell",
+      "vendorPrice": 46,
+      "icon": "assets/etc/384.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/384",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000037",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2591",
+      "name": "Toy Drum",
+      "vendorPrice": 31,
+      "icon": "assets/etc/2591.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2591",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000074",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2597",
+      "name": "Toy Duckling",
+      "vendorPrice": 34,
+      "icon": "assets/etc/2597.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2597",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000080",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2610",
+      "name": "Toy Trojan Sword",
+      "vendorPrice": 39,
+      "icon": "assets/etc/2610.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2610",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000093",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "3108",
+      "name": "Transparent Item",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3108.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3108",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001016",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "504",
+      "name": "Treasure Scroll",
+      "vendorPrice": 1,
+      "icon": "assets/etc/504.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/504",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031066",
+      "subtype": "Quest Item",
+      "maxStack": 1,
+      "sources": []
+    },
+    {
+      "id": "352",
+      "name": "Tree Branch",
+      "vendorPrice": 5,
+      "icon": "assets/etc/352.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/352",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000005",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob",
+        "brk"
+      ]
+    },
+    {
+      "id": "521",
+      "name": "Two-Handed Weapon Crafting Catalyst",
+      "vendorPrice": 1000,
+      "icon": "assets/etc/521.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/521",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4130001",
+      "subtype": "Stimulator",
+      "maxStack": 100,
+      "sources": [
+        "mob",
+        "quest"
+      ]
+    },
+    {
+      "id": "2659",
+      "name": "Viking Sail",
+      "vendorPrice": 93,
+      "icon": "assets/etc/2659.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2659",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000142",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "431",
+      "name": "VIP Mirror",
+      "vendorPrice": 500,
+      "icon": "assets/etc/431.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/431",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001003",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "2717",
+      "name": "Vitamin Gummy",
+      "vendorPrice": 1,
+      "icon": "assets/etc/2717.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2717",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031113",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "447",
+      "name": "Weird Medicine",
+      "vendorPrice": 0,
+      "icon": "assets/etc/447.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/447",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031009",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "316",
+      "name": "White Dye",
+      "vendorPrice": 250,
+      "icon": "assets/etc/316.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/316",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003011",
+      "subtype": "Crafting Material",
+      "maxStack": 100,
+      "sources": [
+        "npc"
+      ]
+    },
+    {
+      "id": "482",
+      "name": "White Viola",
+      "vendorPrice": 1000,
+      "icon": "assets/etc/482.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/482",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031044",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "368",
+      "name": "Wild Boar Tooth",
+      "vendorPrice": 25,
+      "icon": "assets/etc/368.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/368",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000021",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "392",
+      "name": "Wild Kargo Eye",
+      "vendorPrice": 62,
+      "icon": "assets/etc/392.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/392",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000045",
+      "subtype": "Monster Drop",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "508",
+      "name": "Winston's Recommendation",
+      "vendorPrice": 1,
+      "icon": "assets/etc/508.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/508",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031070",
+      "subtype": "Quest Item",
+      "sources": [
+        "quest"
+      ]
+    },
+    {
+      "id": "2680",
+      "name": "Wisdom Crystal",
+      "vendorPrice": 5000,
+      "icon": "assets/etc/2680.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2680",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003021",
+      "sources": []
+    },
+    {
+      "id": "450",
+      "name": "Witchgrass Leaf",
+      "vendorPrice": 1,
+      "icon": "assets/etc/450.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/450",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031012",
+      "subtype": "Quest Item",
+      "sources": [
+        "brk"
+      ]
+    },
+    {
+      "id": "2590",
+      "name": "Worn-Out Goggle",
+      "vendorPrice": 31,
+      "icon": "assets/etc/2590.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2590",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000073",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "318",
+      "name": "Yellow Dye",
+      "vendorPrice": 250,
+      "icon": "assets/etc/318.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/318",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4003013",
+      "subtype": "Crafting Material",
+      "maxStack": 100,
+      "sources": [
+        "npc"
+      ]
+    },
+    {
+      "id": "3113",
+      "name": "Yellow Primrose Seed",
+      "vendorPrice": 1,
+      "icon": "assets/etc/3113.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3113",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4001021",
+      "subtype": "Quest Item",
+      "maxStack": 1,
+      "sources": []
+    },
+    {
+      "id": "2617",
+      "name": "Yellow Toy Block",
+      "vendorPrice": 42,
+      "icon": "assets/etc/2617.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2617",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000100",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "2642",
+      "name": "Yeti Horn",
+      "vendorPrice": 65,
+      "icon": "assets/etc/2642.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2642",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000125",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    },
+    {
+      "id": "466",
+      "name": "Zelya's Map Fragment",
+      "vendorPrice": 0,
+      "icon": "assets/etc/466.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/466",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4031028",
+      "subtype": "Quest Item",
+      "sources": []
+    },
+    {
+      "id": "2640",
+      "name": "Zombie Teddy Bear",
+      "vendorPrice": 63,
+      "icon": "assets/etc/2640.png",
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2640",
+      "iconSource": "https://meowdb.com/msclassic/api/assets/icons/4000123",
+      "maxStack": 200,
+      "sources": [
+        "mob"
+      ]
+    }
+  ]
+}

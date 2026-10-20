@@ -1,10 +1,13 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const root=__dirname,dist=path.join(root,'dist');
+const {catalog,serialize}=require('./build-catalog.cjs');
+const bundledCatalog={...catalog,items:catalog.items.map(item=>({...item,icon:'data:image/png;base64,'+fs.readFileSync(path.join(dist,item.icon)).toString('base64')}))};
+const names=['core','etc-data','etc','history','app'];
 let html=fs.readFileSync(path.join(dist,'index.html'),'utf8');
 html=html.replace('<link rel="stylesheet" href="styles.css">','<style>'+fs.readFileSync(path.join(dist,'styles.css'),'utf8')+'</style>');
 html=html.replace('<script src="theme.js"></script>','<script>'+fs.readFileSync(path.join(dist,'theme.js'),'utf8')+'</script>');
-for(const name of ['core','history','app'])html=html.replace('<script src="'+name+'.js" defer></script>','');
-html=html.replace('</body>', ['core','history','app'].map(name=>'<script>'+fs.readFileSync(path.join(dist,name+'.js'),'utf8')+'</script>').join('')+'</body>');
-const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];if(scripts.length!==4)throw new Error('Expected four embedded scripts.');for(const s of scripts)new vm.Script(s[1]);
+for(const name of names)html=html.replace('<script src="'+name+'.js" defer></script>','');
+html=html.replace('</body>', names.map(name=>'<script>'+(name==='etc-data'?'window.MapleEtcData='+serialize(bundledCatalog)+';':fs.readFileSync(path.join(dist,name+'.js'),'utf8'))+'</script>').join('')+'</body>');
+const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];if(scripts.length!==names.length+1)throw new Error('Expected six embedded scripts.');for(const s of scripts)new vm.Script(s[1]);
 fs.writeFileSync(path.join(root,'..','maple-journal-calculator.html'),html);
-console.log('Standalone HTML updated; all four embedded scripts syntax checked.');
+console.log('Standalone HTML updated with '+catalog.items.length+' ETC items and embedded icons; all six scripts syntax checked.');

@@ -57,3 +57,23 @@ assert.equal(M.groupMaps([record],'estimatedNet')[0].netHour,107600);
 const legacy=M.normalizeSession({...record,id:'legacy',start:{...start},end:{...end},checkpoints:[],meta:{}});assert.equal(legacy.start.level,null);assert.equal(M.calculate(legacy.start,legacy.end,M.activeElapsed(legacy)).exp,30000);
 assert.throws(()=>M.normalizeSession({...record,start:{...start,level:0}}),/between 1 and 100/);
 console.log('Passed: Classic formula boundaries, multiple level-ups, level validation, ETA, pause timing, separate ledger totals, efficiency/runway, interval trends, history validation/upserts, and time-weighted map rates.');
+
+// ETC quantities and price snapshots survive saved history without double-counting balance sales.
+const etc={source:'etc',itemId:'348',label:'Snail Shell',quantity:200,unitPrice:3,kind:'loot',value:600};
+const etcEnd={...end,ledger:[etc]};
+const lootResult=M.calculate(start,etcEnd,1800000);
+assert.equal(lootResult.net,r.net);assert.equal(lootResult.estimatedNet,r.net+600);assert.equal(lootResult.adjustedNet,r.net);
+assert.equal(M.profitRates(lootResult,'estimatedNet').hour,(r.net+600)*2);
+assert.equal(M.profitRates(lootResult,'estimatedNet').ten,(r.net+600)/3);
+assert.equal(M.profitRates(lootResult,'estimatedNet').minute,(r.net+600)/30);
+const soldResult=M.calculate(start,{...end,ledger:[{...etc,kind:'income'}]},1800000);
+assert.equal(soldResult.adjustedNet,r.net+600);assert.equal(soldResult.estimatedNet,r.net+600);assert.equal(soldResult.ledger.loot,0);
+assert.equal(M.ledgerValue({...etc,unitPrice:0,value:0}),0);
+for(const invalid of [{...etc,quantity:0,value:0},{...etc,quantity:-1,value:-3},{...etc,quantity:1.5,value:4.5},{...etc,value:900},{...etc,kind:'expense'},{...etc,unitPrice:Number.MAX_SAFE_INTEGER,value:Number.MAX_SAFE_INTEGER}])assert.throws(()=>M.ledgerTotals([invalid]));
+const normalizedEtc=M.normalizeSession({id:'etc-test',startedAt:1000,stoppedAt:1801000,start,end:etcEnd,checkpoints:[]});
+assert.deepEqual(normalizedEtc.end.ledger,[etc]);assert.equal(M.calculate(normalizedEtc.start,normalizedEtc.end,M.activeElapsed(normalizedEtc)).estimatedNet,r.net+600);
+const roundtripEtc=M.mergeHistory([],JSON.parse(JSON.stringify([normalizedEtc])));assert.deepEqual(roundtripEtc[0].end.ledger,[etc]);
+const updatedEtc=M.mergeHistory(roundtripEtc,[{...normalizedEtc,end:{...normalizedEtc.end,ledger:[{...etc,quantity:400,value:1200}]}}]);assert.equal(updatedEtc.length,1);assert.equal(updatedEtc[0].end.ledger[0].quantity,400);
+const catalogEtc=require('./dist/data/etc-items.json');assert(catalogEtc.items.length>300);assert.equal(new Set(catalogEtc.items.map(i=>i.id)).size,catalogEtc.items.length);
+for(const item of catalogEtc.items){assert(Number.isSafeInteger(item.vendorPrice)&&item.vendorPrice>=0);assert(require('node:fs').existsSync('./dist/'+item.icon));}
+console.log('Passed: ETC quantity valuation, sale status, profit rates, zero prices, invalid inputs, snapshot preservation, JSON restore/upsert, and local catalog assets.');

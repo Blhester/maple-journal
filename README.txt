@@ -47,3 +47,13 @@ node build-download.cjs
 Layout: timer and inputs use one aligned stack. Current-session results, forecasts, supply insights, and checkpoint trends appear only after Done, ending values, and Calculate. Editing or starting a new session hides that review again. Prior completed sessions stay available in history; an empty map-comparison panel is hidden.
 
 Navigation: Session tracker contains the current timer, forms, and completed-session review. History & comparison is a separate tab containing saved runs, review details, filters, backups, and map comparisons. Switching tabs preserves the tracker draft and does not pause a running session. The selected tab is retained in the URL fragment across refresh.
+
+ETC DROPS
+After Done, search the local ETC catalog by name, select an icon/name/price result, and enter the number of individual items gained (not the number of stacks). Repeated additions of the same item and sale status merge. Quantities and sale status remain editable.
+Unsold drops add quantity × NPC vendor price to estimated total net. Drops sold after recording the ending balance add to adjusted cash net instead. Exclude drops already reflected in the ending mesos to avoid counting them twice. The review defaults to total net with loot when unsold drops exist; Profit shown switches the main total and all three meso rates between the original formula, adjusted cash, and loot-inclusive total. Projections and checkpoint trends continue to use original net as labeled.
+ETC quantity, unit-price snapshots, sale status, and names survive session edits, refresh, saved reviews, JSON backups/restores, and CSV summaries. Existing saved sessions remain compatible.
+
+LOCAL ETC DATA
+dist/data/etc-items.json: canonical catalog of 331 priced non-Ossyria Classic ETC items, checked October 20, 2026. Each entry stores MeowDB ID, name, NPC sell-back price, local icon, and source link. The source returned 335 items; four lacked an explicit price and are listed in excludedItemIds. Explicit zero prices are retained. Source: https://meowdb.com/msclassic/item-db/etc
+dist/assets/etc/: 331 local PNG icons. dist/etc-data.js: generated offline catalog script, allowing dist/index.html to open directly without a fetch.
+refresh-etc-catalog.cjs: manual MeowDB catalog/icon refresh. Run node refresh-etc-catalog.cjs then node build-download.cjs. build-catalog.cjs validates the canonical JSON and icons and generates the runtime script; build-download.cjs also embeds catalog and icons into the standalone HTML. Existing session prices are snapshots and do not change after catalog refresh. No scraping or remote icon requests run in the end-user app.
