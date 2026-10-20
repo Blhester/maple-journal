@@ -134,3 +134,8 @@ Mesos preset defaults — October 20, 2026
 - Set Dark text, contrast 0.5, brightness 5, threshold 145 and inversion enabled for mesos only. Full screenshot reads use the mesos preset even without stored tuning; remembered values, including explicit invert:false, retain precedence. Level and other field presets are unchanged.
 - Existing tests and standalone/static build checks pass. The dark-mask unit check now supplies explicit brightness/inversion so it tests the mask independently of defaults. Browser controls on a fresh origin show all requested values and inversion checked.
 - Browser full example read returned mesos 0, level 58, and HP/MP 441/761 with the requested defaults.
+
+Map and class preset defaults — October 20, 2026
+- Map: neutral white/remove-color, contrast 1.6, brightness 10, threshold 30, chroma tolerance 35, inversion on. Class: grayscale, contrast 2.5, brightness -5, inversion on. Threshold/chroma remain inactive for grayscale. Both retain 4x enlargement and saved per-field overrides.
+- Full screenshot reads now apply default map/class image presets as well as level/mesos; catalog similarity matching still runs after map OCR and potion counts still use the existing quantity reader. Existing tests and build pass; browser controls show the exact requested presets on a fresh origin.
+- Browser full example read with all updated defaults returned Dungeon · Ant Tunnel IV, Wizard (Ice, Lightning), level 58, mesos 0 and HP/MP 441/761.
