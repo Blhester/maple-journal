@@ -150,7 +150,12 @@
     try{const end=readEnd('end');M.calculate(state.start,end,elapsed());state.checkpoints=state.checkpoints.filter(cp=>cp.elapsedMs<elapsed());M.intervals(state.start,state.checkpoints,end,elapsed());state.end=end;state.stage='complete';$('profit-metric').value=end.ledger.some(e=>e.kind==='loot')?'estimatedNet':end.ledger.length?'adjustedNet':'net';error('end-error','');persist();try{MapleHistory.save(state);}catch(e){error('history-error',e.message);}render();$('results-heading').setAttribute('tabindex','-1');$('results-heading').focus({preventScroll:true});}catch(e){error('end-error',e.message);}
   });
   $('edit-button').addEventListener('click',()=>{state.stage='ending';state.ledger=structuredClone(state.end.ledger||[]);persist();render();$('end-exp').focus();});
-  function reset(){$('screenshot-applied').textContent='';MapleEtc.reset();state={stage:'setup',checkpoints:[],ledger:[]};$('start-form').reset();$('end-form').reset();$('checkpoint-form').reset();$('hp-potion').value='white';$('mp-potion').value='blue';$('hp-cost').value=350;$('mp-cost').value=220;for(const id of ['adjustments','ledger-details','checkpoint-details'])$(id).open=false;for(const id of ['end-error','start-error','cp-error','ledger-error'])error(id,'');$('cp-saved').textContent='';persist();render();$('start-exp').focus();}
+  function reset(){
+    // Keep the last supply choices (and custom prices) in the next saved draft.
+    const supplies=values(['hp-potion','hp-cost','mp-potion','mp-cost']);
+    $('screenshot-applied').textContent='';MapleEtc.reset();state={stage:'setup',checkpoints:[],ledger:[]};$('start-form').reset();$('end-form').reset();$('checkpoint-form').reset();restoreFields(supplies);
+    for(const id of ['adjustments','ledger-details','checkpoint-details'])$(id).open=false;for(const id of ['end-error','start-error','cp-error','ledger-error'])error(id,'');$('cp-saved').textContent='';persist();render();$('start-exp').focus();
+  }
   $('new-button').addEventListener('click',reset);$('discard-button').addEventListener('click',()=>{$('discard-confirm').hidden=false;$('keep-button').focus();});$('keep-button').addEventListener('click',()=>{$('discard-confirm').hidden=true;$('discard-button').focus();});$('confirm-discard').addEventListener('click',reset);
   for(const id of [...startIds,...endIds])$(id).addEventListener('input',()=>{persist();if(id==='start-level')updateLevelHint();});$('profit-metric').addEventListener('change',renderProfit);$('target-level').addEventListener('input',updateForecast);$('trend-metric').addEventListener('change',renderTrend);document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick();});
   try{

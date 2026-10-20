@@ -139,3 +139,5 @@ Map and class preset defaults — October 20, 2026
 - Map: neutral white/remove-color, contrast 1.6, brightness 10, threshold 30, chroma tolerance 35, inversion on. Class: grayscale, contrast 2.5, brightness -5, inversion on. Threshold/chroma remain inactive for grayscale. Both retain 4x enlargement and saved per-field overrides.
 - Full screenshot reads now apply default map/class image presets as well as level/mesos; catalog similarity matching still runs after map OCR and potion counts still use the existing quantity reader. Existing tests and build pass; browser controls show the exact requested presets on a fresh origin.
 - Browser full example read with all updated defaults returned Dungeon · Ant Tunnel IV, Wizard (Ice, Lightning), level 58, mesos 0 and HP/MP 441/761.
+
+Potion defaults: browser QA confirmed Meat/Lemon and their unit prices survive complete > New session > refresh, and an active-session refresh preserves its locked choices. Custom HP item at 275 mesos survives discard > new draft > refresh. Fresh session EXP, mesos, and supply quantities reset. Existing node test.cjs suite passed.
