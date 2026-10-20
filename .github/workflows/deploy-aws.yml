@@ -1,0 +1,122 @@
+name: Build and deploy Grind Journal
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Test and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      aws-configured: ${{ steps.configuration.outputs.ready }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+      - name: Run calculation and history tests
+        run: node test.cjs
+      - name: Build static website and offline download
+        run: node scripts/build-site.cjs
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: grindjournal-site
+          path: site-build/
+          retention-days: 14
+          if-no-files-found: error
+      - name: Check deployment configuration
+        id: configuration
+        env:
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const required = ['AWS_REGION', 'AWS_ROLE_ARN', 'S3_BUCKET', 'CLOUDFRONT_DISTRIBUTION_ID'];
+          const missing = required.filter(name => !process.env[name]?.trim());
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `ready=${missing.length === 0}\n`);
+          const message = missing.length
+            ? `Build passed. AWS deployment is not configured yet. Add repository Actions variables: ${missing.join(', ')}. Follow AWS-SETUP.txt, then run this workflow from master.`
+            : 'AWS deployment variables are configured. Pull requests only test and build; master pushes and manual master runs deploy.';
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, message + '\n');
+          if (missing.length) console.log(`::notice::${message}`);
+          NODE
+
+  deploy:
+    name: Deploy grindjournal.com
+    needs: build
+    if: >-
+      github.event_name != 'pull_request' &&
+      github.ref == 'refs/heads/master' &&
+      needs.build.outputs.aws-configured == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:
+      group: grindjournal-production
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
+      S3_BUCKET: ${{ vars.S3_BUCKET }}
+      CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+      SITE_URL: https://grindjournal.com
+      AWS_PAGER: ''
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: grindjournal-site
+          path: site-build/
+      - name: Authenticate to AWS with GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: GrindJournal-${{ github.run_id }}
+      - name: Verify the deployment target
+        run: |
+          aws s3api head-bucket --bucket "$S3_BUCKET"
+          aws cloudfront get-distribution --id "$CLOUDFRONT_DISTRIBUTION_ID" > "$RUNNER_TEMP/distribution.json"
+          python3 <<'PY'
+          import json, os
+          from pathlib import Path
+          config = json.loads((Path(os.environ['RUNNER_TEMP']) / 'distribution.json').read_text())['Distribution']['DistributionConfig']
+          assert 'grindjournal.com' in config.get('Aliases', {}).get('Items', []), 'Distribution must serve grindjournal.com'
+          bucket = os.environ['S3_BUCKET']
+          assert any(origin['DomainName'].startswith(bucket + '.s3.') for origin in config['Origins']['Items']), 'Distribution must use the configured S3 bucket'
+          assert config['Enabled'], 'CloudFront distribution must be enabled'
+          PY
+      - name: Upload assets, then publish the HTML entrypoint
+        run: |
+          aws s3 sync site-build/ "s3://$S3_BUCKET/" --delete --exclude index.html --cache-control 'public,max-age=300' --only-show-errors
+          aws s3 cp site-build/index.html "s3://$S3_BUCKET/index.html" --content-type 'text/html; charset=utf-8' --cache-control 'no-cache,max-age=0,must-revalidate' --only-show-errors
+      - name: Refresh the CloudFront cache
+        run: |
+          invalidation_id=$(aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" --paths '/*' --query 'Invalidation.Id' --output text)
+          aws cloudfront wait invalidation-completed --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" --id "$invalidation_id"
+      - name: Verify the published commit
+        run: |
+          curl --fail --silent --show-error --retry 6 --retry-all-errors --retry-delay 5 "$SITE_URL/deployment.json" -o "$RUNNER_TEMP/live-deployment.json"
+          python3 <<'PY'
+          import json, os
+          from pathlib import Path
+          live = json.loads((Path(os.environ['RUNNER_TEMP']) / 'live-deployment.json').read_text())
+          assert live['commit'] == os.environ['GITHUB_SHA'], 'The domain is not serving the deployed commit'
+          PY
+          curl --fail --silent --show-error --retry 6 --retry-all-errors --retry-delay 5 "$SITE_URL/" -o "$RUNNER_TEMP/live-index.html"
+          grep -q 'Maple Journal' "$RUNNER_TEMP/live-index.html"
+          printf 'Deployed commit `%s` to %s\n' "$GITHUB_SHA" "$SITE_URL" >> "$GITHUB_STEP_SUMMARY"

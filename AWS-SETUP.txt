@@ -1,0 +1,144 @@
+GRIND JOURNAL — GitHub Actions and AWS hosting
+
+Target: https://grindjournal.com
+Repository: https://github.com/Blhester/maple-journal
+Deployment branch: master
+
+The repository includes the build/deployment workflow and a one-time AWS
+CloudFormation template. Registering the domain alone does not create the AWS
+hosting resources. Create the stack below, copy its four outputs into GitHub,
+then run the workflow. No AWS access keys or secret keys are needed in GitHub.
+
+1. PREPARE DNS
+
+In the intended AWS account, open Route 53 > Hosted zones. Reuse the PUBLIC
+hosted zone for grindjournal.com if one already exists; otherwise create it.
+Record the zone ID (Z...) and the four nameservers in its NS record.
+
+At the domain registrar, set grindjournal.com's authoritative nameservers to
+those four Route 53 nameservers. If DNS is already delegated to this zone,
+leave it as it is. Preserve any existing DNS records when moving DNS providers.
+The domain can stay registered at its current registrar.
+
+2. CREATE THE ONE-TIME AWS STACK
+
+Open AWS CloudFormation in US East (N. Virginia), us-east-1. CloudFront's ACM
+certificate must be in this region; this template creates the certificate and
+bucket together in us-east-1.
+
+Create stack > With new resources > Upload a template file:
+  infra/aws-static-site.json
+
+Stack name: grindjournal
+Parameters:
+  DomainName: grindjournal.com (keep the default)
+  HostedZoneId: the public Route 53 zone ID from step 1
+  ExistingGitHubOidcProviderArn: leave blank unless your AWS account already has
+    an IAM identity provider for token.actions.githubusercontent.com. If it
+    exists, supply its ARN, for example:
+    arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com
+  GitHubOidcSubject: keep the default for this repository.
+
+Use your AWS setup/admin identity for this one-time step. Acknowledge that the
+template creates IAM resources. Wait for CREATE_COMPLETE. DNS must already
+point to the selected Route 53 zone for certificate validation to finish.
+
+The template creates:
+  - A private encrypted, versioned S3 bucket dedicated to this website.
+  - CloudFront with signed S3 origin access, HTTPS and HTTP-to-HTTPS redirects.
+  - An automatically DNS-validated ACM certificate for grindjournal.com.
+  - A and AAAA alias records for grindjournal.com.
+  - A GitHub OIDC provider, or reuse of the account's existing provider.
+  - A deployment role restricted to this repo's master-branch OIDC subject,
+    this bucket's objects, and this CloudFront distribution's invalidations.
+
+This template serves the apex domain. www.grindjournal.com is not configured.
+The S3 bucket is retained if the stack is deleted, and object versioning keeps
+previous uploads. CloudFront, S3, and Route 53 use your AWS account's billing.
+The application itself stores session history only in the visitor's browser.
+
+Optional AWS CLI equivalent (from an already authenticated checkout/CloudShell):
+
+  aws cloudformation deploy --region us-east-1 --stack-name grindjournal --template-file infra/aws-static-site.json --capabilities CAPABILITY_IAM --parameter-overrides HostedZoneId=YOUR_PUBLIC_ZONE_ID
+
+If the GitHub provider exists, also pass its ARN in the parameter overrides:
+  ExistingGitHubOidcProviderArn=arn:aws:iam::YOUR_ACCOUNT_ID:oidc-provider/token.actions.githubusercontent.com
+
+3. ADD FOUR GITHUB REPOSITORY VARIABLES
+
+Open Settings > Secrets and variables > Actions > Variables:
+https://github.com/Blhester/maple-journal/settings/variables/actions
+
+Create these repository variables, copying values from the stack's Outputs:
+
+  AWS_REGION                 AWSRegion output (us-east-1)
+  AWS_ROLE_ARN               AWSRoleArn output (GitHubDeployRole ARN)
+  S3_BUCKET                  S3Bucket output (no s3:// prefix)
+  CLOUDFRONT_DISTRIBUTION_ID  CloudFrontDistributionId output (E...)
+
+Use the output-to-variable mapping above. These are configuration values,
+not credentials. Do not add AWS_ACCESS_KEY_ID,
+AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN, or private keys to this workflow.
+The public application needs no runtime environment variables.
+
+4. RUN THE FIRST DEPLOYMENT
+
+Open Actions > Build and deploy Grind Journal > Run workflow > branch master.
+https://github.com/Blhester/maple-journal/actions/workflows/deploy-aws.yml
+
+Future pushes to master automatically test, build, and deploy. Pull requests
+only test/build; they do not receive AWS deployment credentials. While any of
+the four variables are missing, the build still runs and the job summary lists
+the missing settings; deployment is skipped.
+
+The build generates site-build/ from dist/, validates scripts/references/local
+ETC icons, and adds the standalone HTML download and a deployment revision.
+No catalog scraping happens in CI. Only this generated artifact goes to S3;
+the source README, feature/TODO documents, IAM template, and workflow stay out
+of the public website. Built artifacts are retained in GitHub for 14 days.
+
+Deployment verifies the domain and S3 origin against the selected CloudFront
+distribution, uploads assets before index.html, invalidates the CloudFront
+cache, waits for invalidation, and checks that grindjournal.com serves the
+expected source commit. Production deploys run one at a time.
+
+5. AUTHENTICATION DETAILS AND TROUBLESHOOTING
+
+The deploy job has id-token: write permission and exchanges its GitHub OIDC
+token for short-lived role credentials. The role has no permissions to create
+infrastructure, modify DNS, change IAM, or access other buckets/distributions.
+
+This repo was created October 20, 2026 and uses GitHub's immutable default OIDC
+subject format. The verified owner ID is 97988932 and repo ID is 1427249778:
+  repo:Blhester@97988932/maple-journal@1427249778:ref:refs/heads/master
+
+The workflow deliberately has no GitHub environment, so trust uses the branch
+subject. If this repository's OIDC subject has been explicitly customized,
+update the stack's GitHubOidcSubject parameter to the exact master-branch
+subject. A legacy subject would be:
+  repo:Blhester/maple-journal:ref:refs/heads/master
+Do not broaden it to a wildcard. Adding a GitHub environment later also changes
+the subject and requires updating the role trust policy deliberately.
+
+If certificate creation waits indefinitely, verify the hosted zone is public,
+belongs to grindjournal.com, and its nameservers match those at the registrar.
+If IAM provider creation reports AlreadyExists, reuse its ARN in the parameter.
+If OIDC fails, check the role ARN, provider audience sts.amazonaws.com, exact
+subject, and that the workflow is running on master.
+If the deployment verification fails, check DNS and the four stack outputs;
+do not point S3_BUCKET at a shared or unrelated bucket (sync removes old files).
+
+Local validation:
+  node test.cjs
+  node scripts/build-site.cjs
+
+The build output site-build/ is ignored by Git. To roll back application code,
+revert the desired source commit on master and push; the same workflow deploys
+the resulting revision. Existing browser history on the ChatGPT-hosted site
+does not automatically move to grindjournal.com: export a JSON backup there,
+then restore it on the new domain.
+
+References:
+https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws
+https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html
+https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html

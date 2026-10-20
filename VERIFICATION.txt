@@ -55,3 +55,10 @@ ETC catalog and loot accounting — October 20, 2026
 - Reload restored both entries and totals; history review preserved quantities, price snapshots, sale status, and icons. Switching tabs preserved the current session.
 - Inspected light and dark picker/drop rows, keyboard selection, empty search results, and source item links. Physical mobile and native file-picker import were not exercised. JSON payload round-trips are covered by automated checks.
 - Standalone generation embeds the full catalog and all icons and syntax-checks six scripts. The hosted app has no runtime requests to MeowDB. No QA history is included in deployed assets.
+
+AWS deployment automation — October 20, 2026
+- Calculation/history/ETC tests and the generated site-build/ checks passed. The publishable artifact includes local icons, catalog, standalone download, and source revision without internal documents.
+- GitHub Actions workflow validated with actionlint; CloudFormation resource schema and intrinsic references validated with cfn-lint for us-east-1.
+- Deployment uses pinned action commits and GitHub OIDC, restricted to master. Missing AWS configuration skips deployment with a setup summary.
+- One-time infrastructure template provides private S3 with CloudFront OAC, DNS-validated HTTPS, apex DNS aliases, and a role limited to the dedicated bucket and distribution.
+- AWS resources have not been created from this workspace, and custom-domain deployment has not been exercised: only the domain is registered and AWS repository variables are not yet configured. Follow AWS-SETUP.txt.
