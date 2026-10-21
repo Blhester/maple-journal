@@ -1,6 +1,7 @@
 const assert=require('node:assert/strict');
 const {calculate,integer}=require('./dist/core.js');
 require('./test-rates.cjs')();
+require('./test-screenshot-transfer.cjs');
 const start={exp:10000,mesos:100000,hp:100,mp:100,hpCost:350,mpCost:220};
 const end={exp:40000,mesos:150000,hp:80,mp:90};
 const r=calculate(start,end,1800000);

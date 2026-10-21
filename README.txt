@@ -46,6 +46,8 @@ node build-download.cjs
 
 Rate regression fixtures: node test-rates.cjs runs fixed starting/ending timestamps, balances, supply counts/prices and ETC quantities against hand-calculated expected totals and all three rate periods. It also verifies pause exclusion, fractional timing, JSON/history restoration, map comparisons and display rounding. The same fixtures run automatically in node test.cjs and GitHub Actions.
 
+Screenshot handoff regression: node test-screenshot-transfer.cjs runs the actual screenshot review submit handler and app controller in a minimal DOM test double. It checks reviewed values through starting/ending forms, timed training, saved drafts and rendered rates, including zero values, unchecked fields and item/price isolation. This tests the transfer after recognition; image recognition accuracy remains covered separately by OCR fixtures and manual screenshot checks.
+
 Layout: timer and inputs use one aligned stack. Current-session results, forecasts, supply insights, and checkpoint trends appear only after Done, ending values, and Calculate. Editing or starting a new session hides that review again. Prior completed sessions stay available in history; an empty map-comparison panel is hidden.
 
 Navigation: Session tracker contains the current timer, forms, and completed-session review. History & comparison is a separate tab containing saved runs, review details, filters, backups, and map comparisons. Switching tabs preserves the tracker draft and does not pause a running session. The selected tab is retained in the URL fragment across refresh.
