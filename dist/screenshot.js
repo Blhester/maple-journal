@@ -2,18 +2,18 @@
   'use strict';
   const $=id=>document.getElementById(id),C=MapleOcrCore,layoutKey='maple-journal-ocr-regions-v1',tuningKey='maple-journal-ocr-tuning-v1',tuningKeys=['reader','mode','contrast','brightness','threshold','chroma','scale','invert'];
   let options,context,image=null,regions=structuredClone(C.defaults),busy=false,worker=null,run=0,objectUrl=null,drag=null;
-  let libraryPromise=null,workerUrls=[],tunings={},digitCancel=null,captureController=null,captureSession=null,captureWasActive=false;
+  let libraryPromise=null,workerUrls=[],tunings={},digitCancel=null,captureController=null,captureSession=null,captureWasActive=false,readCanvases=new Set();
   function paintCaptureConnection(){
     const active=!!captureSession?.active();
     $('ocr-capture').textContent=active?'Capture snapshot':'Capture screen';
     $('ocr-capture-change').hidden=!active;$('ocr-capture-change').disabled=busy;
     $('ocr-capture-stop').hidden=!active;$('capture-sharing-bar').hidden=!active;
-    if(captureWasActive&&!active)$('ocr-capture-status').textContent='The selected screen or window disconnected. Capture screen lets you select a source again.';
+    if(captureWasActive&&!active){$('ocr-capture-status').textContent='The selected screen disconnected. Capture screen lets you select a monitor again.';options?.onCaptureEnded?.();}
     captureWasActive=active;
   }
   function stopSharing(){
     if(captureController)stop();captureSession?.stop();paintCaptureConnection();
-    $('ocr-capture-status').textContent='Screen sharing stopped. Capture screen will let you choose a source again.';
+    $('ocr-capture-status').textContent='Screen sharing stopped. Capture screen will let you choose a monitor again.';
   }
   const text=(tag,value,className)=>{const e=document.createElement(tag);e.textContent=value;if(className)e.className=className;return e;};
   function error(id,message){$(id).textContent=message||'';$(id).hidden=!message;}
@@ -45,24 +45,24 @@
         d[i]=d[i+1]=d[i+2]=value;d[i+3]=255;
       }smallCtx.putImageData(pixels,0,0);
     }
-    const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.imageSmoothingEnabled=treatment==='original';ctx.drawImage(small,pad,pad,r.w*scale,r.h*scale);return canvas;
+    const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.imageSmoothingEnabled=treatment==='original';ctx.drawImage(small,pad,pad,r.w*scale,r.h*scale);small.width=small.height=1;return canvas;
   }
   function processedCrop(id){
     const r=sourceRegion(id),settings=C.tuning(id,tunings[id]),canvas=document.createElement('canvas'),pad=16,scale=C.scaleFor(r.w,r.h,settings.scale);
     // Scale before filtering so the threshold can preserve antialiased strokes.
     const enlarged=document.createElement('canvas');enlarged.width=Math.max(1,Math.round(r.w*scale));enlarged.height=Math.max(1,Math.round(r.h*scale));const ctx=enlarged.getContext('2d',{willReadFrequently:true});ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(image,r.x,r.y,r.w,r.h,0,0,enlarged.width,enlarged.height);
     const pixels=ctx.getImageData(0,0,enlarged.width,enlarged.height);pixels.data.set(C.processPixels(pixels.data,settings));ctx.putImageData(pixels,0,0);
-    canvas.width=enlarged.width+pad*2;canvas.height=enlarged.height+pad*2;const out=canvas.getContext('2d');out.fillStyle=settings.invert?'#000':'#fff';out.fillRect(0,0,canvas.width,canvas.height);out.drawImage(enlarged,pad,pad);return canvas;
+    canvas.width=enlarged.width+pad*2;canvas.height=enlarged.height+pad*2;const out=canvas.getContext('2d');out.fillStyle=settings.invert?'#000':'#fff';out.fillRect(0,0,canvas.width,canvas.height);out.drawImage(enlarged,pad,pad);enlarged.width=enlarged.height=1;return canvas;
   }
   function paintTuning(){
-    if(!image)return;const id=$('ocr-region-field').value,settings=C.tuning(id,tunings[id]);
+    if(!image)return;const id=$('ocr-region-field').value;if(!C.fields.some(field=>field.id===id))return;const settings=C.tuning(id,tunings[id]);
     const numeric=C.fields.find(field=>field.id===id).numeric,fontReader=settings.reader!=='general';
     $('ocr-reader-wrap').hidden=false;$('ocr-general-controls').hidden=fontReader;
     $('ocr-reader-exp').disabled=!numeric;$('ocr-reader-quantity').disabled=!numeric;
     $('ocr-reader-help').textContent=!numeric?'Map and class names need letters. General text OCR reads these fields; the available Classic font templates contain digits only.':settings.reader==='exp-font'?'Matches the Classic EXP display font from the original crop, including scaled digits and thousands separators. Keep the full number visible. This template may not match level or mesos fonts; use General text OCR if it stays blank. Image sliders are not used by font matching.':settings.reader==='quantity-font'?'Matches the Classic potion quantity font, including its outline and blue shading, from the original crop. Keep the full number visible. This template may not match other HUD fonts; use General text OCR if it stays blank. Image sliders are not used by font matching.':'Use image settings below for text OCR, or try either Classic digit template when the selected number uses that font. Reader and image settings can be remembered separately for each field.';
     for(const key of tuningKeys){const control=$('ocr-tune-'+key);if(key==='invert')control.checked=settings[key];else control.value=String(settings[key]);if($('ocr-out-'+key))$('ocr-out-'+key).textContent=settings[key]+(key==='contrast'?'×':'');}
     $('ocr-tune-chroma').disabled=busy||settings.mode!=='neutral';$('ocr-tune-threshold').disabled=busy||settings.mode==='gray';
-    const canvas=$('ocr-processed');if(fontReader){canvas.width=canvas.height=1;return;}const source=processedCrop(id);canvas.width=source.width;canvas.height=source.height;canvas.getContext('2d').drawImage(source,0,0);
+    const canvas=$('ocr-processed');if(fontReader){canvas.width=canvas.height=1;return;}const source=processedCrop(id);canvas.width=source.width;canvas.height=source.height;canvas.getContext('2d').drawImage(source,0,0);source.width=source.height=1;
   }
   function paintRegion(){
     if(!image)return;const id=$('ocr-region-field').value,r=regions[id],overlay=$('ocr-region-overlay');
@@ -85,14 +85,16 @@
     if(!value&&image)paintTuning();
     $('ocr-region-overlay').classList.toggle('ocr-reading',value);
   }
+  function releaseReadCanvases(){for(const canvas of readCanvases)canvas.width=canvas.height=1;readCanvases.clear();}
   function stop(){
+    releaseReadCanvases();
     run++;if(captureController){captureController.abort();captureController=null;}$('ocr-capture-cancel').hidden=true;if(digitCancel)digitCancel();if(worker){void worker.terminate();worker=null;}for(const url of workerUrls)URL.revokeObjectURL(url);workerUrls=[];setBusy(false);
   }
   async function captureScreen({changeSource=false}={}){
     if(busy||captureController)return;error('ocr-error','');
     if(!MapleScreenCapture.supported()){$('ocr-capture-status').textContent='Screen capture is unavailable in this browser. Open grindjournal.com in desktop Chrome or Edge over HTTPS, or choose a screenshot file.';return;}
     if(changeSource)captureSession.stop();
-    stop();const controller=new AbortController();captureController=controller;setBusy(true);$('ocr-progress-wrap').hidden=true;$('ocr-capture-cancel').hidden=false;$('ocr-capture-status').textContent=captureSession.active()?'Taking a snapshot of your selected screen or window…':'Choose your MapleStory window in the browser’s share picker. It stays connected for later snapshots until you stop sharing or leave this page.';
+    stop();const controller=new AbortController();captureController=controller;setBusy(true);$('ocr-progress-wrap').hidden=true;$('ocr-capture-cancel').hidden=false;$('ocr-capture-status').textContent=captureSession.active()?'Taking a snapshot of your selected screen…':'Choose your Entire screen containing MapleStory in the browser’s share picker. It stays connected for later snapshots until you stop sharing or leave this page.';
     try{
       const blob=await captureSession.capture({signal:controller.signal});if(captureController!==controller)return;
       captureController=null;$('ocr-capture-cancel').hidden=true;setBusy(false);
@@ -102,7 +104,7 @@
   }
   function readDigits(id,choice){
     const r=sourceRegion(id),exp=choice==='exp-font',scale=Math.min(1,(exp?512:96)/r.w,(exp?64:32)/r.h),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(r.w*scale));canvas.height=Math.max(1,Math.round(r.h*scale));
-    const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,r.x,r.y,r.w,r.h,0,0,canvas.width,canvas.height);const pixels=ctx.getImageData(0,0,canvas.width,canvas.height);
+    const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,r.x,r.y,r.w,r.h,0,0,canvas.width,canvas.height);const pixels=ctx.getImageData(0,0,canvas.width,canvas.height);canvas.width=canvas.height=1;
     return new Promise((resolve,reject)=>{
       const url=URL.createObjectURL(new Blob([(exp?MapleExpReader:MapleQuantityReader).workerSource()],{type:'text/javascript'}));let reader;
       const cleanup=()=>{reader?.terminate();URL.revokeObjectURL(url);if(digitCancel===cancel)digitCancel=null;};
@@ -145,8 +147,8 @@
     const base=new URL('vendor/ocr/',document.baseURI).href;
     return {workerPath:base+'worker.min.js',corePath:base,langPath:base,workerBlobURL:false,legacyCore:false,gzip:true,cacheMethod:'none',logger};
   }
-  async function read(selectedOnly=false){
-    if(!image||busy)return;const token=++run,results={},fields=activeFields().filter(field=>!selectedOnly||field.id===$('ocr-region-field').value);error('ocr-error','');error('ocr-review-error','');if(!selectedOnly)invalidateReview();setBusy(true);$('ocr-progress').value=0;$('ocr-progress-text').textContent='Loading local text recognition…';$('ocr-field-status').textContent='';
+  async function recognize(fields,token,{selectedOnly=false}={}){
+    const results={};
     let currentField=0,currentPass=0,passCount=1;
     async function ensureTextWorker(){
       if(worker)return;
@@ -154,7 +156,6 @@
       const created=await Tesseract.createWorker('eng',1,workerOptions(message=>{if(token===run&&message.status==='recognizing text')$('ocr-progress').value=Math.min(1,(currentField+(currentPass+(message.progress||0))/passCount)/fields.length);}));
       if(token!==run){await created.terminate();return;}worker=created;
     }
-    try{
       for(const [index,field]of fields.entries()){
         if(token!==run)return;
         currentField=index;if(selectedOnly)tunings[field.id]=C.tuning(field.id,tunings[field.id]);
@@ -170,18 +171,24 @@
         const reads=[];
         const enhanced=['map','class','level','mesos'].includes(field.id)||selectedOnly||Object.hasOwn(tunings,field.id),modes=field.numeric?['8','7','13']:field.id==='map'?['6','7']:['7','13'];
         const passes=enhanced?modes.map(mode=>({mode,label:'Adjusted image · '+(mode==='8'?'word':mode==='13'?'raw line':mode==='6'?'block':'line')})):variants.map(treatment=>({mode:field.id==='map'?'6':'7',treatment,label:treatment+' · line'}));
-        passCount=passes.length;const prepared=enhanced?processedCrop(field.id):null;
+        passCount=passes.length;const prepared=enhanced?processedCrop(field.id):null;if(prepared)readCanvases.add(prepared);
         for(const [passIndex,pass]of passes.entries()){
           if(token!==run)return;
           currentPass=passIndex;
           await worker.setParameters({tessedit_pageseg_mode:pass.mode,tessedit_char_whitelist:field.numeric?'0123456789.,':'',user_defined_dpi:'300'});
-          const {data}=await worker.recognize(prepared||crop(field.id,pass.treatment));reads.push({text:data.text,confidence:data.confidence,label:pass.label});
+          const surface=prepared||crop(field.id,pass.treatment);readCanvases.add(surface);const {data}=await worker.recognize(surface);reads.push({text:data.text,confidence:data.confidence,label:pass.label});
         }
         results[field.id]=field.id==='map'?MapleMapMatcher.select(reads):C.select(field.id,reads);
       }
+    return results;
+  }
+  async function read(selectedOnly=false){
+    if(!image||busy)return;const token=++run,fields=activeFields().filter(field=>!selectedOnly||field.id===$('ocr-region-field').value);error('ocr-error','');error('ocr-review-error','');if(!selectedOnly)invalidateReview();setBusy(true);$('ocr-progress').value=0;$('ocr-progress-text').textContent='Loading local text recognition…';$('ocr-field-status').textContent='';
+    try{
+      const results=await recognize(fields,token,{selectedOnly});
       if(token!==run)return;showReview(results,selectedOnly);$('ocr-progress-text').textContent='Reading complete. Review every value before applying.';if(selectedOnly)$('ocr-field-status').textContent=fields[0].label+' updated below. Other reviewed values were kept.';
     }catch(e){if(token===run){restoreReview();error('ocr-error','Screenshot reading could not finish. '+e.message+' You can continue with manual entry.');}}
-    finally{if(token===run){if(worker)await worker.terminate();worker=null;for(const url of workerUrls)URL.revokeObjectURL(url);workerUrls=[];setBusy(false);}}
+    finally{if(token===run){if(worker)await worker.terminate();worker=null;releaseReadCanvases();for(const url of workerUrls)URL.revokeObjectURL(url);workerUrls=[];setBusy(false);}}
   }
   function showReview(results,partial=false){
     const container=$('ocr-review-fields');if(!partial){MaplePotionPicker.dispose(container);container.replaceChildren();}
@@ -212,16 +219,17 @@
     for(const field of ['hp','mp']){const select=$('ocr-potion-'+field);if(select)MaplePotionPicker.enhance(select,field);}
     MaplePotionPicker.syncAll();MaplePotionPicker.setBusy(container,busy);
   }
-  function open(){
-    context=options.getContext();if(!['setup','ending'].includes(context.stage))return;
+  function open(calibration=false){
+    calibration=calibration===true;context={...options.getContext(),calibration};if(!['setup','ending'].includes(context.stage)&&!(calibration&&context.stage==='running'))return;
+    $('ocr-apply').hidden=calibration;
     stop();clearImage();$('ocr-file').value='';$('ocr-file-name').textContent='PNG, JPG, or WebP · up to 15 MB';$('ocr-capture-status').textContent='';$('ocr-review-form').hidden=true;$('ocr-guide').open=true;
-    $('ocr-context').textContent=context.stage==='setup'?'Fill your starting values from a screenshot taken before training.':'Fill ending values from your final screenshot. Map and class stay as recorded at the start.';
+    $('ocr-context').textContent=calibration?'Adjust regions and readers using an Entire screen snapshot. Remember regions & image settings, then close this dialog and enable Auto screenshots. This calibration does not change your session values.':context.stage==='setup'?'Fill your starting values from a screenshot taken before training.':'Fill ending values from your final screenshot. Map and class stay as recorded at the start.';
     $('ocr-region-field').replaceChildren(...activeFields().map(field=>new Option(field.label,field.id)));$('ocr-region-field').value='exp';error('ocr-error','');error('ocr-review-error','');$('screenshot-dialog').showModal();
-    paintCaptureConnection();if(captureSession.active())$('ocr-capture-status').textContent='Your previous screen or window is still connected. Click Capture snapshot to use it again.';
+    paintCaptureConnection();if(captureSession.active())$('ocr-capture-status').textContent='Your previous monitor is still connected. Click Capture snapshot to use it again.';
   }
   function init(config){
     options=config;captureSession=MapleScreenCapture.createSession({onChange:paintCaptureConnection});drawGuide();paintCaptureConnection();
-    $('ocr-capture-help').textContent=MapleScreenCapture.supported()?'Choose your game window once, then Capture snapshot reuses it while this page stays open. Screen sharing remains active between snapshots; use Stop sharing when finished. No audio or recording.':'Screen capture may be unavailable in this browser. Open the site in desktop Chrome or Edge over HTTPS, or upload a screenshot.';
+    $('ocr-capture-help').textContent=MapleScreenCapture.supported()?'Choose Entire screen once, then Capture snapshot reuses it while this page stays open. Screen sharing remains active between snapshots; use Stop sharing when finished. No audio or recording.':'Screen capture may be unavailable in this browser. Open the site in desktop Chrome or Edge over HTTPS, or upload a screenshot.';
     $('ocr-capture-change').addEventListener('click',()=>void captureScreen({changeSource:true}));
     for(const id of ['ocr-capture-stop','capture-stop-sharing'])$(id).addEventListener('click',stopSharing);
     window.addEventListener('pagehide',()=>{stop();captureSession.stop();});
@@ -244,6 +252,7 @@
     $('ocr-review-form').addEventListener('submit',event=>{
       event.preventDefault();if(busy)return;
       try{
+        if(context.calibration)throw new Error('This is a calibration preview. Remember regions & image settings, close it, and enable Auto screenshots.');
         const current=options.getContext();if(current.stage!==context.stage)throw new Error('The session changed. Close this window and import the screenshot again.');
         const values={};for(const field of activeFields()){if(!$('ocr-use-'+field.id).checked)continue;const value=$('ocr-value-'+field.id).value.trim();const parsed=field.id==='map'?MapleMapMatcher.resolve(value)?.label||null:C.parse(field.id,value);if(parsed===null)throw new Error(field.id==='map'?'Choose a map from the MeowDB list, or uncheck Training map.':'Enter a valid '+field.label.toLowerCase()+', or uncheck it.');values[field.id]=parsed;if(['hp','mp'].includes(field.id))values[field.id+'Potion']=$('ocr-potion-'+field.id).value;}
         if(!Object.keys(values).length)throw new Error('Check at least one field to apply.');
@@ -251,5 +260,27 @@
       }catch(e){error('ocr-review-error',e.message);}
     });
   }
-  window.MapleScreenshot={init};
+  async function sampleProgress({signal,allowPrompt=false}={}){
+    if(busy||$('screenshot-dialog').open)throw new Error('Screenshot review is open or a read is already running; sample skipped.');
+    if(signal?.aborted)throw new DOMException('Reading cancelled.','AbortError');
+    const token=++run,controller=new AbortController();captureController=controller;let rejectAbort;
+    const aborted=new Promise((_,reject)=>{rejectAbort=reject;});
+    const cancel=()=>{if(token===run){clearImage();stop();}rejectAbort(signal.reason||new DOMException('Reading cancelled.','AbortError'));};signal?.addEventListener('abort',cancel,{once:true});
+    let url,img;
+    setBusy(true);$('ocr-progress-wrap').hidden=true;
+    try{
+      const blob=await Promise.race([captureSession.capture({signal:controller.signal,allowPrompt}),aborted]),at=Date.now();
+      if(token!==run)throw new DOMException('Reading cancelled.','AbortError');
+      captureController=null;url=URL.createObjectURL(blob);img=new Image();img.src=url;await Promise.race([img.decode(),aborted]);
+      if(token!==run)throw new DOMException('Reading cancelled.','AbortError');
+      image=img;const width=img.naturalWidth,height=img.naturalHeight;
+      const results=await Promise.race([recognize(C.fields.filter(field=>field.numeric),token),aborted]);
+      if(token!==run||signal?.aborted)throw new DOMException('Reading cancelled.','AbortError');
+      return {results,at,width,height,layout:JSON.stringify({regions,tunings})};
+    }finally{
+      signal?.removeEventListener('abort',cancel);if(img)img.src='';if(url)URL.revokeObjectURL(url);
+      if(token===run){if(worker)await worker.terminate();worker=null;releaseReadCanvases();for(const item of workerUrls)URL.revokeObjectURL(item);workerUrls=[];captureController=null;clearImage();setBusy(false);}
+    }
+  }
+  window.MapleScreenshot={init,openCalibration:()=>open(true),sampleProgress,stopSharing,sharingActive:()=>captureSession.active()};
 })();

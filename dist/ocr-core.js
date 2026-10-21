@@ -47,7 +47,7 @@
     candidates.sort((a,b)=>score(b.value)-score(a.value));
     const best=candidates[0];
     const alternatives=[...new Set(candidates.map(read=>read.value))].filter(value=>value!==best.value);
-    return {value:best.value,raw,confidence:best.confidence||0,disagrees:alternatives.length>0,alternatives};
+    return {value:best.value,raw,confidence:best.confidence||0,votes:score(best.value),readCount:candidates.length,disagrees:alternatives.length>0,alternatives};
   }
   function readerFor(id,value){
     const field=fields.find(field=>field.id===id);

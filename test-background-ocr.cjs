@@ -1,0 +1,43 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),harness=require('./test-screenshot-transfer.cjs'),{decode}=require('./lib/png-rgba.cjs');
+const pictures=Object.fromEntries([['exp','exp/sample-exp.png'],['hp','quantity/sample-hp.png'],['mp','quantity/sample-mp.png']].map(([key,file])=>[key,decode(fs.readFileSync('test/fixtures/'+file))]));
+function fixture({deferDecode=false,deferText=false}={}){
+  const urls=new Map(),trace={requests:[],canvases:[],fontWorkers:0,terminated:0,textWorkers:0,textTerminated:0},pending={};let id=0,recognitions=0;
+  const h=harness(new Map(),{screenCapture:{supported:()=>true,createSession:()=>({active:()=>true,stop(){},capture:async options=>{trace.requests.push(options);return new Blob(['pixels']);}})},setupRuntime:(context,Element)=>{
+    class LocalURL extends URL{static createObjectURL(blob){const url='blob:test-'+(++id);urls.set(url,blob);return url;}static revokeObjectURL(url){urls.delete(url);}}
+    Object.assign(context,{URL:LocalURL,Blob,DOMException,MapleExpReader:require('./dist/exp-reader.js'),MapleQuantityReader:require('./dist/quantity-reader.js'),
+      Image:class{constructor(){this.naturalWidth=1919;this.naturalHeight=1079;}decode(){return deferDecode?new Promise(resolve=>{pending.decode=resolve;}):Promise.resolve();}},
+      Worker:class{constructor(url){this.url=url;trace.fontWorkers++;}terminate(){if(!this.ended){this.ended=true;trace.terminated++;}}async postMessage(data){const source=await urls.get(this.url).text(),scope={self:{postMessage:message=>{if(!this.ended)this.onmessage({data:message});}}};vm.runInNewContext(source,scope);scope.self.onmessage({data});}},
+      Tesseract:{createWorker:async()=>{trace.textWorkers++;return {setParameters:async()=>{},recognize:async()=>{if(deferText)return new Promise(resolve=>{pending.text=resolve;});return {data:{text:++recognitions<=3?'58':'0',confidence:90}};},terminate:async()=>{trace.textTerminated++;}};}}
+    });
+    context.document.baseURI='https://test.invalid/';context.location.protocol='https:';
+    context.document.createElement=tag=>{
+      const element=new Element(tag);if(tag!=='canvas')return element;
+      trace.canvases.push(element);let sourceX=null;
+      element.getContext=()=>({drawImage:(_image,x)=>{sourceX=x;},fillRect(){},putImageData(){},getImageData:(_x,_y,width,height)=>{
+        const key=sourceX===1047?'exp':sourceX===1417?'hp':sourceX===1467?'mp':null;
+        if(key){const picture=pictures[key];assert.equal(width,picture.width);assert.equal(height,picture.height);return {width,height,data:new Uint8ClampedArray(picture.data)};}
+        return {width,height,data:new Uint8ClampedArray(width*height*4)};
+      }});return element;
+    };
+  }});
+  return {h,trace,urls,pending};
+}
+const flush=async predicate=>{for(let i=0;i<100&&!predicate();i++)await new Promise(resolve=>setImmediate(resolve));assert(predicate());};
+(async()=>{
+  const {h,trace,urls}=fixture(),result=await h.screenshot.sampleProgress({signal:new AbortController().signal,allowPrompt:false});
+  assert.deepEqual(Object.fromEntries(Object.entries(result.results).map(([k,r])=>[k,r.value])),{level:'58',exp:'268628',mesos:'0',hp:'441',mp:'761'});
+  assert.equal(trace.requests.length,1);assert.equal(trace.requests[0].allowPrompt,false);assert.equal(trace.fontWorkers,3);assert.equal(trace.terminated,3);assert.equal(trace.textWorkers,1);assert.equal(trace.textTerminated,1);assert.equal(urls.size,0);
+  assert.equal(h.node('ocr-workspace').hidden,true);assert.equal(h.node('ocr-image').attributes.src,undefined);assert.equal(h.node('ocr-review-fields').children.length,0,'No background sample opens or fills the manual review dialog');
+  // All numeric preprocessing canvases must be released too, including the
+  // scaled intermediates, rather than merely dropping the final output canvas.
+  assert(trace.canvases.length>0);assert(trace.canvases.every(canvas=>canvas.width===1&&canvas.height===1),'All read buffers released after a completed sample');
+  for(const stage of ['decode','text']){
+    const f=fixture(stage==='decode'?{deferDecode:true}:{deferText:true}),controller=new AbortController(),job=f.h.screenshot.sampleProgress({signal:controller.signal});
+    await flush(()=>!!f.pending[stage]);controller.abort();await assert.rejects(job,{name:'AbortError'});assert.equal(f.urls.size,0,'Abort releases image and worker URLs during '+stage);assert.equal(f.trace.textTerminated,f.trace.textWorkers);
+    if(stage==='decode')f.pending.decode();else f.pending.text({data:{text:'99999',confidence:99}});
+    await flush(()=>f.urls.size===0);assert.equal(f.h.node('ocr-image').attributes.src,undefined);
+  }
+  const open=fixture();open.h.fire('screenshot-start');await assert.rejects(open.h.screenshot.sampleProgress({signal:new AbortController().signal}),/review is open/);assert.equal(open.trace.requests.length,0);
+  console.log('Passed: actual background OCR path reads real EXP/HP/MP PNG fixtures with font workers, reuses text OCR, skips manual review, forwards no-prompt capture, releases workers/URLs, rejects concurrent dialog use and cancels during image decode or OCR without applying late values.');
+})().catch(error=>{console.error(error);process.exitCode=1;});

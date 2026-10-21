@@ -54,8 +54,10 @@ Classic potion digit matching defaults for HP/MP; original-color local worker, g
 
 Training-map OCR matches both readings to an offline MeowDB map catalog; up to two canonical suggestions, searchable corrections, uncertain matches require choice, invalid OCR labels cannot be applied.
 
-Direct browser screenshot capture alongside file upload. Choose a screen/window once and reuse it for later snapshots while the page stays open, including between starting and ending imports. Visible sharing status, Stop sharing inside/outside the dialog, Change source, no audio/recording, pending-request cancellation, automatic page-exit/source-end cleanup, and upload fallback.
+Direct browser screenshot capture alongside file upload. Choose a monitor once and reuse it for later snapshots while the page stays open, including between starting and ending imports. Visible sharing status, Stop sharing inside/outside the dialog, Change source, no audio/recording, pending-request cancellation, automatic page-exit/source-end cleanup, and upload fallback.
 
 EXP screenshot recognition: dedicated local status-bar font matcher with scaled/antialiased fitting, commas, green-bracket percentage exclusion, zero support, conservative unclear/cut/obscured digit rejection, selectable General text OCR, cancellable worker and offline/standalone support.
 
 Recognition reader is visible for every screenshot preset; all five numeric fields can choose either Classic digit template or general OCR. Text fields explain why digit-only templates are unavailable. Saved reader choices and color settings are independent per field, with legacy setting migration.
+
+Automatic progress: opt-in monitor-only snapshots once a minute while running; five numeric fields read locally, per-field settings reused, pending validation delay, outlier/quality gates, manual restock rebase, actual capture timestamps, bounded jobs, pause/stop lifecycle, value-only decision log and confirmed checkpoints in history. Final totals remain reviewed.

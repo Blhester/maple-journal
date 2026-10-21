@@ -4,7 +4,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 // Minimal DOM test double. Run the real screenshot submit handler and app.js;
 // only recognition workers, visual widgets and storage/network side effects are
 // replaced. No copy of the production transfer or calculation logic lives here.
-function harness(storage=new Map(),{realHistory=false,screenCapture=null}={}){
+function harness(storage=new Map(),{realHistory=false,screenCapture=null,progressSample=null,progressClock=null,setupRuntime=null}={}){
   const nodes=new Map(),html=fs.readFileSync(path.join(__dirname,'dist/index.html'),'utf8');
   class Element{
     constructor(tag='div'){this.tag=tag;this.children=[];this.events=new Map();this.attributes={};this.dataset={};this._value='';this.textContent='';this.checked=false;this.hidden=false;this.disabled=false;this.classList={toggle(){},remove(){},add(){}};}
@@ -29,14 +29,15 @@ function harness(storage=new Map(),{realHistory=false,screenCapture=null}={}){
     localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,String(value)),removeItem:key=>storage.delete(key)},
     Date:class extends Date{static now(){return now;}},Event,Intl,structuredClone,console,URL,AbortController,Option:class extends Element{constructor(label,value){super('option');this.textContent=label;this.value=value;}},
     setInterval:()=>1,clearInterval(){},location:{hash:''},history:{replaceState(){}},addEventListener(type,handler){if(!windowEvents.has(type))windowEvents.set(type,[]);windowEvents.get(type).push(handler);},
-    MapleMath:require('./dist/core.js'),MapleOcrCore:require('./dist/ocr-core.js'),MapleMapMatcher:require('./dist/map-matcher.js'),
+    MapleAutoProgress:progressClock?{...require('./dist/auto-progress.js'),createRecorder:options=>require('./dist/auto-progress.js').createRecorder({...options,...progressClock})}:require('./dist/auto-progress.js'),MapleMath:require('./dist/core.js'),MapleOcrCore:require('./dist/ocr-core.js'),MapleMapMatcher:require('./dist/map-matcher.js'),
     MapleScreenCapture:screenCapture||{supported:()=>false,createSession:()=>({active:()=>false,stop(){}})},MaplePotionPicker:{enhance(){},syncAll(){},setBusy(){},dispose(){}},
     MapleEtc:{init:options=>{etcOptions=options;},render(){},reset(){},icon:()=>new Element('img'),describe:entry=>entry.label},
     MapleHistory:{save:record=>{saved=structuredClone(record);},lineChart(){}}
   };
+  if(setupRuntime)setupRuntime(context,Element);
   context.window=context;vm.createContext(context);
   node('compare-metric').value='net';
-  for(const file of [...(realHistory?['history.js']:[]),'screenshot.js','app.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'dist',file),'utf8'),context,{filename:file});
+  for(const file of [...(realHistory?['history.js']:[]),'screenshot.js','app.js']){vm.runInContext(fs.readFileSync(path.join(__dirname,'dist',file),'utf8'),context,{filename:file});if(file==='screenshot.js'&&progressSample)context.MapleScreenshot.sampleProgress=progressSample;}
   const fire=(id,type='click')=>node(id).dispatchEvent(new Event(type,{cancelable:true}));
   function applyReview(values,stage='start'){
     fire('screenshot-'+stage);
@@ -45,7 +46,7 @@ function harness(storage=new Map(),{realHistory=false,screenCapture=null}={}){
     fire('ocr-review-form','submit');
     assert.equal(node('ocr-review-error').textContent,'','Screenshot applied successfully');
   }
-  return {node,fire,applyReview,storage,history:context.MapleHistory,windowEvent:event=>{for(const handler of windowEvents.get(event.type)||[])handler(event);},setTime:value=>{now=Date.parse(value);},entries:values=>etcOptions.onChange(values),state:()=>JSON.parse(storage.get('maple-journal-session-v1')),saved:()=>saved};
+  return {node,fire,applyReview,storage,screenshot:context.MapleScreenshot,history:context.MapleHistory,windowEvent:event=>{for(const handler of windowEvents.get(event.type)||[])handler(event);},setTime:value=>{now=Date.parse(value);},entries:values=>etcOptions.onChange(values),state:()=>JSON.parse(storage.get('maple-journal-session-v1')),saved:()=>saved};
 }
 
 // This is the real reviewed-screenshot -> start form -> timer -> ending form ->

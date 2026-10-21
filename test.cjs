@@ -91,3 +91,5 @@ require('./test-maps.cjs');
 
 require('./test-capture.cjs');
 require('./test-capture-controls.cjs');
+require('./test-auto-progress.cjs');
+require('./test-background-ocr.cjs');
