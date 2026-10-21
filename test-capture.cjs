@@ -22,4 +22,31 @@ function fixture(settings={}){
   const loaded=fixture({waitForFrame:true}),loading=C.capture({env:loaded.env});await flush(()=>loaded.video.srcObject===loaded.stream);loaded.video.readyState=2;loaded.video.dispatchEvent(new Event('loadeddata'));assert.equal((await loading).type,'image/png');assert.equal(loaded.trace.draws,1);
   const large=fixture({deferEncode:true}),largeResult=C.capture({env:large.env});await flush(()=>!!large.trace.encode);large.trace.encode({type:'image/png',size:15*1024*1024+1});await assert.rejects(largeResult,/15 MB/);assert.equal(large.track.readyState,'ended');
   console.log('Passed: one-frame screen capture, no audio request, permission denial, cancellation with late grants, source-ended/encoding failures, dimension limits, and track/video cleanup.');
+
+  const reused=fixture(),changes=[],session=C.createSession({env:reused.env,onChange:active=>changes.push(active)});
+  assert.equal(session.active(),false);
+  assert.equal((await session.capture()).type,'image/png');assert.equal(session.active(),true);
+  assert.equal(reused.track.readyState,'live');assert.equal(reused.extra.readyState,'live');
+  assert.equal(reused.video.srcObject,null,'A retained stream does not retain the temporary video');
+  assert.equal(reused.canvas.width,1,'Pixel buffers are released after each snapshot');
+  await session.capture();await session.capture();
+  assert.equal(reused.trace.requests.length,1,'Three snapshots request one source chooser');assert.equal(reused.trace.draws,3);assert.equal(reused.trace.requests[0].audio,false);
+  session.stop();assert.equal(session.active(),false);assert.equal(reused.track.readyState,'ended');assert.equal(reused.extra.readyState,'ended');assert.equal(changes.at(-1),false);
+  const replacement=fixture();reused.env.navigator.mediaDevices.getDisplayMedia=options=>{reused.trace.requests.push(options);return Promise.resolve(replacement.stream);};
+  await session.capture();assert.equal(reused.trace.requests.length,2,'After Stop sharing the chooser is required again');assert.equal(session.active(),true);session.stop();assert.equal(replacement.track.readyState,'ended');
+
+  const idle=fixture(),idleSession=C.createSession({env:idle.env});await idleSession.capture();idle.track.readyState='ended';idle.track.dispatchEvent(new Event('ended'));
+  assert.equal(idleSession.active(),false,'Browser Stop sharing disconnects an idle source');assert.equal(idle.extra.readyState,'ended');
+  const switched=fixture();idle.env.navigator.mediaDevices.getDisplayMedia=options=>{idle.trace.requests.push(options);return Promise.resolve(switched.stream);};
+  await idleSession.capture();assert.equal(idle.trace.requests.length,2,'A source ended by the browser must be selected again');idleSession.stop();
+
+  const granting=deferred(),lateSessionFixture=fixture({request:granting.promise}),lateSession=C.createSession({env:lateSessionFixture.env});
+  const permission=lateSession.capture();await assert.rejects(lateSession.capture(),/already in progress/);lateSession.stop();await assert.rejects(permission,{name:'AbortError'});
+  granting.resolve(lateSessionFixture.stream);await flush(()=>lateSessionFixture.track.readyState==='ended');assert.equal(lateSessionFixture.extra.readyState,'ended');assert.equal(lateSession.active(),false);
+
+  const stoppedFrame=fixture({waitForFrame:true}),stoppedSession=C.createSession({env:stoppedFrame.env}),frame=stoppedSession.capture();
+  await flush(()=>stoppedFrame.video.srcObject===stoppedFrame.stream);stoppedSession.stop();await assert.rejects(frame,{name:'AbortError'});assert.equal(stoppedFrame.trace.draws,0);assert.equal(stoppedFrame.video.srcObject,null);
+
+  const failedSessionFixture=fixture({failEncode:true}),failedSession=C.createSession({env:failedSessionFixture.env});await assert.rejects(failedSession.capture(),/encoded/);assert.equal(failedSession.active(),false);assert.equal(failedSessionFixture.track.readyState,'ended');
+  console.log('Passed: retained source reuse (one chooser for three snapshots), frame buffer cleanup, explicit Stop/change source, browser-ended tracks, fresh selection after disconnection, duplicate capture protection, pending chooser cancellation, late grants and failed-frame cleanup.');
 })().catch(error=>{console.error(error);process.exitCode=1;});

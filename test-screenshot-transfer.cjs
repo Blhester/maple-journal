@@ -4,7 +4,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 // Minimal DOM test double. Run the real screenshot submit handler and app.js;
 // only recognition workers, visual widgets and storage/network side effects are
 // replaced. No copy of the production transfer or calculation logic lives here.
-function harness(storage=new Map(),{realHistory=false}={}){
+function harness(storage=new Map(),{realHistory=false,screenCapture=null}={}){
   const nodes=new Map(),html=fs.readFileSync(path.join(__dirname,'dist/index.html'),'utf8');
   class Element{
     constructor(tag='div'){this.tag=tag;this.children=[];this.events=new Map();this.attributes={};this.dataset={};this._value='';this.textContent='';this.checked=false;this.hidden=false;this.disabled=false;this.classList={toggle(){},remove(){},add(){}};}
@@ -30,7 +30,7 @@ function harness(storage=new Map(),{realHistory=false}={}){
     Date:class extends Date{static now(){return now;}},Event,Intl,structuredClone,console,URL,AbortController,Option:class extends Element{constructor(label,value){super('option');this.textContent=label;this.value=value;}},
     setInterval:()=>1,clearInterval(){},location:{hash:''},history:{replaceState(){}},addEventListener(type,handler){if(!windowEvents.has(type))windowEvents.set(type,[]);windowEvents.get(type).push(handler);},
     MapleMath:require('./dist/core.js'),MapleOcrCore:require('./dist/ocr-core.js'),MapleMapMatcher:require('./dist/map-matcher.js'),
-    MapleScreenCapture:{supported:()=>false},MaplePotionPicker:{enhance(){},syncAll(){},setBusy(){},dispose(){}},
+    MapleScreenCapture:screenCapture||{supported:()=>false,createSession:()=>({active:()=>false,stop(){}})},MaplePotionPicker:{enhance(){},syncAll(){},setBusy(){},dispose(){}},
     MapleEtc:{init:options=>{etcOptions=options;},render(){},reset(){},icon:()=>new Element('img'),describe:entry=>entry.label},
     MapleHistory:{save:record=>{saved=structuredClone(record);},lineChart(){}}
   };

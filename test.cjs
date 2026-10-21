@@ -89,3 +89,4 @@ require('./test-quantity.cjs');
 require('./test-maps.cjs');
 
 require('./test-capture.cjs');
+require('./test-capture-controls.cjs');
