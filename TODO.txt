@@ -36,3 +36,5 @@ Verification details and device/file-picker limits: VERIFICATION.txt.
 [x] Cache MeowDB map names and add similarity matching and catalog search to screenshot review, including ambiguous map suffix and incorrect town-name regressions.
 
 [x] Add direct browser screen/window capture to starting and ending screenshot imports; stop sharing after one frame, preserve review on failure/cancel, embed in standalone, and test media lifecycle.
+
+[x] Expose per-field Recognition reader in Improve a difficult read for every preset, with both digit templates for numeric fields, letter-field guidance, backward-compatible defaults and local preference memory.

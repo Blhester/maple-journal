@@ -49,6 +49,14 @@
     const alternatives=[...new Set(candidates.map(read=>read.value))].filter(value=>value!==best.value);
     return {value:best.value,raw,confidence:best.confidence||0,disagrees:alternatives.length>0,alternatives};
   }
+  function readerFor(id,value){
+    const field=fields.find(field=>field.id===id);
+    if(!field)throw new Error('Unknown screenshot field.');
+    if(!field.numeric)return 'general';
+    const fallback=id==='exp'?'exp-font':['hp','mp'].includes(id)?'quantity-font':'general';
+    // Older settings wrote "classic" even for fields that only ran text OCR.
+    return ['general','exp-font','quantity-font'].includes(value)?value:fallback;
+  }
   function tuning(id,value={}){
     const preset={
       map:{mode:'neutral',contrast:1.6,brightness:10,threshold:30,chroma:35,invert:true},
@@ -60,7 +68,7 @@
     if(!preset)throw new Error('Unknown screenshot field.');
     const defaults={contrast:1.3,brightness:0,threshold:145,chroma:55,scale:4,invert:false,...preset};
     const number=(key,fallback,min,max)=>Number.isFinite(value[key])?Math.max(min,Math.min(max,value[key])):fallback;
-    return {reader:value.reader==='general'?'general':'classic',mode:['gray','light','dark','neutral','gold'].includes(value.mode)?value.mode:defaults.mode,contrast:number('contrast',defaults.contrast,.5,3),brightness:number('brightness',defaults.brightness,-80,80),threshold:number('threshold',defaults.threshold,30,240),chroma:number('chroma',defaults.chroma,0,255),scale:Math.round(number('scale',defaults.scale,2,6)),invert:value.invert===undefined?defaults.invert:!!value.invert};
+    return {reader:readerFor(id,value.reader),mode:['gray','light','dark','neutral','gold'].includes(value.mode)?value.mode:defaults.mode,contrast:number('contrast',defaults.contrast,.5,3),brightness:number('brightness',defaults.brightness,-80,80),threshold:number('threshold',defaults.threshold,30,240),chroma:number('chroma',defaults.chroma,0,255),scale:Math.round(number('scale',defaults.scale,2,6)),invert:value.invert===undefined?defaults.invert:!!value.invert};
   }
   // Pure RGBA preprocessing. Input pixels are never modified or persisted.
   function processPixels(input,settings){
@@ -77,6 +85,6 @@
     return d;
   }
   const scaleFor=(width,height,preferred)=>Math.min(preferred,Math.sqrt(2000000/(width*height)),6000/width,6000/height);
-  root.MapleOcrCore={fields,defaults,region,parse,select,tuning,processPixels,scaleFor};
+  root.MapleOcrCore={fields,defaults,region,parse,select,readerFor,tuning,processPixels,scaleFor};
   if(typeof module!=='undefined')module.exports=root.MapleOcrCore;
 })(typeof window!=='undefined'?window:globalThis);

@@ -39,6 +39,21 @@ assert.equal(C.tuning('exp',{contrast:Infinity,scale:100}).contrast,1.3);assert.
 assert.equal(C.tuning('mp',{mode:'bad',threshold:-20}).mode,'neutral');assert.equal(C.tuning('mp',{threshold:-20}).threshold,30);
 assert.equal(C.scaleFor(30,20,4),4);const safeScale=C.scaleFor(6000,4000,6);assert.ok(6000*4000*safeScale*safeScale<=2000001);
 for(const field of C.fields)assert.deepEqual(C.region(C.defaults[field.id]),C.defaults[field.id]);
+// Reader selection applies per field, including old saved settings whose
+// "classic" flag was ignored for map/class/level/mesos before this change.
+const readerDefaults={map:'general',class:'general',level:'general',mesos:'general',exp:'exp-font',hp:'quantity-font',mp:'quantity-font'};
+for(const field of C.fields){
+  for(const legacy of [undefined,'classic','unknown'])assert.equal(C.tuning(field.id,{reader:legacy}).reader,readerDefaults[field.id],field.id+' legacy/default');
+  for(const reader of ['general','exp-font','quantity-font']){
+    const settings=C.tuning(field.id,{reader,contrast:2.1,brightness:12,threshold:109,chroma:76,scale:3,invert:true});
+    assert.equal(settings.reader,field.numeric?reader:'general',field.id+' choice '+reader);
+    assert.deepEqual(C.tuning(field.id,JSON.parse(JSON.stringify(settings))),settings,'Saved settings round trip: '+field.id);
+    assert.equal(settings.contrast,2.1);assert.equal(settings.threshold,109);
+  }
+}
+assert.equal(C.tuning('level',{reader:'classic'}).contrast,3);
+assert.equal(C.tuning('mesos',{reader:'classic'}).contrast,.5);
+assert.throws(()=>C.readerFor('unknown','general'));
 for(const r of [null,{x:0,y:0,w:0,h:1},{x:.9,y:0,w:.2,h:1},{x:NaN,y:0,w:1,h:1}])assert.throws(()=>C.region(r));
 require('node:child_process').execFileSync(process.execPath,['scripts/refresh-ocr-assets.cjs','--verify'],{stdio:'pipe'});
 console.log('Passed: OCR parsing, numeric alternatives, crop/settings validation, contrast/brightness/color masks, transparency, bounded scaling, and pinned runtime checksums.');
