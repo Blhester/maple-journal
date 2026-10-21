@@ -7,7 +7,7 @@ const bundledPotions={...potionCatalog,items:potionCatalog.items.map(item=>({...
 require('./build-quantity-font.cjs').build();
 require('./build-exp-font.cjs').build();
 require('./build-maps.cjs').build();
-const names=['core','potion-data','potions','etc-data','etc','history','map-data','map-matcher','ocr-core','quantity-font','quantity-reader','exp-font','exp-reader','screen-capture','screenshot','auto-progress','app'];
+const names=['core','potion-data','potions','etc-data','etc','history','map-data','map-matcher','ocr-core','quantity-font','quantity-reader','exp-font','exp-reader','screen-capture','screenshot','auto-progress','live-model','overlay-protocol','overlay-client','app','overlay-controls'];
 const ocrBase=path.join(dist,'vendor','ocr');
 const offlineOcr={library:fs.readFileSync(path.join(ocrBase,'tesseract.min.js'),'utf8'),worker:fs.readFileSync(path.join(ocrBase,'worker.min.js'),'utf8'),core:fs.readFileSync(path.join(ocrBase,'tesseract-core-lstm.wasm.js'),'utf8'),language:fs.readFileSync(path.join(ocrBase,'eng.traineddata.gz')).toString('base64')};
 offlineOcr.notices=['NOTICE.txt','LICENSE-core.txt','LICENSE-tesseract.txt','tesseract.min.js.LICENSE.txt','worker.min.js.LICENSE.txt'].map(name=>name+'\n'+fs.readFileSync(path.join(ocrBase,name),'utf8')).join('\n\n');
@@ -17,6 +17,7 @@ html=html.replace('<script src="theme.js"></script>','<script>'+fs.readFileSync(
 for(const name of names)html=html.replace('<script src="'+name+'.js" defer></script>','');
 html=html.replace('</body>', names.map(name=>'<script>'+(name==='etc-data'?'window.MapleEtcData='+serialize(bundledCatalog)+';':name==='potion-data'?'window.MaplePotionData='+serialize(bundledPotions)+';':fs.readFileSync(path.join(dist,name+'.js'),'utf8'))+'</script>').join('')+'</body>');
 html=html.replace('src="assets/ocr-example.png"','src="data:image/png;base64,'+fs.readFileSync(path.join(dist,'assets','ocr-example.png')).toString('base64')+'"');
+html=html.replaceAll('href="overlay.html#demo"','href="https://grindjournal.com/overlay.html#demo"');
 html=html.replace('</body>','<script id="ocr-offline-bundle" type="application/json">'+serialize(offlineOcr)+'</script></body>');
 const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];if(scripts.length!==names.length+1)throw new Error('Unexpected embedded script count.');for(const s of scripts)new vm.Script(s[1]);
 fs.writeFileSync(path.join(root,'..','maple-journal-calculator.html'),html);

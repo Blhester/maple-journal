@@ -1,0 +1,67 @@
+GRIND JOURNAL - LOCAL STREAMING OVERLAY
+
+No hosted relay, account, cloud API key, or added AWS resources are needed.
+OBS and the helper must run on the same computer. The helper only listens on
+127.0.0.1; it does not open a LAN/public endpoint or inspect the game process.
+
+1. Install Node.js 24 LTS from https://nodejs.org/ once (20+ also works).
+2. Unzip the whole download. On Windows open Start-Grind-Journal.cmd.
+   Alternatively, from the extracted folder run: node local-overlay/server.cjs
+3. Keep its window open. Visit http://127.0.0.1:4317 in Firefox or Chrome.
+4. Create/start your run there. In Stream overlay click Create overlay and
+   enable Share this run. Copy OBS link.
+5. OBS > Sources > + > Browser. Turn Local file OFF; paste the complete URL,
+   including its #fragment. Use the dimensions shown by the tracker:
+   Stats 480 x 180; Graphs 640 x 280; Combined 640 x 400. Use 30 FPS and
+   default transparent custom CSS. Resize/reposition the source in your scene.
+6. Select layout, metrics, active time, opacity and text size in the tracker.
+   Keep the browser tab open; the overlay polls locally every 5 seconds.
+7. Every new run needs Share this run again. Completed reviewed results stay
+   visible until hidden, replaced by another explicitly shared run, or expired.
+
+Website history and localhost history are separate browser stores. To transfer
+history, Back up JSON on the website and Restore JSON locally. Restore replaces
+the destination history. Different browser profiles need their own overlay link.
+Current runs cannot automatically move from the website to localhost.
+Remembered OCR regions, reader settings, theme and screen permissions are also
+per browser origin. Check/calibrate screenshot regions once in the local page.
+
+Only confirmed values appear. Automatic readings normally trail by a capture;
+manual checkpoints and final reviewed values also update the overlay. Rates
+start at zero until a full active minute; final reviewed short runs use their
+actual rate. Mesos is N/A when unreadable. Graph gaps are not filled or guessed.
+Final profit uses Original net mesos (potion costs included; ETC stays manual).
+
+Pause freezes the session timer. Done freezes the confirmed display as Awaiting
+final review; Calculate publishes the reviewed result as Completed. Starting
+another unshared run never sends that run's values. Hide clears the widget.
+Reset link invalidates BOTH old read/publish credentials; update the URL in OBS.
+Only one tab can publish a link. Close/hide in the first tab before using another;
+an abandoned publisher lease expires after 75 seconds. Reload does not opt a
+running session back into sharing. Its previous display becomes Disconnected
+after 90 seconds without a heartbeat; capture stalls are marked after 3 minutes.
+If the stored credentials have expired or the helper state was reset, Reset link
+creates a replacement instead. Copy its new URL into OBS.
+
+Only selected rates, derived gains, graph points and status go to the helper.
+Screenshots, raw meso balances, potion counts and history remain in the browser.
+Credentials live in browser localStorage separately from history/JSON backups.
+The helper stores token HASHES and the latest shared snapshot in
+  Windows: %USERPROFILE%\.grindjournal-overlay\state.json
+  macOS/Linux: ~/.grindjournal-overlay/state.json
+It does not keep a history of shared snapshots. Snapshot access expires after
+24 hours without publishing; credentials expire after 30 days without publisher
+activity. Expired records are removed when the helper next runs/receives traffic.
+Completed summaries can be restored after restarting the helper. Never publish
+the OBS link: it gives read-only access on this computer; it cannot control OBS.
+
+Stop the helper with Ctrl+C. Restart from the SAME folder/version on the same
+port to reuse the link. If port 4317 is occupied, reuse the existing helper or
+set GRIND_OVERLAY_PORT to a free port before starting (changing it changes the
+browser origin and OBS URL). No firewall port opening is required.
+
+Troubleshooting: keep the inventory open for mesos, check read regions, enable
+sharing in one tab, and verify the full OBS URL. A browser-only overlay.html URL
+on grindjournal.com cannot read Firefox's local session inside OBS; use the local
+helper page. The standalone HTML download continues to work for manual tracking,
+but streaming uses the helper folder with its local OCR assets.

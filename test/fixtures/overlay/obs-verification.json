@@ -1,0 +1,30 @@
+{
+  "obsVersion": "32.2.2",
+  "passed": true,
+  "checks": {
+    "combined": {
+      "width": 640,
+      "height": 400,
+      "visible": 230828,
+      "transparent": 25136
+    },
+    "stats": {
+      "width": 480,
+      "height": 180,
+      "visible": 79948,
+      "transparent": 6416
+    },
+    "graphs": {
+      "width": 640,
+      "height": 280,
+      "visible": 178348,
+      "transparent": 816
+    },
+    "hidden": {
+      "width": 640,
+      "height": 280,
+      "visible": 0,
+      "transparent": 179200
+    }
+  }
+}

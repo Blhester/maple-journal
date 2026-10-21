@@ -30,7 +30,7 @@ function harness(storage=new Map(),{realHistory=false,screenCapture=null,progres
     Date:class extends Date{static now(){return now;}},Event,Intl,structuredClone,console,URL,AbortController,Option:class extends Element{constructor(label,value){super('option');this.textContent=label;this.value=value;}},
     setInterval:()=>1,clearInterval(){},location:{hash:''},history:{replaceState(){}},addEventListener(type,handler){if(!windowEvents.has(type))windowEvents.set(type,[]);windowEvents.get(type).push(handler);},
     MapleAutoProgress:progressClock?{...require('./dist/auto-progress.js'),createRecorder:options=>require('./dist/auto-progress.js').createRecorder({...options,...progressClock})}:require('./dist/auto-progress.js'),MapleMath:require('./dist/core.js'),MapleOcrCore:require('./dist/ocr-core.js'),MapleMapMatcher:require('./dist/map-matcher.js'),
-    MapleScreenCapture:screenCapture||{supported:()=>false,createSession:()=>({active:()=>false,stop(){}})},MaplePotionPicker:{enhance(){},syncAll(){},setBusy(){},dispose(){}},
+    MapleLiveModel:require('./dist/live-model.js'),MapleScreenCapture:screenCapture||{supported:()=>false,createSession:()=>({active:()=>false,stop(){}})},MaplePotionPicker:{enhance(){},syncAll(){},setBusy(){},dispose(){}},
     MapleEtc:{init:options=>{etcOptions=options;},render(){},reset(){},icon:()=>new Element('img'),describe:entry=>entry.label},
     MapleHistory:{save:record=>{saved=structuredClone(record);},lineChart:(container,rows,metric,options)=>charts.set(container.id,{rows:structuredClone(rows),metric,options})}
   };
@@ -46,7 +46,7 @@ function harness(storage=new Map(),{realHistory=false,screenCapture=null,progres
     fire('ocr-review-form','submit');
     assert.equal(node('ocr-review-error').textContent,'','Screenshot applied successfully');
   }
-  return {node,fire,applyReview,storage,charts,screenshot:context.MapleScreenshot,history:context.MapleHistory,windowEvent:event=>{for(const handler of windowEvents.get(event.type)||[])handler(event);},setTime:value=>{now=Date.parse(value);},entries:values=>etcOptions.onChange(values),state:()=>JSON.parse(storage.get('maple-journal-session-v1')),saved:()=>saved};
+  return {node,fire,applyReview,storage,charts,overlayFeed:context.MapleOverlayFeed,screenshot:context.MapleScreenshot,history:context.MapleHistory,windowEvent:event=>{for(const handler of windowEvents.get(event.type)||[])handler(event);},setTime:value=>{now=Date.parse(value);},entries:values=>etcOptions.onChange(values),state:()=>JSON.parse(storage.get('maple-journal-session-v1')),saved:()=>saved};
 }
 
 // This is the real reviewed-screenshot -> start form -> timer -> ending form ->

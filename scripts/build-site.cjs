@@ -7,6 +7,7 @@ require('../build-download.cjs');
 fs.rmSync(output,{recursive:true,force:true});
 fs.cpSync(path.join(root,'dist'),output,{recursive:true});
 fs.copyFileSync(path.join(root,'..','maple-journal-calculator.html'),path.join(output,'maple-journal-calculator.html'));
+require('./build-local-helper.cjs').buildLocalHelper(path.join(output,'stream-helper.zip'));
 const commit=process.env.GITHUB_SHA||require('node:child_process').execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
 if(!/^[a-f0-9]{40}$/.test(commit))throw new Error('Expected a full source commit SHA.');
 fs.writeFileSync(path.join(output,'deployment.json'),JSON.stringify({commit})+'\n');

@@ -2,6 +2,7 @@ MAPLE JOURNAL — MapleStory Classic grind journal
 
 Open dist/index.html directly, or run node preview.cjs and visit http://127.0.0.1:4173.
 No installation or build is needed. Calculations work offline; Google Fonts fall back to system fonts.
+Optional local OBS overlays: download stream-helper.zip from the site, or run node local-overlay/server.cjs from this checkout. See LOCAL-OVERLAY.txt for setup, localhost history transfer, OBS dimensions, privacy, link reset and lifecycle details. Node.js 24 LTS is recommended. No new AWS resources or secrets are needed.
 The header slider remembers light/dark mode, including sun/moon icons.
 
 TRACK A RUN

@@ -58,21 +58,19 @@
     }));
   }
   function progressPoints(){
-    const points=new Map();for(const point of [...(state.checkpoints||[]),...(state.autoPoints||[])])points.set(point.elapsedMs,point);return [...points.values()].sort((a,b)=>a.elapsedMs-b.elapsedMs);
+    return MapleLiveModel.points(state);
   }
   function paintLive(){
     const running=state.stage==='running';$('live-dashboard').hidden=!running;if(!running)return;
-    const confirmed=progressPoints(),points=[...confirmed];if(autoPreview&&autoPreview.elapsedMs>(points.at(-1)?.elapsedMs||0))points.push(autoPreview);
-    const point=points.at(-1),pending=!!point?.preview;
+    const model=MapleLiveModel.project(state,{preview:autoPreview,lastSample:autoLastSample}),point=model.point,pending=!!point?.preview;
     $('live-quality').textContent=point?(pending?'Latest capture · pending':'Confirmed progress'):'Waiting for a capture';
     $('live-context').textContent=[state.meta?.map,state.meta?.class].filter(Boolean).join(' · ')||'Rates use active training time and your validated starting values.';
     for(const id of ['exp-hour','mesos-hour','level','hp','mp','supply-cost','eta'])$('live-'+id).textContent='N/A';
     $('live-confirmed').textContent=String(state.autoPoints?.length||0);$('live-exp-gained').textContent='No usable capture yet';$('live-net-total').textContent='Keep your inventory open to read mesos';
-    const rows=[{to:0,expHour:0,netHour:0},...points.map(p=>{const s=MapleAutoProgress.stats(state.start,p);return {to:p.elapsedMs,expHour:s.expHour,netHour:s.netHour,preview:!!p.preview};})];
-    if(autoLastSample&&!autoLastSample.mesosReadable&&autoLastSample.elapsedMs>(rows.at(-1)?.to||0))rows.push({to:autoLastSample.elapsedMs,expHour:null,netHour:null});
+    const rows=model.rows;
     MapleHistory.lineChart($('live-exp-chart'),rows,'expHour',{live:true});MapleHistory.lineChart($('live-mesos-chart'),rows,'netHour',{live:true});
     if(!point){$('live-exp-hour').textContent='0';$('live-exp-gained').textContent='0 EXP gained';$('live-mesos-hour').textContent=autoLastSample?'N/A':'0';$('live-net-total').textContent=autoLastSample?'Mesos N/A · awaiting a readable capture':'0 net mesos · starting balance';$('live-snapshot-note').textContent='Rates start at 0. A usable capture after one full active minute starts the rate estimates. Keep the HUD and potion counts visible; mesos needs an open inventory.';return;}
-    const stats=MapleAutoProgress.stats(state.start,point),mesosAvailable=point.end.mesos!==null&&autoLastSample?.mesosReadable!==false;
+    const stats=model.stats,mesosAvailable=point.end.mesos!==null&&autoLastSample?.mesosReadable!==false;
     if(!stats.rateReady)$('live-quality').textContent='Gathering first minute';
     $('live-exp-hour').textContent=format(stats.expHour);$('live-exp-gained').textContent=format(stats.exp)+' EXP gained';
     if(mesosAvailable){$('live-mesos-hour').textContent=format(stats.netHour);$('live-net-total').textContent=format(stats.net)+' net mesos · after potion costs';}
@@ -102,8 +100,8 @@
       try{
         const layout=read.width+'x'+read.height+':'+read.layout;
         if(autoLayout&&autoLayout!==layout){autoLog(null,'Skipped','Screen size or read settings changed. Recalibrate before restarting.');stopAuto('Capture layout changed. Check your regions and restart automatic mode.');persist();return;}autoLayout=layout;
-        autoLastSample={elapsedMs:M.activeElapsed(state,read.at),mesosReadable:false};
-        const point=MapleAutoProgress.fromRead(read,state.start,autoLastSample.elapsedMs),result=autoFilter.offer(point);autoPreview=result.preview;autoLastSample.mesosReadable=autoPreview?.end.mesos!==null&&!!autoPreview;
+        autoLastSample={at:read.at,elapsedMs:M.activeElapsed(state,read.at),mesosReadable:false,usable:false};
+        const point=MapleAutoProgress.fromRead(read,state.start,autoLastSample.elapsedMs),result=autoFilter.offer(point);autoPreview=result.preview;autoLastSample.mesosReadable=autoPreview?.end.mesos!==null&&!!autoPreview;autoLastSample.usable=!!autoPreview;
         for(const rejected of result.rejected)autoLog(rejected.point,'Discarded',rejected.reason);
         autoLog(point,result.held?'Held':'Waiting',result.message);
         for(const accepted of result.accepted){
@@ -129,7 +127,7 @@
   function error(id,message){$(id).textContent=message||'';$(id).hidden=!message;}
   function values(ids){return Object.fromEntries(ids.map(id=>[id,$(id).value]));}
   function restoreFields(fields){for(const [id,value]of Object.entries(fields||{}))if([...startIds,...endIds].includes(id))$(id).value=value;}
-  function persist(){state.startFields=values(startIds);state.endFields=values(endIds);try{localStorage.setItem(storageKey,JSON.stringify(state));}catch{$('storage-warning').hidden=false;}}
+  function persist(){state.startFields=values(startIds);state.endFields=values(endIds);try{localStorage.setItem(storageKey,JSON.stringify(state));}catch{$('storage-warning').hidden=false;}window.MapleOverlay?.update();}
   const elapsed=()=>M.activeElapsed(state);
   function tick(){
     const active=elapsed();$('timer').innerHTML=duration(active).split(':').join('<span>:</span>');
@@ -248,5 +246,6 @@
       state=saved;restoreFields(saved.startFields);restoreFields(saved.endFields);if(saved.start?.level){$('end-level').value=saved.endFields?.['end-level']||saved.end?.level||saved.start.level;$('cp-level').value=saved.checkpoints.at(-1)?.end.level||saved.start.level;}if(saved.stage==='complete')$('profit-metric').value=saved.end.ledger?.some(e=>e.kind==='loot')?'estimatedNet':saved.end.ledger?.length?'adjustedNet':'net';
     }
   }catch(e){error('history-error','A saved session could not be fully restored: '+e.message+'. Your saved history is kept separately.');}
+  window.MapleOverlayFeed={session:()=>({id:state.id,stage:state.stage}),snapshot:()=>MapleLiveModel.snapshot(state,{lastSample:autoLastSample,now:Date.now()})};
   render();
 })();
