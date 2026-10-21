@@ -91,15 +91,18 @@
     run++;if(captureController){captureController.abort();captureController=null;}$('ocr-capture-cancel').hidden=true;if(digitCancel)digitCancel();if(worker){void worker.terminate();worker=null;}for(const url of workerUrls)URL.revokeObjectURL(url);workerUrls=[];setBusy(false);
   }
   async function captureScreen({changeSource=false}={}){
-    if(busy||captureController)return;error('ocr-error','');
+    if(busy||captureController)return;error('ocr-error','');error('ocr-capture-error','');
     if(!MapleScreenCapture.supported()){$('ocr-capture-status').textContent='Screen capture is unavailable in this browser. Open grindjournal.com in desktop Chrome or Edge over HTTPS, or choose a screenshot file.';return;}
     if(changeSource)captureSession.stop();
-    stop();const controller=new AbortController();captureController=controller;setBusy(true);$('ocr-progress-wrap').hidden=true;$('ocr-capture-cancel').hidden=false;$('ocr-capture-status').textContent=captureSession.active()?'Taking a snapshot of your selected screen…':'Choose your Entire screen containing MapleStory in the browser’s share picker. It stays connected for later snapshots until you stop sharing or leave this page.';
+    stop();const controller=new AbortController();captureController=controller;setBusy(true);$('ocr-progress-wrap').hidden=true;$('ocr-capture-cancel').hidden=false;$('ocr-capture-status').textContent=captureSession.active()?'Taking a snapshot of your selected screen…':'Choose Entire screen / Screen 1 / Screen 2 containing MapleStory in the browser’s share picker. It stays connected for later snapshots until you stop sharing or leave this page.';
     try{
       const blob=await captureSession.capture({signal:controller.signal});if(captureController!==controller)return;
-      captureController=null;$('ocr-capture-cancel').hidden=true;setBusy(false);
-      const loaded=await loadImage(new File([blob],'Screen capture.png',{type:'image/png'}));if(loaded&&$('screenshot-dialog').open)$('ocr-capture-status').textContent='Snapshot captured. Click Capture snapshot for another image from the same source. Sharing stays on until you stop it; no audio or recording.';
-    }catch(e){if(captureController===controller){$('ocr-capture-status').textContent=['NotAllowedError','AbortError'].includes(e.name)?'Capture was cancelled or permission was denied. Your previous screenshot and reviewed values were kept. You can retry or upload instead.':['NotSupportedError','SecurityError'].includes(e.name)?'Screen capture is blocked or unsupported in this browser. Open grindjournal.com in desktop Chrome or Edge, or upload a screenshot. Your previous screenshot and reviewed values were kept.':e.message+' Your previous screenshot and reviewed values were kept.';}}
+      const loaded=await loadImage(blob,{name:'Screen capture.png',signal:controller.signal});
+      if(loaded&&captureController===controller&&$('screenshot-dialog').open)$('ocr-capture-status').textContent='Snapshot captured. Click Capture snapshot for another image from the same source. Sharing stays on until you stop it; no audio or recording.'+(captureSession.sourceVerified?.()===false?' Your browser cannot verify the source type. Choose Screen 1 or Screen 2 when sharing, rather than a window.':'');
+    }catch(e){if(captureController===controller){
+      const cancelled=['NotAllowedError','AbortError'].includes(e.name),message=cancelled?'Capture was cancelled or permission was denied. Your previous screenshot and reviewed values were kept. You can retry or upload instead.':['NotSupportedError','SecurityError'].includes(e.name)?'Screen capture is blocked or unsupported in this browser. Try another desktop browser, or upload a screenshot.':(e.message||'The snapshot could not be opened.')+' Try again or upload a screenshot.';
+      $('ocr-capture-status').textContent=message;error('ocr-capture-error',cancelled?'':message);
+    }}
     finally{if(captureController===controller){captureController=null;$('ocr-capture-cancel').hidden=true;setBusy(false);}paintCaptureConnection();}
   }
   function readDigits(id,choice){
@@ -113,17 +116,19 @@
     });
   }
   function clearImage(){if(objectUrl)URL.revokeObjectURL(objectUrl);objectUrl=null;image=null;drag=null;$('ocr-image').removeAttribute('src');for(const id of ['ocr-crop','ocr-processed']){$(id).width=1;$(id).height=1;}$('ocr-region-overlay').replaceChildren();$('ocr-workspace').hidden=true;}
-  async function loadImage(file){
-    stop();clearImage();error('ocr-error','');invalidateReview();MaplePotionPicker.dispose($('ocr-review-fields'));$('ocr-review-fields').replaceChildren();$('ocr-field-status').textContent='';
-    const token=run;
-    if(file&&(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>15*1024*1024)){error('ocr-error','Choose a PNG, JPG, or WebP smaller than 15 MB.');return;}
-    const img=new Image();
+  async function loadImage(file,{name=file?.name||'Capture guide example',signal}={}){
+    if(!signal)stop();error('ocr-error','');error('ocr-capture-error','');
+    const token=run;let nextUrl=null;
     try{
-      if(file){objectUrl=URL.createObjectURL(file);img.src=objectUrl;}else img.src=$('ocr-guide').querySelector('img').src;
-      await img.decode();if(token!==run)return;if(img.naturalWidth<320||img.naturalHeight<200||img.naturalWidth*img.naturalHeight>24000000)throw new Error('Use a screenshot between 320 × 200 and 24 megapixels.');
-      image=img;$('ocr-image').src=img.src;$('ocr-workspace').hidden=false;$('ocr-guide').open=false;$('ocr-file-name').textContent=(file?.name||'Capture guide example')+' · '+img.naturalWidth+' × '+img.naturalHeight;paintRegion();
+      if(file&&(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>15*1024*1024))throw new Error('Choose a PNG, JPG, or WebP smaller than 15 MB.');
+      const img=new Image();if(file){nextUrl=URL.createObjectURL(file);img.src=nextUrl;}else img.src=$('ocr-guide').querySelector('img').src;
+      await img.decode();if(token!==run||signal?.aborted)return false;if(img.naturalWidth<320||img.naturalHeight<200||img.naturalWidth*img.naturalHeight>24000000)throw new Error('Use a screenshot between 320 × 200 and 24 megapixels.');
+      // Replace the previous image and review only after decoding succeeds.
+      clearImage();invalidateReview();MaplePotionPicker.dispose($('ocr-review-fields'));$('ocr-review-fields').replaceChildren();$('ocr-field-status').textContent='';objectUrl=nextUrl;nextUrl=null;
+      image=img;$('ocr-image').src=img.src;$('ocr-workspace').hidden=false;$('ocr-guide').open=false;$('ocr-file-name').textContent=name+' · '+img.naturalWidth+' × '+img.naturalHeight;paintRegion();
       $('ocr-empty-review').textContent='Check the regions, then read your screenshot. Each field remains editable before applying.';return true;
-    }catch(e){if(token===run){clearImage();error('ocr-error','The image could not be opened. '+e.message);}}
+    }catch(e){if(token===run&&!signal?.aborted){if(signal)throw e;error('ocr-error','The image could not be opened. '+e.message);}return false;}
+    finally{if(nextUrl)URL.revokeObjectURL(nextUrl);}
   }
   function loadLibrary(){
     if(window.Tesseract)return Promise.resolve();
@@ -222,14 +227,14 @@
   function open(calibration=false){
     calibration=calibration===true;context={...options.getContext(),calibration};if(!['setup','ending'].includes(context.stage)&&!(calibration&&context.stage==='running'))return;
     $('ocr-apply').hidden=calibration;
-    stop();clearImage();$('ocr-file').value='';$('ocr-file-name').textContent='PNG, JPG, or WebP · up to 15 MB';$('ocr-capture-status').textContent='';$('ocr-review-form').hidden=true;$('ocr-guide').open=true;
+    stop();clearImage();error('ocr-capture-error','');$('ocr-file').value='';$('ocr-file-name').textContent='PNG, JPG, or WebP · up to 15 MB';$('ocr-capture-status').textContent='';$('ocr-review-form').hidden=true;$('ocr-guide').open=true;
     $('ocr-context').textContent=calibration?'Adjust regions and readers using an Entire screen snapshot. Remember regions & image settings, then close this dialog and enable Auto screenshots. This calibration does not change your session values.':context.stage==='setup'?'Fill your starting values from a screenshot taken before training.':'Fill ending values from your final screenshot. Map and class stay as recorded at the start.';
     $('ocr-region-field').replaceChildren(...activeFields().map(field=>new Option(field.label,field.id)));$('ocr-region-field').value='exp';error('ocr-error','');error('ocr-review-error','');$('screenshot-dialog').showModal();
     paintCaptureConnection();if(captureSession.active())$('ocr-capture-status').textContent='Your previous monitor is still connected. Click Capture snapshot to use it again.';
   }
   function init(config){
     options=config;captureSession=MapleScreenCapture.createSession({onChange:paintCaptureConnection});drawGuide();paintCaptureConnection();
-    $('ocr-capture-help').textContent=MapleScreenCapture.supported()?'Choose Entire screen once, then Capture snapshot reuses it while this page stays open. Screen sharing remains active between snapshots; use Stop sharing when finished. No audio or recording.':'Screen capture may be unavailable in this browser. Open the site in desktop Chrome or Edge over HTTPS, or upload a screenshot.';
+    $('ocr-capture-help').textContent=MapleScreenCapture.supported()?'Choose Entire screen (Screen 1 or Screen 2 in Firefox), then Capture snapshot reuses it while this page stays open. Some browsers cannot verify the source type: select a whole screen rather than a window. Use Stop sharing when finished. No audio or recording.':'Screen capture may be unavailable in this browser. Open the site in a desktop browser over HTTPS, or upload a screenshot.';
     $('ocr-capture-change').addEventListener('click',()=>void captureScreen({changeSource:true}));
     for(const id of ['ocr-capture-stop','capture-stop-sharing'])$(id).addEventListener('click',stopSharing);
     window.addEventListener('pagehide',()=>{stop();captureSession.stop();});
