@@ -70,7 +70,11 @@
     if(![exp,supplyCost].every(Number.isSafeInteger))throw new Error('Progress totals are too large.');
     const net=e.mesos===null?null:M.calculate(start,e,ms).net;
     const remaining=!start.level?null:e.level===100?0:M.expTable[e.level]-e.exp;
-    return {exp,expHour:exp*3600000/ms,net,netHour:net===null?null:net*3600000/ms,hpUsed,mpUsed,supplyCost,remaining,etaMs:remaining===0?0:remaining!==null&&exp>0?remaining*ms/exp:null};
+    // The immediate startup snapshot can be only milliseconds after validation.
+    // Keep live rates at their starting zero until a full active minute has
+    // been observed; tiny OCR differences must not become huge hourly spikes.
+    const rateReady=ms>=60000;
+    return {exp,expHour:rateReady?exp*3600000/ms:0,net,netHour:net===null?null:rateReady?net*3600000/ms:0,rateReady,hpUsed,mpUsed,supplyCost,remaining,etaMs:remaining===0?0:rateReady&&remaining!==null&&exp>0?remaining*ms/exp:null};
   }
   // One bounded job at a time. Late browser timers take one fresh sample, never
   // replay missed minutes or invent timestamps. Permission is requested only

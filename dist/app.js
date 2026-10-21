@@ -68,16 +68,17 @@
     $('live-context').textContent=[state.meta?.map,state.meta?.class].filter(Boolean).join(' · ')||'Rates use active training time and your validated starting values.';
     for(const id of ['exp-hour','mesos-hour','level','hp','mp','supply-cost','eta'])$('live-'+id).textContent='N/A';
     $('live-confirmed').textContent=String(state.autoPoints?.length||0);$('live-exp-gained').textContent='No usable capture yet';$('live-net-total').textContent='Keep your inventory open to read mesos';
-    const rows=points.map(p=>{const s=MapleAutoProgress.stats(state.start,p);return {to:p.elapsedMs,expHour:s.expHour,netHour:s.netHour,preview:!!p.preview};});
+    const rows=[{to:0,expHour:0,netHour:0},...points.map(p=>{const s=MapleAutoProgress.stats(state.start,p);return {to:p.elapsedMs,expHour:s.expHour,netHour:s.netHour,preview:!!p.preview};})];
     if(autoLastSample&&!autoLastSample.mesosReadable&&autoLastSample.elapsedMs>(rows.at(-1)?.to||0))rows.push({to:autoLastSample.elapsedMs,expHour:null,netHour:null});
     MapleHistory.lineChart($('live-exp-chart'),rows,'expHour',{live:true});MapleHistory.lineChart($('live-mesos-chart'),rows,'netHour',{live:true});
-    if(!point){$('live-snapshot-note').textContent='Your first usable capture starts the graphs. Mesos is optional; keep the HUD and potion counts visible.';return;}
+    if(!point){$('live-exp-hour').textContent='0';$('live-exp-gained').textContent='0 EXP gained';$('live-mesos-hour').textContent=autoLastSample?'N/A':'0';$('live-net-total').textContent=autoLastSample?'Mesos N/A · awaiting a readable capture':'0 net mesos · starting balance';$('live-snapshot-note').textContent='Rates start at 0. A usable capture after one full active minute starts the rate estimates. Keep the HUD and potion counts visible; mesos needs an open inventory.';return;}
     const stats=MapleAutoProgress.stats(state.start,point),mesosAvailable=point.end.mesos!==null&&autoLastSample?.mesosReadable!==false;
+    if(!stats.rateReady)$('live-quality').textContent='Gathering first minute';
     $('live-exp-hour').textContent=format(stats.expHour);$('live-exp-gained').textContent=format(stats.exp)+' EXP gained';
     if(mesosAvailable){$('live-mesos-hour').textContent=format(stats.netHour);$('live-net-total').textContent=format(stats.net)+' net mesos · after potion costs';}
     else $('live-net-total').textContent='Mesos N/A · inventory hidden, unreadable or awaiting validation';
     $('live-level').textContent=(point.end.level||'Level N/A')+' · '+format(point.end.exp)+' EXP';$('live-hp').textContent=format(point.end.hp)+' '+(M.catalog.hp.find(item=>item.id===state.start.hpPotion)?.name||'items');$('live-mp').textContent=format(point.end.mp)+' '+(M.catalog.mp.find(item=>item.id===state.start.mpPotion)?.name||'items');$('live-supply-cost').textContent=format(stats.supplyCost)+' mesos';$('live-eta').textContent=eta(stats.etaMs);
-    $('live-snapshot-note').textContent=(pending?'Pending capture':'Confirmed snapshot')+' at '+duration(point.elapsedMs)+' active training. '+(pending?'Provisional rates update immediately; this point is excluded from confirmed history until validated.':'Only confirmed values are counted.')+(!mesosAvailable?' EXP continues while mesos is N/A.':'');
+    $('live-snapshot-note').textContent=(pending?'Pending capture':'Confirmed snapshot')+' at '+duration(point.elapsedMs)+' active training. '+(!stats.rateReady?'Rates stay at 0 until a usable capture after one full active minute. Totals still show detected changes. ':pending?'Provisional rates update after each capture; this point is excluded from confirmed history until validated.':'Only confirmed values are counted.')+(!mesosAvailable?' EXP continues while mesos is N/A.':'');
   }
   function autoLog(point,status,message){
     state.autoLog??=[];const at=point?.at||Date.now(),entry={at,elapsedMs:point?.elapsedMs||elapsed(),status,message};

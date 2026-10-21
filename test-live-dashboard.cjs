@@ -12,6 +12,16 @@ for(const bad of [null,undefined,'bad','-3']){const read=capture(point(1,null));
 const hidden=capture(point(1,11000));hidden.inventoryVisible=false;assert.equal(A.fromRead(hidden,start,60000).end.mesos,null,'Scenery digits are not a balance if inventory cue is absent');
 const zeroStart={...start,mesos:0},zeroFilter=A.createFilter({start:zeroStart});zeroFilter.offer(point(1,0));assert.equal(zeroFilter.offer(point(2,0)).accepted[0].end.mesos,0,'A real zero stays zero');
 assert.equal(A.stats(start,point(2,null)).supplyCost,2300);
+const startupEnd={...start,hpAdded:0,mpAdded:0,extraExp:0,ledger:[]};
+for(const ms of [1,120,1000,59999,60000]){
+  const s=A.stats(start,{end:startupEnd,elapsedMs:ms});assert.equal(s.exp,0);assert.equal(s.net,0);assert.equal(s.expHour,0);assert.equal(s.netHour,0);assert.equal(s.rateReady,ms===60000);
+}
+const twoMesos={...startupEnd,mesos:10002},tiny=A.stats(start,{end:twoMesos,elapsedMs:120});
+assert.equal(tiny.net,2,'Detected changes remain visible as totals');assert.equal(tiny.netHour,0,'Do not annualize two mesos over a 120 ms startup capture');assert.equal(tiny.etaMs,null);
+assert.equal(A.stats(start,{end:twoMesos,elapsedMs:60000}).netHour,120,'A full-minute reading uses the actual starting balance');
+assert.equal(A.stats(start,{end:{...startupEnd,mesos:null},elapsedMs:120}).netHour,null,'Unreadable mesos still means N/A during warmup');
+assert.equal(A.stats(start,{end:{...startupEnd,mesos:9980},elapsedMs:60000}).netHour,-1200);
+assert.equal(M.calculate(start,twoMesos,120).rates.hour.mesos,60000,'Final reviewed short-session calculation stays exact');
 // Real screenshot pixels test the pale inventory-box cue; dark scenery is not
 // considered an open inventory, independently of any OCR digit hallucination.
 const {decode}=require('./lib/png-rgba.cjs'),image=decode(fs.readFileSync('dist/assets/ocr-example.png'));
@@ -26,7 +36,7 @@ console.log('Passed: partial EXP tracking, independent mesos rejection/recovery,
   now=epoch+60000;h.setTime(new Date(now).toISOString());h.node('auto-progress-toggle').checked=true;h.fire('auto-progress-toggle','change');await flush();
   assert.equal(h.node('live-exp-hour').textContent,'60,000');assert.equal(h.node('live-mesos-hour').textContent,'N/A');assert.match(h.node('live-quality').textContent,/pending/);assert.equal(h.state().autoPoints,undefined,'Provisional point not persisted as confirmed');
   async function next(){const task=[...jobs].sort((a,b)=>a[1].due-b[1].due)[0];now=task[1].due;h.setTime(new Date(now).toISOString());jobs.delete(task[0]);task[1].fn();await flush();}
-  await next();assert.equal(h.state().autoPoints.length,1);assert.equal(h.state().checkpoints.length,0);assert.equal(h.charts.get('live-exp-chart').rows.length,2);assert(h.charts.get('live-mesos-chart').rows.every(row=>row.netHour===null));
+  await next();assert.equal(h.state().autoPoints.length,1);assert.equal(h.state().checkpoints.length,0);assert.equal(h.charts.get('live-exp-chart').rows.length,3);assert(h.charts.get('live-mesos-chart').rows.filter(row=>row.to>0).every(row=>row.netHour===null),'The validated time-zero baseline is zero; unreadable captured balances remain gaps');
   await next();await next();assert.equal(h.state().autoPoints.length,3);assert.equal(h.state().checkpoints.length,1);assert.equal(h.node('live-mesos-hour').textContent,'-9,000');assert.equal(h.node('live-net-total').textContent,'-600 net mesos · after potion costs');assert.equal(h.node('live-supply-cost').textContent,'4,600 mesos');
   await next();assert.equal(h.node('live-mesos-hour').textContent,'N/A','Latest missing balance never shows a stale previous net rate');assert.equal(h.node('live-exp-hour').textContent,'60,000');assert.equal(h.state().autoPoints.at(-1).end.mesos,null);
   const restored=harness(h.storage);assert.equal(restored.node('start-form').hidden,true);assert.equal(restored.node('live-exp-hour').textContent,'60,000');assert.equal(restored.node('live-mesos-hour').textContent,'N/A');assert.equal(restored.node('auto-progress-toggle').checked,false);
@@ -35,6 +45,24 @@ console.log('Passed: partial EXP tracking, independent mesos rejection/recovery,
   const clean=M.normalizeSession(h.saved());assert.equal(clean.autoPoints.length,4);assert.equal(clean.autoPoints[0].end.mesos,null);assert.equal(clean.autoPoints[2].end.mesos,13000);assert.deepEqual(M.normalizeSession(JSON.parse(JSON.stringify(clean))),clean);
   for(const invalid of [{...clean,autoPoints:{}},{...clean,autoPoints:[{...point(1,null),elapsedMs:99999999}]},{...clean,autoPoints:[point(2,null),point(1,null)]},{...clean,autoPoints:[{...point(1,null),end:{...point(1,null).end,hpAdded:Number.MAX_SAFE_INTEGER}}]}])assert.throws(()=>M.normalizeSession(invalid));
   let autoStartCalls=0;const automatic=harness(new Map(),{progressClock:clock,progressSample:async()=>{autoStartCalls++;throw new DOMException('Test permission denied','NotAllowedError');},screenCapture:{supported:()=>true,createSession:()=>({active:()=>false,stop(){}})}});automatic.applyReview(start);automatic.node('auto-start').checked=true;automatic.fire('start-form','submit');await flush();assert.equal(autoStartCalls,1,'Initial validation can start capture directly from the submit gesture');assert.equal(automatic.node('start-form').hidden,true);assert.equal(automatic.node('auto-progress-toggle').checked,false,'Permission denial leaves a usable dashboard');assert.equal(jobs.size,0);
+  // Real startup submit + immediate screenshot + next scheduled minute.
+  // A startup point must stay zero even after it becomes confirmed or reloads.
+  for(const initialDifference of [0,2]){
+    let t=epoch,nextId=0,reads=0;const timers=new Map(),startupClock={now:()=>t,setTimer:(fn,ms)=>{timers.set(++nextId,{fn,due:t+ms});return nextId;},clearTimer:id=>timers.delete(id)};
+    const startup=harness(new Map(),{progressClock:startupClock,progressSample:async()=>{
+      const first=reads++===0;if(first)t=epoch+120;startup.setTime(new Date(t).toISOString());
+      return capture({at:t,end:{...startupEnd,mesos:first?10000+initialDifference:initialDifference?11000:10000,exp:!first&&initialDifference?101000:100000}});
+    },screenCapture:{supported:()=>true,createSession:()=>({active:()=>true,stop(){}})}});
+    startup.applyReview(start);startup.node('auto-start').checked=true;startup.fire('start-form','submit');
+    assert.equal(startup.node('live-exp-hour').textContent,'0');assert.equal(startup.node('live-mesos-hour').textContent,'0');await flush();
+    assert.equal(startup.node('live-mesos-hour').textContent,'0');assert.equal(startup.node('live-exp-hour').textContent,'0');assert.match(startup.node('live-quality').textContent,/first minute/);
+    assert(startup.charts.get('live-mesos-chart').rows.every(row=>row.netHour===0),'Baseline and immediate capture cannot spike');assert.equal(startup.state().start.mesos,10000);
+    const task=[...timers].sort((a,b)=>a[1].due-b[1].due)[0];assert.equal(task[1].due,epoch+60000);t=task[1].due;startup.setTime(new Date(t).toISOString());timers.delete(task[0]);task[1].fn();await flush();
+    assert.equal(startup.node('live-mesos-hour').textContent,initialDifference?'60,000':'0');assert.equal(startup.node('live-exp-hour').textContent,initialDifference?'60,000':'0');
+    const rows=startup.charts.get('live-mesos-chart').rows;assert.deepEqual(rows.slice(0,2).map(row=>row.netHour),[0,0],'Confirmed startup point cannot reintroduce the old spike');assert.equal(rows[0].to,0);assert.equal(startup.state().autoPoints.length,1,'Synthetic origin is not a checkpoint');
+    const reload=harness(startup.storage);assert.equal(reload.node('live-mesos-hour').textContent,'0');assert(reload.charts.get('live-mesos-chart').rows.every(row=>row.netHour===0));
+    startup.node('auto-progress-toggle').checked=false;startup.fire('auto-progress-toggle','change');assert.equal(timers.size,0);
+  }
   // SVG rendering uses actual history chart code: null gaps aren't connected,
   // previews are hollow/dashed, and no undefined or nonfinite SVG coordinates.
   const chart=harness(new Map(),{realHistory:true});chart.history.lineChart(chart.node('live-mesos-chart'),[{to:60000,netHour:10},{to:120000,netHour:null},{to:180000,netHour:20},{to:240000,netHour:25,preview:true}],'netHour',{live:true});
