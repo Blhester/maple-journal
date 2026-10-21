@@ -1,5 +1,10 @@
 GRIND JOURNAL - LOCAL STREAMING OVERLAY
 
+This helper is optional. For a no-download overlay, use grindjournal.com's
+Open stream overlay button and OBS Window Capture with Magenta Chroma Key.
+That mode uses the same browser/profile as the tracker. The helper below is
+only needed when you prefer a direct OBS Browser Source URL.
+
 No hosted relay, account, cloud API key, or added AWS resources are needed.
 OBS and the helper must run on the same computer. The helper only listens on
 127.0.0.1; it does not open a LAN/public endpoint or inspect the game process.

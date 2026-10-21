@@ -1,0 +1,50 @@
+GRIND JOURNAL - BROWSER OVERLAY (NO DOWNLOAD)
+
+Use the regular grindjournal.com tracker in a current Firefox or Chrome browser.
+In Stream overlay click Open stream overlay. Allow pop-ups for the site if
+prompted, or copy the window link into a separate window in this browser/profile.
+Starting a recording does not enable sharing: turn on Share this run yourself.
+
+OBS setup:
+1. Add Window Capture and select the Grind Journal overlay window.
+2. Crop the browser toolbar and borders. On Windows, hold Alt while dragging
+   source edges. The overlay panel is 480x180 for Stats, 640x280 for Graphs,
+   or 640x400 for Combined. Resize the pop-out when changing layouts.
+3. Add a Chroma Key filter to that source; select Magenta. The surrounding
+   background disappears. The panel stays solid so it does not acquire a
+   magenta tint. Panel opacity is available in the optional direct-URL helper.
+4. Keep the tracker and overlay window open and unminimized. Confirm the source
+   remains visible while playing; capture/suspension behavior varies by browser
+   and operating system.
+
+Settings, selected metrics, active time, Hide and Reset stats use the same
+confirmed projection as the helper. Pending/rejected OCR readings stay out of
+the overlay. Unknown mesos remains N/A. Rates start at zero until a full active
+minute is confirmed. Reset stats counts from the latest confirmed reading and
+does not erase the full recording. Paused time is excluded from rates/time.
+
+Share each run separately. Done retains the last confirmed reading awaiting
+review; Calculate publishes final reviewed rates. The next unshared run leaves
+that summary alone. Hide clears the widget. Closing the tracker retains the
+last values, labelled Disconnected after 90 seconds unless already Completed.
+Running readings are marked stale after three minutes without a usable capture.
+The latest derived snapshot expires after 24 hours without publication.
+Refreshing the overlay reconnects automatically. Refreshing the tracker does
+not automatically opt a running session back into sharing. Only one tracker tab
+can publish a browser overlay at once; hide in or close that tab to switch.
+
+All updates use same-origin browser messaging and localStorage. No backend,
+cloud API, account, screenshots or raw balances are transmitted for the overlay.
+Only selected derived metrics and graph points are exposed to the viewer.
+Browser state is separate from the helper's credentials and history backups.
+Different browser profiles, private windows, different domains (including www
+versus the apex), and OBS's own embedded browser cannot read the same state.
+An OBS Browser Source URL alone will therefore show a waiting message. Use
+Window Capture for this mode, or the optional helper for a direct OBS URL.
+
+If pop-ups are blocked use the copied window link, in a normal window of the
+same profile. Do not paste it into a third-party service. Browser storage and
+Web Locks must be enabled/available. Ordinary training works if overlay sharing
+is unavailable. Standalone file:// downloads still track normally; use the
+website or optional helper for streaming. There is no automatic website/local
+history migration required when using this no-download website mode.

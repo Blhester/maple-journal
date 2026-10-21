@@ -43,3 +43,5 @@ Verification details and device/file-picker limits: VERIFICATION.txt.
 
 [x] Add live EXP/hour and net-mesos/hour graphs and stats, one-time starting validation, default automatic start option, hidden running inputs, missing-inventory support and partial progress persistence.
 [x] Add local streaming helper, confirmed-only OBS projection, transparent layouts, browser controls, token/lease/expiry tests, downloadable ZIP and real OBS acceptance check. Hosted relay removed per user preference.
+[x] Make no-download same-browser pop-out overlays the default; keep the direct-URL helper optional. Add local messaging/storage sync, publisher locks, sharing/reset/hide controls, magenta capture background, OBS instructions and regression tests.
+[ ] Verify native Firefox pop-out Window Capture and Magenta Chroma Key in the user's OBS setup; the in-app preview is not exposed as a desktop window. Follow BROWSER-OVERLAY.txt with the pop-out open in Firefox/Chrome.

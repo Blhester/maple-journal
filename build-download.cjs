@@ -7,7 +7,7 @@ const bundledPotions={...potionCatalog,items:potionCatalog.items.map(item=>({...
 require('./build-quantity-font.cjs').build();
 require('./build-exp-font.cjs').build();
 require('./build-maps.cjs').build();
-const names=['core','potion-data','potions','etc-data','etc','history','map-data','map-matcher','ocr-core','quantity-font','quantity-reader','exp-font','exp-reader','screen-capture','screenshot','auto-progress','live-model','overlay-protocol','overlay-client','app','overlay-controls'];
+const names=['core','potion-data','potions','etc-data','etc','history','map-data','map-matcher','ocr-core','quantity-font','quantity-reader','exp-font','exp-reader','screen-capture','screenshot','auto-progress','live-model','overlay-protocol','overlay-client','overlay-browser','app','overlay-controls'];
 const ocrBase=path.join(dist,'vendor','ocr');
 const offlineOcr={library:fs.readFileSync(path.join(ocrBase,'tesseract.min.js'),'utf8'),worker:fs.readFileSync(path.join(ocrBase,'worker.min.js'),'utf8'),core:fs.readFileSync(path.join(ocrBase,'tesseract-core-lstm.wasm.js'),'utf8'),language:fs.readFileSync(path.join(ocrBase,'eng.traineddata.gz')).toString('base64')};
 offlineOcr.notices=['NOTICE.txt','LICENSE-core.txt','LICENSE-tesseract.txt','tesseract.min.js.LICENSE.txt','worker.min.js.LICENSE.txt'].map(name=>name+'\n'+fs.readFileSync(path.join(ocrBase,name),'utf8')).join('\n\n');

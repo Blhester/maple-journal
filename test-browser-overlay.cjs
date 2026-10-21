@@ -1,0 +1,37 @@
+'use strict';
+const assert=require('node:assert/strict'),B=require('./dist/overlay-browser.js'),P=require('./dist/overlay-protocol.js'),L=require('./dist/live-model.js');
+const epoch=Date.parse('2026-10-21T18:00:00Z'),values=new Map(),listeners=new Set(),channels=new Map(),held=new Set(),timers=new Map();let now=epoch,timerId=0;
+const events={addEventListener:(type,fn)=>listeners.add(fn),removeEventListener:(type,fn)=>listeners.delete(fn)},storage={getItem:key=>values.get(key)||null,setItem:(key,value)=>{values.set(key,value);for(const fn of listeners)fn({key});}},locks={async request(key,options,fn){if(held.has(key))return fn(null);held.add(key);try{return await fn({name:key});}finally{held.delete(key);}}};
+function channelFactory(name){const channel={onmessage:null,postMessage(data){for(const c of channels.get(name)||[])if(c!==channel)c.onmessage?.({data});},close(){channels.get(name).delete(channel);}};if(!channels.has(name))channels.set(name,new Set());channels.get(name).add(channel);return channel;}
+const common={storage,locks,events,channelFactory,now:()=>now,setEvery:fn=>{timers.set(++timerId,fn);return timerId;},clearEvery:id=>timers.delete(id)};
+const start={level:30,exp:14000,mesos:10000,hp:100,mp:100,hpCost:80,mpCost:150},end={level:31,exp:1000,mesos:12000,hp:99,mp:99,hpAdded:0,mpAdded:0,extraExp:0,ledger:[]},cp={at:epoch+60000,elapsedMs:60000,end};
+let session={id:'run-one',stage:'running',startedAt:epoch,pausedMs:0,start,autoPoints:[cp],checkpoints:[]};
+const options={...common,getSession:()=>({id:session.id,stage:session.stage}),getSnapshot:opts=>L.snapshot(session,{...opts,now}),getBaseline:()=>L.baseline(session),newId:()=> 'a'.repeat(32)};
+(async()=>{
+  let publisher=B.create(options),seen;const id=publisher.view().credentials.id,stop=B.subscribe({...common,id,onChange:e=>{seen=e;}});
+  try{
+    assert.equal(publisher.view().sharing,false);assert.equal(seen,null,'Opening a pop-out never opts into sharing');
+    await publisher.share();assert.equal(seen.snapshot.expHour,4962000);assert.equal(seen.snapshot.netHour,106200);assert.equal(seen.snapshot.activeMs,null);assert.equal(seen.snapshot.netTotal,1770);
+    const second=B.create(options);await assert.rejects(second.share(),/Another tracker tab/);await assert.rejects(second.hide(),/Another tracker tab/);second.dispose();
+    session.autoPoints.push({...cp,preview:true,elapsedMs:120000,end:{...end,mesos:999999}});publisher.update();assert.equal(seen.snapshot.netHour,106200);assert.equal(seen.snapshot.series.length,2);assert(!JSON.stringify(seen).includes('999999'),'Pending source data never crosses the boundary');session.autoPoints.pop();
+    await publisher.configure({...P.defaults,mesos:false,layout:'combined',showTime:true});assert.equal(seen.snapshot.netHour,null);assert(seen.snapshot.series.every(p=>p.mesos===null));assert.equal(seen.snapshot.display.layout,'combined');
+    await publisher.configure({...P.defaults,showTime:true});now=epoch+60000;await publisher.resetStats();assert.equal(seen.snapshot.netTotal,0);assert.equal(seen.snapshot.expTotal,0);assert.equal(seen.snapshot.activeMs,0);assert.equal(seen.snapshot.series.length,1);assert.equal(publisher.view().credentials.id,id);
+    const nextEnd={...end,exp:4000,mesos:13200,hp:97,mp:98};now=epoch+120000;session.autoPoints.push({at:now,elapsedMs:120000,end:nextEnd});publisher.update();assert.equal(seen.snapshot.expHour,180000);assert.equal(seen.snapshot.netHour,53400);assert.equal(L.snapshot(session).netTotal,2660,'Full tracker remains independent of reset');
+    session.pausedAt=now;now+=60000;publisher.update();assert.equal(seen.snapshot.phase,'paused');assert.equal(seen.snapshot.activeMs,60000);
+    delete session.pausedAt;session.pausedMs=60000;session.stage='ending';session.stoppedAt=now;publisher.update();assert.equal(seen.snapshot.phase,'ending');
+    session.stage='complete';session.end=nextEnd;publisher.update();assert.equal(seen.snapshot.phase,'complete');assert.equal(seen.snapshot.netHour,53400);await assert.rejects(publisher.resetStats(),/Share a running/);
+    session={...session,id:'run-two',stage:'running',start:{...start,mesos:888888},autoPoints:[],end:null,stoppedAt:null};publisher.update();assert.equal(publisher.view().sharing,false);assert.equal(seen.snapshot.session,'run-one');assert(!JSON.stringify(seen).includes('888888'),'Unshared next-run source values are not published');
+    publisher.dispose();await new Promise(resolve=>setImmediate(resolve));publisher=B.create(options);assert.equal(publisher.view().sharing,false);await publisher.configure({...P.defaults,layout:'graphs'});assert.equal(seen.snapshot.phase,'complete','Reviewed summary survives tracker reload');
+    await publisher.share();assert.equal(seen.snapshot.session,'run-two');assert.equal(seen.snapshot.netTotal,0);assert.equal(seen.snapshot.series.length,1,'Newly shared run clears the previous reset/graph');
+    await publisher.hide();assert.equal(seen.snapshot.phase,'hidden');assert.equal(seen.snapshot.series.length,0);assert.equal(seen.snapshot.netTotal,null);assert.equal(publisher.view().sharing,false);
+    assert(!JSON.stringify([...values]).includes('hpCost'));assert(!JSON.stringify([...values]).includes('startMesos'));assert(!JSON.stringify([...values]).includes('888888'));
+    // Storage events and local polling work when BroadcastChannel is unavailable.
+    let fallback;const stopFallback=B.subscribe({...common,id,channelFactory:()=>null,onChange:e=>{fallback=e;}});await publisher.share();assert.equal(fallback.snapshot.session,'run-two');stopFallback();
+    const otherProfile={getItem:()=>null};let isolated='unset';const stopIsolated=B.subscribe({...common,id,storage:otherProfile,channelFactory:()=>null,onChange:e=>{isolated=e;}});assert.equal(isolated,null,'Separate browser profiles cannot read the live overlay');stopIsolated();
+    const revision=seen.revision;for(const fn of [...timers.values()])fn();assert(seen.revision>revision,'Publisher heartbeat advances the envelope without new graph points');assert.equal(seen.snapshot.series.length,1);
+    publisher.dispose();await new Promise(resolve=>setImmediate(resolve));now+=90001;assert.equal(P.status(seen,now),'Disconnected');now+=86400000;assert.equal(B.read(storage,id,now),null,'Old browser snapshots expire after 24 hours');
+    assert.throws(()=>B.subscribe({...common,id:'bad',onChange:()=>{}}),/Invalid/);
+    values.set('maple-journal-browser-overlay-state:'+id,JSON.stringify({...seen,snapshot:{...seen.snapshot,screenshot:'private'}}));assert.equal(B.read(storage,id,now),null,'Snapshot allowlist is enforced on the receiving side');
+    console.log('Passed: no-download browser publisher/viewer, confirmed-only level-up/net math, sharing opt-in, display redaction, one-tab locks, reset, pause/final/new-run isolation, reload, hide, storage fallback, profile isolation, heartbeat/disconnection and expiry.');
+  }finally{publisher.dispose();stop();assert.equal(timers.size,0);for(const set of channels.values())assert.equal(set.size,0);}
+})().catch(e=>{console.error(e);process.exitCode=1;});
