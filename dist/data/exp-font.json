@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-21T14:15:24.660Z",
+  "source": "https://maplestory.io",
+  "region": "GMS",
+  "version": "83",
+  "path": "UI/StatusBar.img/number",
+  "attribution": "MapleStory UI sprites are the property of Nexon. Provided by the public MapleStory.io WZ API. Local matching only; screenshots are not sent to the provider.",
+  "glyphs": [
+    {
+      "digit": "0",
+      "icon": "assets/exp-font/0.png",
+      "width": 5,
+      "height": 7,
+      "bytes": 352,
+      "sha256": "4f1cf45e46d5ae717ae761d24ba3ff46531753366eb995aa663d16c7f565a7e5",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/StatusBar.img/number/0"
+    },
+    {
+      "digit": "1",
+      "icon": "assets/exp-font/1.png",
+      "width": 5,
+      "height": 7,
+      "bytes": 357,
+      "sha256": "bdeb5c981afe1bcf3c7d5acf655807fc2bb12394961fe5437085d7499c04ae5b",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/StatusBar.img/number/1"
+    },
+    {
+      "digit": "2",
+      "icon": "assets/exp-font/2.png",
+      "width": 5,
+      "height": 7,
+      "bytes": 364,
+      "sha256": "217a128c9b4ab1f768080a890d396da4f6bb8d2e03696800b158140b4953c991",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/StatusBar.img/number/2"
+    },
+    {
+      "digit": "3",
+      "icon": "assets/exp-font/3.png",
+      "width": 5,
+      "height": 7,
+      "bytes": 366,
+      "sha256": "7380dfadfed77d875a771d4c002a0e3e60d5272d6ee1f209b24c1af8dbc469a8",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/StatusBar.img/number/3"
+    },
+    {
+      "digit": "4",
+      "icon": "assets/exp-font/4.png",
+      "width": 5,
+      "height": 7,
+      "bytes": 358,
+      "sha256": "b68743fda060145ce2019dca90e49ec21ec646ebd84baeaf753d379144b246ea",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/StatusBar.img/number/4"
+    },
+    {
+      "digit": "5",
+      "icon": "assets/exp-font/5.png",
+      "width": 5,
+      "height": 7,
+      "bytes": 355,
+      "sha256": "68ad4a8fe6a90b022812538d724c5f4118846698ea08aa7903155a0ee699373c",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/StatusBar.img/number/5"
+    },
+    {
+      "digit": "6",
+      "icon": "assets/exp-font/6.png",
+      "width": 5,
+      "height": 7,
+      "bytes": 363,
+      "sha256": "8806f09f254978c2416578ff96bb1a728997e8304ef6ce31eea5350dec24919f",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/StatusBar.img/number/6"
+    },
+    {
+      "digit": "7",
+      "icon": "assets/exp-font/7.png",
+      "width": 5,
+      "height": 7,
+      "bytes": 352,
+      "sha256": "d6641535cafd90f8c8687bcd2346a477592d818c9e65db7fd38ac08503b660e1",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/StatusBar.img/number/7"
+    },
+    {
+      "digit": "8",
+      "icon": "assets/exp-font/8.png",
+      "width": 5,
+      "height": 7,
+      "bytes": 351,
+      "sha256": "199948d2f41826d19bfda25723f8ec8b80052c75892dc4504064358f10cbdee2",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/StatusBar.img/number/8"
+    },
+    {
+      "digit": "9",
+      "icon": "assets/exp-font/9.png",
+      "width": 5,
+      "height": 7,
+      "bytes": 363,
+      "sha256": "049d1eb9822c0d963ecfc8179c9019da78a5e35faf20bff2c222788a57475ed1",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/StatusBar.img/number/9"
+    }
+  ]
+}

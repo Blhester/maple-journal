@@ -56,10 +56,12 @@
   }
   function paintTuning(){
     if(!image)return;const id=$('ocr-region-field').value,settings=C.tuning(id,tunings[id]);
-    const quantity=['hp','mp'].includes(id);$('ocr-reader-wrap').hidden=!quantity;$('ocr-general-controls').hidden=quantity&&settings.reader==='classic';
+    const fontField=['exp','hp','mp'].includes(id);$('ocr-reader-wrap').hidden=!fontField;$('ocr-general-controls').hidden=fontField&&settings.reader==='classic';
+    $('ocr-reader-classic').textContent=id==='exp'?'Classic EXP digits':'Classic potion digits';
+    $('ocr-reader-help').textContent=id==='exp'?'Matches the EXP display font from the original crop, including scaled digits and thousands separators. Keep the full number visible. The green bracket separates EXP from its percentage. Use General text OCR for a different font.':'Matches the game’s quantity font from the original crop. Keep the full count visible. Use General text OCR for a different font.';
     for(const key of tuningKeys){const control=$('ocr-tune-'+key);if(key==='invert')control.checked=settings[key];else control.value=String(settings[key]);if($('ocr-out-'+key))$('ocr-out-'+key).textContent=settings[key]+(key==='contrast'?'×':'');}
     $('ocr-tune-chroma').disabled=busy||settings.mode!=='neutral';$('ocr-tune-threshold').disabled=busy||settings.mode==='gray';
-    const canvas=$('ocr-processed');if(quantity&&settings.reader==='classic'){canvas.width=canvas.height=1;return;}const source=processedCrop(id);canvas.width=source.width;canvas.height=source.height;canvas.getContext('2d').drawImage(source,0,0);
+    const canvas=$('ocr-processed');if(fontField&&settings.reader==='classic'){canvas.width=canvas.height=1;return;}const source=processedCrop(id);canvas.width=source.width;canvas.height=source.height;canvas.getContext('2d').drawImage(source,0,0);
   }
   function paintRegion(){
     if(!image)return;const id=$('ocr-region-field').value,r=regions[id],overlay=$('ocr-region-overlay');
@@ -98,13 +100,13 @@
     finally{if(captureController===controller){captureController=null;$('ocr-capture-cancel').hidden=true;setBusy(false);}paintCaptureConnection();}
   }
   function readDigits(id){
-    const r=sourceRegion(id),scale=Math.min(1,96/r.w,32/r.h),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(r.w*scale));canvas.height=Math.max(1,Math.round(r.h*scale));
+    const r=sourceRegion(id),exp=id==='exp',scale=Math.min(1,(exp?512:96)/r.w,(exp?64:32)/r.h),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(r.w*scale));canvas.height=Math.max(1,Math.round(r.h*scale));
     const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,r.x,r.y,r.w,r.h,0,0,canvas.width,canvas.height);const pixels=ctx.getImageData(0,0,canvas.width,canvas.height);
     return new Promise((resolve,reject)=>{
-      const url=URL.createObjectURL(new Blob([MapleQuantityReader.workerSource()],{type:'text/javascript'}));let reader;
+      const url=URL.createObjectURL(new Blob([(exp?MapleExpReader:MapleQuantityReader).workerSource()],{type:'text/javascript'}));let reader;
       const cleanup=()=>{reader?.terminate();URL.revokeObjectURL(url);if(digitCancel===cancel)digitCancel=null;};
       const cancel=()=>{cleanup();reject(new Error('Reading cancelled.'));};digitCancel=cancel;
-      try{reader=new Worker(url);reader.onmessage=event=>{cleanup();if(event.data.error)reject(new Error(event.data.error));else resolve(event.data.result);};reader.onerror=()=>{cleanup();reject(new Error('The local quantity reader could not run.'));};reader.postMessage({data:pixels.data,width:pixels.width,height:pixels.height},[pixels.data.buffer]);}catch(e){cleanup();reject(e);}
+      try{reader=new Worker(url);reader.onmessage=event=>{cleanup();if(event.data.error)reject(new Error(event.data.error));else resolve(event.data.result);};reader.onerror=()=>{cleanup();reject(new Error('The local number reader could not run.'));};reader.postMessage({data:pixels.data,width:pixels.width,height:pixels.height},[pixels.data.buffer]);}catch(e){cleanup();reject(e);}
     });
   }
   function clearImage(){if(objectUrl)URL.revokeObjectURL(objectUrl);objectUrl=null;image=null;drag=null;$('ocr-image').removeAttribute('src');for(const id of ['ocr-crop','ocr-processed']){$(id).width=1;$(id).height=1;}$('ocr-region-overlay').replaceChildren();$('ocr-workspace').hidden=true;}
@@ -156,7 +158,7 @@
         if(token!==run)return;
         currentField=index;if(selectedOnly)tunings[field.id]=C.tuning(field.id,tunings[field.id]);
         $('ocr-progress-text').textContent='Reading '+field.label.toLowerCase()+' · '+(index+1)+' of '+fields.length;
-        if(['hp','mp'].includes(field.id)&&C.tuning(field.id,tunings[field.id]).reader==='classic'){
+        if(['exp','hp','mp'].includes(field.id)&&C.tuning(field.id,tunings[field.id]).reader==='classic'){
           results[field.id]=await readDigits(field.id);if(token!==run)return;$('ocr-progress').value=(index+1)/fields.length;continue;
         }
         await ensureTextWorker();if(token!==run)return;
@@ -199,7 +201,7 @@
       if(['hp','mp'].includes(field.id)){
         const supply=text('label','Count belongs to '),select=document.createElement('select');select.id='ocr-potion-'+field.id;select.setAttribute('aria-label',field.id.toUpperCase()+' supply in screenshot');select.replaceChildren(...MapleMath.catalog[field.id].map(item=>new Option(item.name,item.id)));select.value=previous?.querySelector('#ocr-potion-'+field.id)?.value||context[field.id+'Potion'];select.disabled=context.stage!=='setup';supply.append(select);row.append(supply);
       }
-      row.append(text('small',!supported?'Starting level was not recorded. Keep using the manual level-up adjustment.':field.id==='map'?(result.value===null?'No close catalog match. Search for your map or leave it unchecked.':result.needsConfirmation?'Uncertain match: choose the correct map above or search the catalog. This field is not included yet.':'Matched a MeowDB map. Verify the location before applying.'):result.method==='classic-digits'?(result.value===null?'No clear Classic count matched. Draw a tight box around the full number, try General text OCR for another font, or type it here.':'Classic quantity digits matched. Check the count and choose its item.'):result.value===null?'No number or text found. Type it here or leave this field unchecked.':result.disagrees?'Readings differ. Check the enlarged crop carefully.':['hp','mp'].includes(field.id)?'Detected count is included. Choose the matching item and edit the number if needed.':result.confidence<70?'Small text: check the enlarged crop before applying.':'Review this value before applying.','ocr-review-note'));
+      row.append(text('small',!supported?'Starting level was not recorded. Keep using the manual level-up adjustment.':field.id==='map'?(result.value===null?'No close catalog match. Search for your map or leave it unchecked.':result.needsConfirmation?'Uncertain match: choose the correct map above or search the catalog. This field is not included yet.':'Matched a MeowDB map. Verify the location before applying.'):result.method==='classic-exp'?(result.value===null?'No clear EXP font match. Keep the complete number inside the region, try General text OCR, or type the EXP here.':'Classic EXP digits matched. Check the complete number against your screenshot before applying.'):result.method==='classic-digits'?(result.value===null?'No clear Classic count matched. Draw a tight box around the full number, try General text OCR for another font, or type it here.':'Classic quantity digits matched. Check the count and choose its item.'):result.value===null?'No number or text found. Type it here or leave this field unchecked.':result.disagrees?'Readings differ. Check the enlarged crop carefully.':['hp','mp'].includes(field.id)?'Detected count is included. Choose the matching item and edit the number if needed.':result.confidence<70?'Small text: check the enlarged crop before applying.':'Review this value before applying.','ocr-review-note'));
       const details=document.createElement('details');details.className='ocr-raw';details.append(text('summary','Recognized text'),text('p',result.raw||'No text recognized'));row.append(details);if(previous){MaplePotionPicker.dispose(previous);previous.replaceWith(row);}else container.append(row);
     }
     $('ocr-review-form').hidden=false;$('ocr-empty-review').hidden=true;

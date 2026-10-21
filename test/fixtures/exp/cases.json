@@ -1,0 +1,194 @@
+{
+  "cases": [
+    {
+      "file": "sample-exp.png",
+      "expected": "268628",
+      "source": "Unmodified crop of the provided screenshot, including partial EXP label and comma."
+    },
+    {
+      "file": "sample-exp-full.png",
+      "expected": "268628",
+      "source": "Unmodified screenshot crop including the green bracket and percentage."
+    },
+    {
+      "file": "sample-percent-only.png",
+      "expected": null,
+      "source": "Unmodified screenshot crop of percentage only."
+    },
+    {
+      "file": "sample-truncated.png",
+      "expected": null,
+      "source": "Screenshot crop cutting the final digit."
+    },
+    {
+      "file": "digit-0.png",
+      "expected": "0",
+      "source": "Known individual status-bar glyph rendered on a dark background."
+    },
+    {
+      "file": "digit-1.png",
+      "expected": "1",
+      "source": "Known individual status-bar glyph rendered on a dark background."
+    },
+    {
+      "file": "digit-2.png",
+      "expected": "2",
+      "source": "Known individual status-bar glyph rendered on a dark background."
+    },
+    {
+      "file": "digit-3.png",
+      "expected": "3",
+      "source": "Known individual status-bar glyph rendered on a dark background."
+    },
+    {
+      "file": "digit-4.png",
+      "expected": "4",
+      "source": "Known individual status-bar glyph rendered on a dark background."
+    },
+    {
+      "file": "digit-5.png",
+      "expected": "5",
+      "source": "Known individual status-bar glyph rendered on a dark background."
+    },
+    {
+      "file": "digit-6.png",
+      "expected": "6",
+      "source": "Known individual status-bar glyph rendered on a dark background."
+    },
+    {
+      "file": "digit-7.png",
+      "expected": "7",
+      "source": "Known individual status-bar glyph rendered on a dark background."
+    },
+    {
+      "file": "digit-8.png",
+      "expected": "8",
+      "source": "Known individual status-bar glyph rendered on a dark background."
+    },
+    {
+      "file": "digit-9.png",
+      "expected": "9",
+      "source": "Known individual status-bar glyph rendered on a dark background."
+    },
+    {
+      "file": "scaled-1234567890-1.png",
+      "expected": "1234567890",
+      "source": "Known sequence rendered with bilinear capture scaling; every digit must survive."
+    },
+    {
+      "file": "scaled-1234567890-1_25.png",
+      "expected": "1234567890",
+      "source": "Known sequence rendered with bilinear capture scaling; every digit must survive."
+    },
+    {
+      "file": "scaled-1234567890-1_5.png",
+      "expected": "1234567890",
+      "source": "Known sequence rendered with bilinear capture scaling; every digit must survive."
+    },
+    {
+      "file": "scaled-1234567890-2.png",
+      "expected": "1234567890",
+      "source": "Known sequence rendered with bilinear capture scaling; every digit must survive."
+    },
+    {
+      "file": "scaled-1234567890-3.png",
+      "expected": "1234567890",
+      "source": "Known sequence rendered with bilinear capture scaling; every digit must survive."
+    },
+    {
+      "file": "scaled-688969-1.png",
+      "expected": "688969",
+      "source": "Known sequence rendered with bilinear capture scaling; every digit must survive."
+    },
+    {
+      "file": "scaled-688969-1_25.png",
+      "expected": "688969",
+      "source": "Known sequence rendered with bilinear capture scaling; every digit must survive."
+    },
+    {
+      "file": "scaled-688969-1_5.png",
+      "expected": "688969",
+      "source": "Known sequence rendered with bilinear capture scaling; every digit must survive."
+    },
+    {
+      "file": "scaled-688969-2.png",
+      "expected": "688969",
+      "source": "Known sequence rendered with bilinear capture scaling; every digit must survive."
+    },
+    {
+      "file": "scaled-688969-3.png",
+      "expected": "688969",
+      "source": "Known sequence rendered with bilinear capture scaling; every digit must survive."
+    },
+    {
+      "file": "scaled-1_234_567-1.png",
+      "expected": "1234567",
+      "source": "Known sequence rendered with bilinear capture scaling; every digit must survive."
+    },
+    {
+      "file": "scaled-1_234_567-1_25.png",
+      "expected": "1234567",
+      "source": "Known sequence rendered with bilinear capture scaling; every digit must survive."
+    },
+    {
+      "file": "scaled-1_234_567-1_5.png",
+      "expected": "1234567",
+      "source": "Known sequence rendered with bilinear capture scaling; every digit must survive."
+    },
+    {
+      "file": "scaled-1_234_567-2.png",
+      "expected": "1234567",
+      "source": "Known sequence rendered with bilinear capture scaling; every digit must survive."
+    },
+    {
+      "file": "scaled-1_234_567-3.png",
+      "expected": "1234567",
+      "source": "Known sequence rendered with bilinear capture scaling; every digit must survive."
+    },
+    {
+      "file": "scaled-0-1.png",
+      "expected": "0",
+      "source": "Known sequence rendered with bilinear capture scaling; every digit must survive."
+    },
+    {
+      "file": "scaled-0-1_25.png",
+      "expected": "0",
+      "source": "Known sequence rendered with bilinear capture scaling; every digit must survive."
+    },
+    {
+      "file": "scaled-0-1_5.png",
+      "expected": "0",
+      "source": "Known sequence rendered with bilinear capture scaling; every digit must survive."
+    },
+    {
+      "file": "scaled-0-2.png",
+      "expected": "0",
+      "source": "Known sequence rendered with bilinear capture scaling; every digit must survive."
+    },
+    {
+      "file": "scaled-0-3.png",
+      "expected": "0",
+      "source": "Known sequence rendered with bilinear capture scaling; every digit must survive."
+    },
+    {
+      "file": "missing-middle-digit.png",
+      "expected": null,
+      "source": "One entire middle digit is obscured; reject rather than silently concatenate the remaining digits."
+    },
+    {
+      "file": "blank.png",
+      "expected": null,
+      "source": "Blank dark crop."
+    },
+    {
+      "file": "transparent.png",
+      "expected": null,
+      "source": "Fully transparent crop."
+    },
+    {
+      "file": "other-font.png",
+      "expected": null,
+      "source": "Arial text must not be accepted as the fixed EXP font."
+    }
+  ]
+}
