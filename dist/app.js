@@ -246,6 +246,6 @@
       state=saved;restoreFields(saved.startFields);restoreFields(saved.endFields);if(saved.start?.level){$('end-level').value=saved.endFields?.['end-level']||saved.end?.level||saved.start.level;$('cp-level').value=saved.checkpoints.at(-1)?.end.level||saved.start.level;}if(saved.stage==='complete')$('profit-metric').value=saved.end.ledger?.some(e=>e.kind==='loot')?'estimatedNet':saved.end.ledger?.length?'adjustedNet':'net';
     }
   }catch(e){error('history-error','A saved session could not be fully restored: '+e.message+'. Your saved history is kept separately.');}
-  window.MapleOverlayFeed={session:()=>({id:state.id,stage:state.stage}),snapshot:()=>MapleLiveModel.snapshot(state,{lastSample:autoLastSample,now:Date.now()})};
+  window.MapleOverlayFeed={session:()=>({id:state.id,stage:state.stage}),baseline:()=>MapleLiveModel.baseline(state),snapshot:(options={})=>MapleLiveModel.snapshot(state,{...options,lastSample:autoLastSample,now:Date.now()})};
   render();
 })();

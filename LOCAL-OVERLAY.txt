@@ -36,6 +36,13 @@ Pause freezes the session timer. Done freezes the confirmed display as Awaiting
 final review; Calculate publishes the reviewed result as Completed. Starting
 another unshared run never sends that run's values. Hide clears the widget.
 Reset link invalidates BOTH old read/publish credentials; update the URL in OBS.
+Reset stats starts the overlay over from the latest confirmed reading during a
+shared running/paused session. It clears the gains, rates and graph, and measures
+active time from that reading. The full recording/history and OBS link stay the
+same. Rates stay zero until a fresh active minute is confirmed. If mesos were
+unreadable at reset, the next readable capture establishes their new baseline;
+mesos gains count from that capture. Hide/re-share and browser reload remember
+the reset for that run; a newly shared run starts from its own beginning.
 Only one tab can publish a link. Close/hide in the first tab before using another;
 an abandoned publisher lease expires after 75 seconds. Reload does not opt a
 running session back into sharing. Its previous display becomes Disconnected

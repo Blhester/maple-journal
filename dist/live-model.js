@@ -10,7 +10,11 @@
   }
   // Explicit allowlist: neither the running session nor its raw values leave
   // this boundary. Calling without preview gives confirmed-only stream data.
-  function snapshot(state,{lastSample=null,now=Date.now()}={}){
+  function baseline(state){
+    const p=points(state).at(-1),s=p?A.stats(state.start,p):null;
+    return {session:String(state.id),ms:p?.elapsedMs||0,exp:s?.exp||0,net:p?s.net:0};
+  }
+  function snapshot(state,{lastSample=null,now=Date.now(),since=null}={}){
     if(!state.id||!state.start)return null;
     const view=project(state,{now}),s=view.stats,p=view.point;
     let phase=state.stage==='complete'?'complete':state.stage==='ending'?'ending':state.pausedAt?'paused':s?.rateReady?'running':'starting';
@@ -21,8 +25,27 @@
       const r=M.calculate(state.start,state.end,M.activeElapsed(state));expHour=r.rates.hour.exp;netHour=r.rates.hour.mesos;expTotal=r.exp;netTotal=r.net;rateReady=true;sampleAt=state.stoppedAt;
       rows=rows.filter(row=>row.to<r.durationMs).concat({to:r.durationMs,expHour,netHour});
     }
+    if(since?.session===String(state.id)&&Number.isFinite(since.ms)&&since.ms>=0&&Number.isFinite(since.exp)&&(since.net===null||Number.isFinite(since.net))){
+      // Keep the baseline in the tracker. Recalculate from confirmed cumulative
+      // gains, including sub-minute readings whose displayed rates were zero.
+      const readings=view.confirmed.map(point=>{const value=A.stats(state.start,point);return {ms:point.elapsedMs,exp:value.exp,net:value.net};}).filter(row=>row.ms>since.ms);
+      if(phase==='complete'){
+        const ms=M.activeElapsed(state);readings.splice(0,readings.length,...readings.filter(row=>row.ms<ms),...(ms>since.ms?[{ms,exp:expTotal,net:netTotal}]:[]));
+      }
+      // An unreadable balance at reset needs a fresh known balance before
+      // counting mesos again; never treat N/A as a zero balance.
+      const anchor=since.net===null?readings.find(row=>row.net!==null):{ms:since.ms,net:since.net};
+      const rate=(value,ms)=>value===null?null:ms>0&&(ms>=60000||phase==='complete')?value*3600000/ms:0;
+      rows=readings.map(row=>({to:row.ms-since.ms,expHour:rate(row.exp-since.exp,row.ms-since.ms),netHour:row.net===null||!anchor||row.ms<anchor.ms?null:rate(row.net-anchor.net,row.ms-anchor.ms)}));
+      const latest=readings.at(-1);expTotal=latest?latest.exp-since.exp:0;netTotal=!anchor||latest?.net===null?null:latest?latest.net-anchor.net:0;
+      expHour=rows.at(-1)?.expHour??0;netHour=rows.length?rows.at(-1).netHour:since.net===null?null:0;
+      if(phase!=='complete'&&lastSample?.mesosReadable===false){netHour=null;netTotal=null;}
+      rateReady=!!latest&&(latest.ms-since.ms>=60000||phase==='complete');
+      if(['starting','running'].includes(phase))phase=rateReady?'running':'starting';
+      view.activeMs=Math.max(0,view.activeMs-since.ms);
+    }
     const series=rows.filter(row=>row.to>0).slice(-240).map(row=>({ms:row.to,exp:row.expHour,mesos:row.netHour}));
     return {version:1,session:String(state.id),phase,activeMs:view.activeMs,sampleAt,captureAt:lastSample?.usable?lastSample.at:p?.at??state.startedAt,rateReady,expHour,netHour,expTotal,netTotal,series:[{ms:0,exp:0,mesos:0},...series]};
   }
-  return {points,project,snapshot};
+  return {points,project,snapshot,baseline};
 });
