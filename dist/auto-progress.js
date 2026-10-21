@@ -79,7 +79,7 @@
   // One bounded job at a time. Late browser timers take one fresh sample, never
   // replay missed minutes or invent timestamps. Permission is requested only
   // by start(), which must be called directly from the user's toggle gesture.
-  function createRecorder({sample,getContext,onSample,onStatus=()=>{},now=Date.now,setTimer=setTimeout,clearTimer=clearTimeout,intervalMs=60000,timeoutMs=45000}){
+  function createRecorder({sample,getContext,onSample,onStatus=()=>{},now=Date.now,setTimer=setTimeout,clearTimer=clearTimeout,intervalMs=30000,timeoutMs=45000}){
     let enabled=false,timer=null,job=null,generation=0,sessionId=null;
     function status(message,extra={}){onStatus({enabled,inFlight:!!job,message,...extra});}
     function schedule(due=now()+intervalMs){clearTimer(timer);if(enabled){timer=setTimer(()=>void run(false),Math.max(0,due-now()));status(undefined,{due});}}
@@ -93,7 +93,7 @@
       const token=generation,controller=new AbortController(),started=now();job=controller;status('Capturing and reading progress locally…');let watchdog;
       try{
         const cancelled=new Promise((_,reject)=>controller.signal.addEventListener('abort',()=>reject(controller.signal.reason),{once:true}));
-        const timeout=new Promise((_,reject)=>{watchdog=setTimer(()=>{const error=new Error('Snapshot reading timed out; this minute was skipped.');controller.abort(error);reject(error);},timeoutMs);});
+        const timeout=new Promise((_,reject)=>{watchdog=setTimer(()=>{const error=new Error('Snapshot reading timed out; this sample was skipped.');controller.abort(error);reject(error);},timeoutMs);});
         const result=await Promise.race([sample({signal:controller.signal,allowPrompt}),timeout,cancelled]);
         if(token!==generation||!enabled)return;
         const current=getContext();if(current.running&&!current.paused&&current.sessionId===context.sessionId)onSample(result);
