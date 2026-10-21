@@ -1,9 +1,11 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),harness=require('./test-screenshot-transfer.cjs'),{decode}=require('./lib/png-rgba.cjs');
 const pictures=Object.fromEntries([['exp','exp/sample-exp.png'],['hp','quantity/sample-hp.png'],['mp','quantity/sample-mp.png']].map(([key,file])=>[key,decode(fs.readFileSync('test/fixtures/'+file))]));
-function fixture({deferDecode=false,deferText=false}={}){
+const screenshot=decode(fs.readFileSync('dist/assets/ocr-example.png'));
+function fixture({deferDecode=false,deferText=false,tight=false}={}){
   const urls=new Map(),trace={requests:[],canvases:[],fontWorkers:0,terminated:0,textWorkers:0,textTerminated:0},pending={};let id=0,recognitions=0;
-  const h=harness(new Map(),{screenCapture:{supported:()=>true,createSession:()=>({active:()=>true,stop(){},capture:async options=>{trace.requests.push(options);return new Blob(['pixels']);}})},setupRuntime:(context,Element)=>{
+  const storage=new Map();if(tight){const regions=structuredClone(require('./dist/ocr-core.js').defaults);for(const [key,x]of [['hp',1419],['mp',1469]])regions[key]={x:x/1919,y:960/1079,w:30/1919,h:17/1079};storage.set('maple-journal-ocr-regions-v1',JSON.stringify(regions));}
+  const h=harness(storage,{screenCapture:{supported:()=>true,createSession:()=>({active:()=>true,stop(){},capture:async options=>{trace.requests.push(options);return new Blob(['pixels']);}})},setupRuntime:(context,Element)=>{
     class LocalURL extends URL{static createObjectURL(blob){const url='blob:test-'+(++id);urls.set(url,blob);return url;}static revokeObjectURL(url){urls.delete(url);}}
     Object.assign(context,{URL:LocalURL,Blob,DOMException,MapleExpReader:require('./dist/exp-reader.js'),MapleQuantityReader:require('./dist/quantity-reader.js'),
       Image:class{constructor(){this.naturalWidth=1919;this.naturalHeight=1079;}decode(){return deferDecode?new Promise(resolve=>{pending.decode=resolve;}):Promise.resolve();}},
@@ -13,10 +15,11 @@ function fixture({deferDecode=false,deferText=false}={}){
     context.document.baseURI='https://test.invalid/';context.location.protocol='https:';
     context.document.createElement=tag=>{
       const element=new Element(tag);if(tag!=='canvas')return element;
-      trace.canvases.push(element);let sourceX=null;
-      element.getContext=()=>({drawImage:(_image,x)=>{sourceX=x;},fillRect(){},putImageData(){},getImageData:(_x,_y,width,height)=>{
+      trace.canvases.push(element);let sourceX=null,sourceY=null;
+      element.getContext=()=>({drawImage:(_image,x,y)=>{sourceX=x;sourceY=y;},fillRect(){},putImageData(){},getImageData:(_x,_y,width,height)=>{
         if(sourceX===1608&&width===197&&height===16)return {width,height,data:new Uint8ClampedArray(width*height*4).fill(255)};
-        const key=sourceX===1047?'exp':sourceX===1417?'hp':sourceX===1467?'mp':null;
+        if(sourceX>=1410&&sourceX<1480){const data=new Uint8ClampedArray(width*height*4);for(let row=0;row<height;row++)data.set(screenshot.data.subarray(((sourceY+row)*screenshot.width+sourceX)*4,((sourceY+row)*screenshot.width+sourceX+width)*4),row*width*4);return {width,height,data};}
+        const key=sourceX===1047?'exp':null;
         if(key){const picture=pictures[key];assert.equal(width,picture.width);assert.equal(height,picture.height);return {width,height,data:new Uint8ClampedArray(picture.data)};}
         return {width,height,data:new Uint8ClampedArray(width*height*4)};
       }});return element;
@@ -29,6 +32,7 @@ const flush=async predicate=>{for(let i=0;i<100&&!predicate();i++)await new Prom
   const {h,trace,urls}=fixture(),result=await h.screenshot.sampleProgress({signal:new AbortController().signal,allowPrompt:false});
   assert.deepEqual(Object.fromEntries(Object.entries(result.results).map(([k,r])=>[k,r.value])),{level:'58',exp:'268628',mesos:'0',hp:'441',mp:'761'});
   assert.equal(trace.requests.length,1);assert.equal(trace.requests[0].allowPrompt,false);assert.equal(trace.fontWorkers,3);assert.equal(trace.terminated,3);assert.equal(trace.textWorkers,1);assert.equal(trace.textTerminated,1);assert.equal(urls.size,0);
+  const tight=fixture({tight:true}),tightResult=await tight.h.screenshot.sampleProgress({allowPrompt:false});assert.equal(tightResult.results.hp.value,'441');assert.equal(tightResult.results.mp.value,'761');assert.equal(tight.urls.size,0,'Padded automatic reads release all pixel URLs too');
   assert.equal(h.node('ocr-workspace').hidden,true);assert.equal(h.node('ocr-image').attributes.src,undefined);assert.equal(h.node('ocr-review-fields').children.length,0,'No background sample opens or fills the manual review dialog');
   // All numeric preprocessing canvases must be released too, including the
   // scaled intermediates, rather than merely dropping the final output canvas.

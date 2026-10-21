@@ -10,6 +10,13 @@
     if(x<0||y<0||w<=0||h<=0||x+w>1.00001||y+h>1.00001)throw new Error('Keep the read region inside the screenshot.');
     return {x,y,w,h};
   }
+  function digitRegion(box,width,height,reader){
+    if(reader!=='quantity-font')return {...box};
+    // A hand-drawn box often touches the outline of the first/last digit.
+    // Recover real neighboring pixels, rather than inventing a padded edge.
+    const pad=Math.max(2,Math.min(8,Math.round(box.h*.12))),x=Math.max(0,box.x-pad),y=Math.max(0,box.y-pad);
+    return {x,y,w:Math.min(width,box.x+box.w+pad)-x,h:Math.min(height,box.y+box.h+pad)-y};
+  }
   function cleanText(value){return String(value||'').normalize('NFKC').replace(/[|]/g,'I').replace(/[\u0000-\u001f]+/g,' ').replace(/\s+/g,' ').trim();}
   function parse(id,text){
     let raw=String(text||'').normalize('NFKC').trim();
@@ -92,6 +99,6 @@
     return pale/(data.length/4)>=.6;
   }
   const scaleFor=(width,height,preferred)=>Math.min(preferred,Math.sqrt(2000000/(width*height)),6000/width,6000/height);
-  root.MapleOcrCore={fields,defaults,region,parse,select,readerFor,tuning,processPixels,inventoryVisible,scaleFor};
+  root.MapleOcrCore={fields,defaults,region,digitRegion,parse,select,readerFor,tuning,processPixels,inventoryVisible,scaleFor};
   if(typeof module!=='undefined')module.exports=root.MapleOcrCore;
 })(typeof window!=='undefined'?window:globalThis);
