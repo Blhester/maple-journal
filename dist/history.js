@@ -67,7 +67,8 @@
     for(const [i,g]of groups.entries()){const dot=svgElement('circle',{cx:X(g.expHour),cy:Y(g.netHour),r:7,class:'map-dot'});dot.append(svgElement('title',{},g.map+' · '+fmt(g.expHour)+' EXP/h · '+fmt(g.netHour)+' mesos/h · '+g.runs+' runs'));svg.append(dot,svgElement('text',{x:X(g.expHour)+11,y:Y(g.netHour)+4,class:'chart-marker'},String(i+1)));}
   }
   function save(session){
-    try{const stored=localStorage.getItem(key);if(stored)records=M.mergeHistory(records,JSON.parse(stored));}
+    // Storage is authoritative: another tab may have replaced or cleared history.
+    try{const stored=localStorage.getItem(key);records=M.mergeHistory([],stored?JSON.parse(stored):[]);}
     catch{records=M.mergeHistory(records,[session]);render();throw new Error('Existing browser history could not be read safely. This run is in memory; use Back up JSON before closing. Existing storage has not been overwritten.');}
     records=M.mergeHistory(records,[session]);render();try{localStorage.setItem(key,JSON.stringify(records));}catch{throw new Error('History is available in this tab but could not be written to browser storage. Use Back up JSON before closing.');}
   }
@@ -78,12 +79,24 @@
     const header=['Date','Map','Class','Starting level','Ending level','Active seconds','Paused seconds','EXP gained','Original net','Adjusted cash net','Estimated net with loot','EXP/hour','Net mesos/hour','Net with loot/hour','ETC unsold estimate','ETC sold after balance'];
     const lines=records.map(s=>{const r=M.calculate(s.start,s.end,M.activeElapsed(s));return [new Date(s.stoppedAt).toISOString(),s.meta.map,s.meta.class,s.start.level,s.end.level,r.durationMs/1000,s.pausedMs/1000,r.exp,r.net,r.adjustedNet,r.estimatedNet,r.rates.hour.exp,r.rates.hour.mesos,M.profitRates(r,'estimatedNet').hour,M.ledgerTotals(s.end.ledger.filter(e=>e.source==='etc')).loot,M.ledgerTotals(s.end.ledger.filter(e=>e.source==='etc')).income].map((v,i)=>i<3?csvCell(v):String(v??'')).join(',');});download('maple-journal-history.csv','text/csv;charset=utf-8','\uFEFF'+[header.join(','),...lines].join('\r\n'));
   });
+  function replaceHistory(next,{resetFilters=false}={}){
+    records=next;page=0;selected=null;$('history-review').hidden=true;$('history-review').replaceChildren();
+    if(resetFilters)for(const id of ['filter-class','filter-min','filter-max'])$(id).value='';
+    render();
+  }
   $('import-json').addEventListener('change',async event=>{
     const file=event.target.files[0];if(!file)return;
-    try{if(file.size>5000000)throw new Error('Choose a JSON backup smaller than 5 MB.');const data=JSON.parse(await file.text());if(data.schemaVersion!==1||!Array.isArray(data.sessions))throw new Error('Choose a Maple Journal schema-version 1 backup.');const merged=M.mergeHistory(records,data.sessions);records=merged;render();try{localStorage.setItem(key,JSON.stringify(records));}catch{throw new Error('Import is in memory only; browser storage is full. Export a backup before closing.');}notice('');$('history-status').prepend(document.createTextNode('Backup restored. Matching IDs were updated; other sessions were kept. '));}catch(e){notice('Backup could not be restored: '+e.message);}finally{event.target.value='';}
+    try{
+      if(file.size>5000000)throw new Error('Choose a JSON backup smaller than 5 MB.');
+      const data=JSON.parse(await file.text());if(data.schemaVersion!==1||!Array.isArray(data.sessions))throw new Error('Choose a Maple Journal schema-version 1 backup.');
+      const next=M.mergeHistory([],data.sessions);
+      // Validate the entire backup and persist it before replacing the visible list.
+      try{localStorage.setItem(key,JSON.stringify(next));}catch{throw new Error('Browser storage could not be updated. Your existing history was kept.');}
+      replaceHistory(next,{resetFilters:true});notice('');$('history-status').prepend(document.createTextNode('Backup restored. Saved history was replaced with '+next.length+' session'+(next.length===1?'':'s')+'. '));
+    }catch(e){notice('Backup could not be restored: '+e.message);}finally{event.target.value='';}
   });
   for(const id of ['filter-class','filter-min','filter-max','compare-metric'])$(id).addEventListener(id==='filter-min'||id==='filter-max'?'input':'change',()=>{page=0;notice('');render();});
   try{const raw=JSON.parse(localStorage.getItem(key)||'[]');records=M.mergeHistory([],raw);}catch(e){notice('Saved history could not be read: '+e.message+'. Existing storage has not been overwritten.');}
-  window.addEventListener('storage',event=>{if(event.key===key&&event.newValue){try{records=M.mergeHistory(records,JSON.parse(event.newValue));render();}catch(e){notice('History in another tab could not be loaded: '+e.message);}}});
+  window.addEventListener('storage',event=>{if(event.key===key||event.key===null){try{replaceHistory(M.mergeHistory([],event.newValue?JSON.parse(event.newValue):[]));}catch(e){notice('History in another tab could not be loaded: '+e.message);}}});
   window.MapleHistory={save,render,lineChart};render();
 })();

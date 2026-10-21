@@ -4,7 +4,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 // Minimal DOM test double. Run the real screenshot submit handler and app.js;
 // only recognition workers, visual widgets and storage/network side effects are
 // replaced. No copy of the production transfer or calculation logic lives here.
-function harness(storage=new Map()){
+function harness(storage=new Map(),{realHistory=false}={}){
   const nodes=new Map(),html=fs.readFileSync(path.join(__dirname,'dist/index.html'),'utf8');
   class Element{
     constructor(tag='div'){this.tag=tag;this.children=[];this.events=new Map();this.attributes={};this.dataset={};this._value='';this.textContent='';this.checked=false;this.hidden=false;this.disabled=false;this.classList={toggle(){},remove(){},add(){}};}
@@ -12,7 +12,7 @@ function harness(storage=new Map()){
     setAttribute(key,value){this.attributes[key]=String(value);}removeAttribute(key){delete this.attributes[key];}
     addEventListener(type,handler){if(!this.events.has(type))this.events.set(type,[]);this.events.get(type).push(handler);}
     dispatchEvent(event){for(const handler of this.events.get(event.type)||[])handler(event);return true;}
-    append(...children){this.children.push(...children);}replaceChildren(...children){this.children=children;}
+    append(...children){this.children.push(...children);}prepend(...children){this.children.unshift(...children);}replaceChildren(...children){this.textContent='';this.children=children;}
     querySelectorAll(){return [];}focus(){}showModal(){this.open=true;}close(){this.open=false;this.dispatchEvent(new Event('close'));}
     reset(){for(const id of this.formIds||[]){const node=nodes.get(id);node.value=node.initialValue;}}
   }
@@ -24,18 +24,19 @@ function harness(storage=new Map()){
   // Review fields are normally built after OCR. Supply those reviewed results
   // directly, leaving parsing, checkbox filtering and form transfer to real code.
   for(const field of require('./dist/ocr-core.js').fields)for(const prefix of ['ocr-use-','ocr-value-','ocr-potion-'])nodes.set(prefix+field.id,new Element('input'));
-  let now=Date.parse('2026-10-20T20:00:00Z'),etcOptions,saved;
-  const context={document:{getElementById:id=>nodes.get(id)||null,createElement:tag=>new Element(tag),createElementNS:(_ns,tag)=>new Element(tag),addEventListener(){}},
+  let now=Date.parse('2026-10-20T20:00:00Z'),etcOptions,saved;const windowEvents=new Map();
+  const context={document:{getElementById:id=>nodes.get(id)||null,createElement:tag=>new Element(tag),createElementNS:(_ns,tag)=>new Element(tag),createTextNode:value=>{const n=new Element('#text');n.textContent=value;return n;},addEventListener(){}},
     localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,String(value)),removeItem:key=>storage.delete(key)},
     Date:class extends Date{static now(){return now;}},Event,Intl,structuredClone,console,URL,AbortController,Option:class extends Element{constructor(label,value){super('option');this.textContent=label;this.value=value;}},
-    setInterval:()=>1,clearInterval(){},location:{hash:''},history:{replaceState(){}},addEventListener(){},
+    setInterval:()=>1,clearInterval(){},location:{hash:''},history:{replaceState(){}},addEventListener(type,handler){if(!windowEvents.has(type))windowEvents.set(type,[]);windowEvents.get(type).push(handler);},
     MapleMath:require('./dist/core.js'),MapleOcrCore:require('./dist/ocr-core.js'),MapleMapMatcher:require('./dist/map-matcher.js'),
     MapleScreenCapture:{supported:()=>false},MaplePotionPicker:{enhance(){},syncAll(){},setBusy(){},dispose(){}},
-    MapleEtc:{init:options=>{etcOptions=options;},render(){},reset(){}},
+    MapleEtc:{init:options=>{etcOptions=options;},render(){},reset(){},icon:()=>new Element('img'),describe:entry=>entry.label},
     MapleHistory:{save:record=>{saved=structuredClone(record);},lineChart(){}}
   };
   context.window=context;vm.createContext(context);
-  for(const file of ['screenshot.js','app.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'dist',file),'utf8'),context,{filename:file});
+  node('compare-metric').value='net';
+  for(const file of [...(realHistory?['history.js']:[]),'screenshot.js','app.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'dist',file),'utf8'),context,{filename:file});
   const fire=(id,type='click')=>node(id).dispatchEvent(new Event(type,{cancelable:true}));
   function applyReview(values,stage='start'){
     fire('screenshot-'+stage);
@@ -44,7 +45,7 @@ function harness(storage=new Map()){
     fire('ocr-review-form','submit');
     assert.equal(node('ocr-review-error').textContent,'','Screenshot applied successfully');
   }
-  return {node,fire,applyReview,storage,setTime:value=>{now=Date.parse(value);},entries:values=>etcOptions.onChange(values),state:()=>JSON.parse(storage.get('maple-journal-session-v1')),saved:()=>saved};
+  return {node,fire,applyReview,storage,history:context.MapleHistory,windowEvent:event=>{for(const handler of windowEvents.get(event.type)||[])handler(event);},setTime:value=>{now=Date.parse(value);},entries:values=>etcOptions.onChange(values),state:()=>JSON.parse(storage.get('maple-journal-session-v1')),saved:()=>saved};
 }
 
 // This is the real reviewed-screenshot -> start form -> timer -> ending form ->
@@ -110,3 +111,4 @@ invalid.fire('ocr-review-form','submit');assert.match(invalid.node('ocr-review-e
 assert.equal(invalid.node('start-exp').value,'');assert.equal(invalid.node('start-mesos').value,'777');
 
 console.log('Passed: real screenshot review submit -> start/end forms -> timed session -> rendered rates, starting-value isolation, item/price isolation, zeros, unchecked fields, invalid proposals, saved drafts and profit selector updates.');
+module.exports=harness;

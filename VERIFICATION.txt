@@ -157,3 +157,9 @@ Meat/Lemon initial defaults — October 20, 2026
 - Extended controller/transfer regression tests for fresh defaults, applying Meat/Lemon from different selected items, New Session plus reload, and an explicitly selected Red Potion with a custom 45-meso price. Full suite and static/standalone build pass.
 - Browser full example OCR review and applied setup form both show Meat/Lemon with correct prices, HP 441 and MP 761; refresh preserves them.
 - Browser ending OCR review also retains Meat/Lemon at 80/150, with both selectors disabled to preserve recorded supply types.
+
+JSON replacement restore — October 21, 2026
+- Restore JSON now validates the complete backup and persists its normalized sessions before replacing history. Matching IDs are overwritten, missing IDs are removed, empty backups clear history, and filters/page/review reset. The interface explains replacement rather than merging.
+- Completed tracker drafts no longer auto-save into history on reload. Other-tab storage updates replace the in-memory list, including storage clears; subsequent saves start from the authoritative stored list so stale records cannot reappear.
+- test-history-restore.cjs executes actual history/app handlers. It covers A/B -> updated A/C, reload with stale completed A, empty restore, stale-tab saves, storage events/removal/clear, filters/review, malformed/schema/invalid-session/oversized files, duplicate IDs and failed storage writes preserving both data and visible history.
+- Full tests and static/standalone build pass. Browser checked replacement instructions/layout; native file chooser upload was unavailable in this automation environment, so file contents were exercised through the actual async change handler in the DOM integration test.

@@ -32,7 +32,7 @@ https://meowdb.com/msclassic/npc-shops — editable NPC supply prices, including
 https://meowdb.com/msclassic/formulas/leveling — Classic EXP formulas for requirements from levels 1–99, with level 100 as the table endpoint.
 
 STORAGE
-History, the active draft/checkpoints, and theme stay in this browser. The hosted site, localhost, and local-file copy use separate origin storage. No game/account connection or server-side history storage is used. Back up important runs with JSON. Restore merges matching session IDs and keeps other records. Filters do not limit exports. Comparisons do not normalize party size, gear, buffs, or map changes during a run.
+History, the active draft/checkpoints, and theme stay in this browser. The hosted site, localhost, and local-file copy use separate origin storage. No game/account connection or server-side history storage is used. Back up important runs with JSON. Restore JSON replaces saved history with the backup, including removing sessions absent from it; an empty backup clears history. The whole file is validated and saved before the visible history changes. Restores reset history filters and synchronize other open tabs. The current tracker draft stays separate and is only added to history when explicitly calculated. Filters do not limit exports. Comparisons do not normalize party size, gear, buffs, or map changes during a run.
 
 FILES
 FEATURES.txt: internal feature list and calculation contract.
