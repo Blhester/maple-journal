@@ -6,7 +6,7 @@ The header slider remembers light/dark mode, including sun/moon icons.
 
 TRACK A RUN
 1. Optionally enter map, class/job, and level. Starting EXP is within-level EXP when a level is provided.
-2. Enter starting EXP, mesos, supplies, quantities, and editable unit prices. Start the timer. New sessions remember the last selected HP/MP items and unit prices in this browser, including after refresh; session quantities and balances reset.
+2. Enter starting EXP, mesos, supplies, quantities, and editable unit prices. Start the timer. The initial HP/MP defaults are Meat (80 mesos) and Lemon (150 mesos). New sessions remember the last selected HP/MP items and unit prices in this browser, including after refresh; session quantities and balances reset. Saved choices take precedence over these initial defaults.
 3. Pause/resume for breaks. Optional checkpoints record snapshots for the final pace review.
 4. Done stops active time, including when paused. Enter ending values and ending level if supplied at the start.
 5. Adjust cumulative supply additions. Without level metadata, the manual extra-EXP field supports legacy sessions.

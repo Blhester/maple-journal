@@ -151,3 +151,9 @@ Screenshot transfer verification — October 20, 2026
 - test-screenshot-transfer.cjs executes real screenshot.js review submission and app.js handlers against a minimal DOM and fixed clock. Known reviewed start/end values, a five-minute pause, ETC and cash adjustments produce the exact expected 105,000/hour, 17,500/10 minutes and 1,750/minute on rendered result nodes.
 - Tests verify starting vs ending field mapping, immutable starting snapshot/item prices, zero values, missing/unchecked fields, repeated ending imports, invalid proposals rejected before mutation, excluded ending-value entry time, saved draft restoration and profit selector changes. No transfer or scaling bug reproduced.
 - Confirmed existing contract: unchecked or unread fields retain the previous form value. A second screenshot can therefore leave an earlier meso amount in place if Mesos is not selected. No production behavior changed. Recognition workers and visual picker components are not exercised by this DOM test; their existing tests remain separate.
+
+Meat/Lemon initial defaults — October 20, 2026
+- Fixed app initialization that still used White/Blue when no saved selection existed. Fresh HP/MP defaults are Meat at 80 and Lemon at 150. Saved choices and recorded session prices retain precedence.
+- Extended controller/transfer regression tests for fresh defaults, applying Meat/Lemon from different selected items, New Session plus reload, and an explicitly selected Red Potion with a custom 45-meso price. Full suite and static/standalone build pass.
+- Browser full example OCR review and applied setup form both show Meat/Lemon with correct prices, HP 441 and MP 761; refresh preserves them.
+- Browser ending OCR review also retains Meat/Lemon at 80/150, with both selectors disabled to preserve recorded supply types.

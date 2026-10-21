@@ -40,7 +40,7 @@ function harness(storage=new Map()){
   function applyReview(values,stage='start'){
     fire('screenshot-'+stage);
     for(const field of context.MapleOcrCore.fields){node('ocr-use-'+field.id).checked=Object.hasOwn(values,field.id);node('ocr-value-'+field.id).value=values[field.id]??'';}
-    for(const type of ['hp','mp'])node('ocr-potion-'+type).value=values[type+'Potion']||'meat';
+    for(const type of ['hp','mp'])node('ocr-potion-'+type).value=values[type+'Potion']||(type==='hp'?'meat':'lemon');
     fire('ocr-review-form','submit');
     assert.equal(node('ocr-review-error').textContent,'','Screenshot applied successfully');
   }
@@ -50,6 +50,10 @@ function harness(storage=new Map()){
 // This is the real reviewed-screenshot -> start form -> timer -> ending form ->
 // calculation -> rendered rate path, with known, independent expected answers.
 const h=harness();
+for(const [id,value]of Object.entries({'hp-potion':'meat','mp-potion':'lemon','hp-cost':'80','mp-cost':'150'}))assert.equal(h.node(id).value,value,'Fresh-browser default: '+id);
+// Choose different supplies first, so applying OCR must change both item and cost.
+h.node('hp-potion').value='white';h.fire('hp-potion','change');
+h.node('mp-potion').value='blue';h.fire('mp-potion','change');
 h.applyReview({map:'Dungeon · Ant Tunnel IV',class:'Wizard (Ice, Lightning)',level:'58',exp:'268628',mesos:'100000',hp:'100',mp:'100',hpPotion:'meat',mpPotion:'lemon'});
 for(const [id,value]of Object.entries({'start-level':'58','start-exp':'268628','start-mesos':'100000','start-hp':'100','start-mp':'100','hp-potion':'meat','mp-potion':'lemon','hp-cost':'80','mp-cost':'150'}))assert.equal(h.node(id).value,value,'Starting import: '+id);
 assert.equal(h.state().stage,'setup','Applying OCR does not start training');
@@ -79,6 +83,12 @@ for(const id of ['mesos-hour','mesos-ten','mesos-minute'])assert.equal(restored.
 // Selectors must use one profit total consistently across the three displayed rates.
 restored.node('profit-metric').value='net';restored.fire('profit-metric','change');
 assert.equal(restored.node('mesos-hour').textContent,'90,000');assert.equal(restored.node('mesos-ten').textContent,'15,000');assert.equal(restored.node('mesos-minute').textContent,'1,500');
+restored.fire('new-button');
+const next=harness(restored.storage);
+for(const [id,value]of Object.entries({'hp-potion':'meat','mp-potion':'lemon','hp-cost':'80','mp-cost':'150','start-exp':'','start-mesos':'','start-hp':'','start-mp':''}))assert.equal(next.node(id).value,value,'New Session then reload: '+id);
+// An explicit saved choice, including a custom unit price, takes precedence.
+next.node('hp-potion').value='red';next.fire('hp-potion','change');next.node('hp-cost').value='45';next.fire('hp-cost','input');
+const chosen=harness(next.storage);assert.equal(chosen.node('hp-potion').value,'red');assert.equal(chosen.node('hp-cost').value,'45');
 
 const partial=harness();
 partial.node('start-mesos').value='123456';partial.fire('start-mesos','input');

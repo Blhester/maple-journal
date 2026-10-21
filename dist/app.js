@@ -123,7 +123,7 @@
   }
   function updateLevelHint(){try{const v=$('start-level').value;$('level-hint').textContent=v?(Number(v)===100?'Level 100 is the end of the supported EXP table.':format(M.expTable[M.levelNumber(v)])+' EXP needed for this level. Enter within-level EXP below.'):'Add a level to handle level-ups and estimate time to your next level.';}catch(e){$('level-hint').textContent=e.message;}}
   for(const type of ['hp','mp']){
-    $(type+'-potion').replaceChildren(...M.catalog[type].map(p=>new Option(p.name+(p.id==='custom'?'':' · '+format(p.cost)+' mesos'),p.id)));$(type+'-potion').value=type==='hp'?'white':'blue';const updatePrice=()=>{$(type+'-cost').value=M.catalog[type].find(p=>p.id===$(type+'-potion').value).cost;};updatePrice();$(type+'-potion').addEventListener('change',()=>{updatePrice();persist();});
+    $(type+'-potion').replaceChildren(...M.catalog[type].map(p=>new Option(p.name+(p.id==='custom'?'':' · '+format(p.cost)+' mesos'),p.id)));$(type+'-potion').value=type==='hp'?'meat':'lemon';const updatePrice=()=>{$(type+'-cost').value=M.catalog[type].find(p=>p.id===$(type+'-potion').value).cost;};updatePrice();$(type+'-potion').addEventListener('change',()=>{updatePrice();persist();});
     MaplePotionPicker.enhance($(type+'-potion'),type);
   }
   $('start-form').addEventListener('submit',event=>{
