@@ -12,7 +12,10 @@ function build(){
     const width=right-left+1,alpha=Array.from({length:width*7},(_,i)=>p.data[(Math.floor(i/width)*5+i%width+left)*4+3]/255);
     return {digit:g.digit,width,height:7,alpha};
   }).sort((a,b)=>Number(a.digit)-Number(b.digit));
-  const font={schemaVersion:1,source:metadata.source,path:metadata.path,glyphs};
+  const symbol=metadata.symbols?.[0];if(metadata.symbols?.length!==1||symbol.digit!=='%'||symbol.icon!=='assets/exp-font/percent.png')throw Error('Invalid EXP percent metadata.');
+  const bytes=fs.readFileSync(path.join(dist,symbol.icon)),p=decode(bytes);if(p.width!==7||p.height!==7||bytes.length!==symbol.bytes||crypto.createHash('sha256').update(bytes).digest('hex')!==symbol.sha256)throw Error('EXP percent glyph checksum/dimensions mismatch.');
+  const percent={digit:'%',width:7,height:7,alpha:Array.from({length:49},(_,i)=>p.data[i*4+3]/255)};
+  const font={schemaVersion:1,source:metadata.source,path:metadata.path,glyphs,percent};
   fs.writeFileSync(path.join(dist,'exp-font.js'),'(function(root){"use strict";const font='+JSON.stringify(font)+';if(typeof module==="object"&&module.exports)module.exports=font;root.MapleExpFont=font;})(typeof globalThis!=="undefined"?globalThis:this);\n');return font;
 }
-module.exports={build};if(require.main===module){build();console.log('Verified and embedded ten EXP font glyphs.');}
+module.exports={build};if(require.main===module){build();console.log('Verified and embedded ten EXP digits and the percent symbol.');}

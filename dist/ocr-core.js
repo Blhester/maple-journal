@@ -1,8 +1,9 @@
 (function(root){
   'use strict';
+  const M=typeof module!=='undefined'?require('./core.js'):root.MapleMath;
   const fields=[['map','Training map'],['class','Class / job'],['level','Level'],['exp','EXP'],['mesos','Mesos'],['hp','HP supply quantity'],['mp','MP supply quantity']].map(([id,label])=>({id,label,numeric:!['map','class'].includes(id)}));
   // Normalized regions from the capture guide. Users can redraw each region for their HUD.
-  const pixels={map:[67,36,235,49],class:[511,1031,182,27],level:[457,1044,41,22],exp:[1047,1037,66,17],mesos:[1608,597,197,16],hp:[1417,958,47,18],mp:[1467,958,47,18]};
+  const pixels={map:[67,36,235,49],class:[511,1031,182,27],level:[457,1044,41,22],exp:[1047,1037,134,17],mesos:[1608,597,197,16],hp:[1417,958,47,18],mp:[1467,958,47,18]};
   const defaults=Object.fromEntries(Object.entries(pixels).map(([id,[x,y,w,h]])=>[id,{x:x/1919,y:y/1079,w:w/1919,h:h/1079}]));
   function region(value){
     if(!value||!['x','y','w','h'].every(key=>Number.isFinite(value[key])))throw new Error('Invalid read region.');
@@ -11,7 +12,8 @@
     return {x,y,w,h};
   }
   function digitRegion(box,width,height,reader){
-    if(reader!=='quantity-font')return {...box};
+    if(!['quantity-font','exp-percent'].includes(reader))return {...box};
+    if(reader==='exp-percent'){const pad=Math.max(2,Math.min(8,Math.round(box.h*.12))),x=Math.max(0,box.x-pad);return {x,y:box.y,w:Math.min(width,box.x+box.w+pad)-x,h:box.h};}
     // A hand-drawn box often touches the outline of the first/last digit.
     // Recover real neighboring pixels, rather than inventing a padded edge.
     const pad=Math.max(2,Math.min(8,Math.round(box.h*.12))),x=Math.max(0,box.x-pad),y=Math.max(0,box.y-pad);
@@ -56,6 +58,29 @@
     const alternatives=[...new Set(candidates.map(read=>read.value))].filter(value=>value!==best.value);
     return {value:best.value,raw,confidence:best.confidence||0,votes:score(best.value),readCount:candidates.length,disagrees:alternatives.length>0,alternatives};
   }
+  function parsePercent(text){
+    const raw=String(text??'').normalize('NFKC').trim(),matches=[...raw.matchAll(/(?:^|[^\d.,+-])(\d{1,2}[.,]\d{2})\s*%/g)];
+    if(matches.length!==1||(raw.match(/%/g)||[]).length!==1)return null;return Number(matches[0][1].replace(',','.')).toFixed(2);
+  }
+  function selectPercent(reads){
+    const converted=reads.map(read=>({...read,text:parsePercent(read.text)})),values=converted.filter(read=>read.text!==null),raw=reads.map(read=>(read.label?read.label+': ':'')+read.text.trim()).join('\n');
+    if(!values.length)return {value:null,raw,confidence:0,disagrees:false,alternatives:[],method:'exp-percent-text'};
+    const votes=value=>values.filter(read=>read.text===value).length;values.sort((a,b)=>votes(b.text)-votes(a.text));const best=values[0],alternatives=[...new Set(values.map(read=>read.text))].filter(value=>value!==best.text);
+    return {value:best.text,raw,confidence:best.confidence||0,votes:votes(best.text),readCount:values.length,disagrees:alternatives.length>0,alternatives,method:'exp-percent-text'};
+  }
+  function percentExp(level,percent){
+    try{const n=M.levelNumber(level);if(typeof percent!=='string'||!/^\d{1,2}\.\d{2}$/.test(percent))return null;
+      const basis=Number(percent.replace('.',''));if(n===100)return basis===0?'0':null;
+      return String(Number(BigInt(M.expTable[n])*BigInt(basis)/10000n));
+    }catch{return null;}
+  }
+  function convertPercent(result,level){
+    const percent=typeof result.value==='string'&&/^\d{1,2}\.\d{2}$/.test(result.value)?result.value:null,value=percentExp(level,percent);
+    return {...result,percent,levelUsed:value===null?null:Number(level),value,estimated:percent!==null,alternatives:(result.alternatives||[]).map(p=>percentExp(level,p)).filter(v=>v!==null)};
+  }
+  function migrateExpRegion(value){
+    const r=region(value);return {...r,w:Math.min(1-r.x,Math.max(r.w,defaults.exp.w*r.h/defaults.exp.h))};
+  }
   function readerFor(id,value){
     const field=fields.find(field=>field.id===id);
     if(!field)throw new Error('Unknown screenshot field.');
@@ -99,6 +124,6 @@
     return pale/(data.length/4)>=.6;
   }
   const scaleFor=(width,height,preferred)=>Math.min(preferred,Math.sqrt(2000000/(width*height)),6000/width,6000/height);
-  root.MapleOcrCore={fields,defaults,region,digitRegion,parse,select,readerFor,tuning,processPixels,inventoryVisible,scaleFor};
+  root.MapleOcrCore={fields,defaults,region,digitRegion,parse,select,parsePercent,selectPercent,percentExp,convertPercent,migrateExpRegion,readerFor,tuning,processPixels,inventoryVisible,scaleFor};
   if(typeof module!=='undefined')module.exports=root.MapleOcrCore;
 })(typeof window!=='undefined'?window:globalThis);

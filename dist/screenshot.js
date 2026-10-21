@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const $=id=>document.getElementById(id),C=MapleOcrCore,layoutKey='maple-journal-ocr-regions-v1',tuningKey='maple-journal-ocr-tuning-v1',tuningKeys=['reader','mode','contrast','brightness','threshold','chroma','scale','invert'];
+  const $=id=>document.getElementById(id),C=MapleOcrCore,layoutKey='maple-journal-ocr-regions-v2',legacyLayoutKey='maple-journal-ocr-regions-v1',tuningKey='maple-journal-ocr-tuning-v1',tuningKeys=['reader','mode','contrast','brightness','threshold','chroma','scale','invert'];
   let options,context,image=null,regions=structuredClone(C.defaults),busy=false,worker=null,run=0,objectUrl=null,drag=null;
   let libraryPromise=null,workerUrls=[],tunings={},digitCancel=null,captureController=null,captureSession=null,captureWasActive=false,readCanvases=new Set();
   function paintCaptureConnection(){
@@ -59,7 +59,7 @@
     const numeric=C.fields.find(field=>field.id===id).numeric,fontReader=settings.reader!=='general';
     $('ocr-reader-wrap').hidden=false;$('ocr-general-controls').hidden=fontReader;
     $('ocr-reader-exp').disabled=!numeric;$('ocr-reader-quantity').disabled=!numeric;
-    $('ocr-reader-help').textContent=!numeric?'Map and class names need letters. General text OCR reads these fields; the available Classic font templates contain digits only.':settings.reader==='exp-font'?'Matches the Classic EXP display font from the original crop, including scaled digits and thousands separators. Keep the full number visible. This template may not match level or mesos fonts; use General text OCR if it stays blank. Image sliders are not used by font matching.':settings.reader==='quantity-font'?'Matches the Classic potion quantity font, including its outline and blue shading, from the original crop. Keep the full number visible. This template may not match other HUD fonts; use General text OCR if it stays blank. Image sliders are not used by font matching.':'Use image settings below for text OCR, or try either Classic digit template when the selected number uses that font. Reader and image settings can be remembered separately for each field.';
+    $('ocr-reader-help').textContent=id==='exp'?(settings.reader==='quantity-font'?'The potion template cannot read EXP percentages. Choose Classic EXP digits or General text OCR.':'Read the EXP percentage, including its decimal point and % sign. The complete EXP bar can be included; clipped absolute totals are ignored. A level is required to estimate within-level EXP. '+(settings.reader==='exp-font'?'The Classic template uses original pixels; image sliders do not affect it.':'Image settings below apply to the percentage OCR.')):!numeric?'Map and class names need letters. General text OCR reads these fields; the available Classic font templates contain digits only.':settings.reader==='exp-font'?'Matches the Classic EXP display font from the original crop, including scaled digits and thousands separators. Keep the full number visible. This template may not match level or mesos fonts; use General text OCR if it stays blank. Image sliders are not used by font matching.':settings.reader==='quantity-font'?'Matches the Classic potion quantity font, including its outline and blue shading, from the original crop. Keep the full number visible. This template may not match other HUD fonts; use General text OCR if it stays blank. Image sliders are not used by font matching.':'Use image settings below for text OCR, or try either Classic digit template when the selected number uses that font. Reader and image settings can be remembered separately for each field.';
     for(const key of tuningKeys){const control=$('ocr-tune-'+key);if(key==='invert')control.checked=settings[key];else control.value=String(settings[key]);if($('ocr-out-'+key))$('ocr-out-'+key).textContent=settings[key]+(key==='contrast'?'×':'');}
     $('ocr-tune-chroma').disabled=busy||settings.mode!=='neutral';$('ocr-tune-threshold').disabled=busy||settings.mode==='gray';
     const canvas=$('ocr-processed');if(fontReader){canvas.width=canvas.height=1;return;}const source=processedCrop(id);canvas.width=source.width;canvas.height=source.height;canvas.getContext('2d').drawImage(source,0,0);source.width=source.height=1;
@@ -106,13 +106,13 @@
     finally{if(captureController===controller){captureController=null;$('ocr-capture-cancel').hidden=true;setBusy(false);}paintCaptureConnection();}
   }
   function readDigits(id,choice){
-    const r=C.digitRegion(sourceRegion(id),image.naturalWidth,image.naturalHeight,choice),exp=choice==='exp-font',scale=Math.min(1,(exp?512:96)/r.w,(exp?64:32)/r.h),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(r.w*scale));canvas.height=Math.max(1,Math.round(r.h*scale));
+    const exp=choice==='exp-font',r=C.digitRegion(sourceRegion(id),image.naturalWidth,image.naturalHeight,id==='exp'&&exp?'exp-percent':choice),scale=Math.min(1,(exp?512:96)/r.w,(exp?64:32)/r.h),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(r.w*scale));canvas.height=Math.max(1,Math.round(r.h*scale));
     const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,r.x,r.y,r.w,r.h,0,0,canvas.width,canvas.height);const pixels=ctx.getImageData(0,0,canvas.width,canvas.height);canvas.width=canvas.height=1;
     return new Promise((resolve,reject)=>{
       const url=URL.createObjectURL(new Blob([(exp?MapleExpReader:MapleQuantityReader).workerSource()],{type:'text/javascript'}));let reader;
       const cleanup=()=>{reader?.terminate();URL.revokeObjectURL(url);if(digitCancel===cancel)digitCancel=null;};
       const cancel=()=>{cleanup();reject(new Error('Reading cancelled.'));};digitCancel=cancel;
-      try{reader=new Worker(url);reader.onmessage=event=>{cleanup();if(event.data.error)reject(new Error(event.data.error));else resolve(event.data.result);};reader.onerror=()=>{cleanup();reject(new Error('The local number reader could not run.'));};reader.postMessage({data:pixels.data,width:pixels.width,height:pixels.height},[pixels.data.buffer]);}catch(e){cleanup();reject(e);}
+      try{reader=new Worker(url);reader.onmessage=event=>{cleanup();if(event.data.error)reject(new Error(event.data.error));else resolve(event.data.result);};reader.onerror=()=>{cleanup();reject(new Error('The local number reader could not run.'));};reader.postMessage({data:pixels.data,width:pixels.width,height:pixels.height,format:id==='exp'?'percent':'amount'},[pixels.data.buffer]);}catch(e){cleanup();reject(e);}
     });
   }
   function clearImage(){if(objectUrl)URL.revokeObjectURL(objectUrl);objectUrl=null;image=null;drag=null;$('ocr-image').removeAttribute('src');for(const id of ['ocr-crop','ocr-processed']){$(id).width=1;$(id).height=1;}$('ocr-region-overlay').replaceChildren();$('ocr-workspace').hidden=true;}
@@ -152,7 +152,7 @@
     const base=new URL('vendor/ocr/',document.baseURI).href;
     return {workerPath:base+'worker.min.js',corePath:base,langPath:base,workerBlobURL:false,legacyCore:false,gzip:true,cacheMethod:'none',logger};
   }
-  async function recognize(fields,token,{selectedOnly=false}={}){
+  async function recognize(fields,token,{selectedOnly=false,background=false}={}){
     const results={};
     let currentField=0,currentPass=0,passCount=1;
     async function ensureTextWorker(){
@@ -168,7 +168,8 @@
         const readerChoice=C.tuning(field.id,tunings[field.id]).reader;
         if(readerChoice!=='general'){
           const result=await readDigits(field.id,readerChoice);if(token!==run)return;
-          results[field.id]={...result,value:C.parse(field.id,result.value)};
+          const level=results.level?.value??(!background?(selectedOnly&&$('ocr-use-level')?.checked?$('ocr-value-level').value:options.getContext().level):null);
+          results[field.id]=field.id==='exp'?C.convertPercent(result,level):{...result,value:C.parse(field.id,result.value)};
           $('ocr-progress').value=(index+1)/fields.length;continue;
         }
         await ensureTextWorker();if(token!==run)return;
@@ -180,10 +181,11 @@
         for(const [passIndex,pass]of passes.entries()){
           if(token!==run)return;
           currentPass=passIndex;
-          await worker.setParameters({tessedit_pageseg_mode:pass.mode,tessedit_char_whitelist:field.numeric?'0123456789.,':'',user_defined_dpi:'300'});
+          await worker.setParameters({tessedit_pageseg_mode:pass.mode,tessedit_char_whitelist:field.id==='exp'?'0123456789.,[]()%':field.numeric?'0123456789.,':'',user_defined_dpi:'300'});
           const surface=prepared||crop(field.id,pass.treatment);readCanvases.add(surface);const {data}=await worker.recognize(surface);reads.push({text:data.text,confidence:data.confidence,label:pass.label});
         }
-        results[field.id]=field.id==='map'?MapleMapMatcher.select(reads):C.select(field.id,reads);
+        const level=results.level?.value??(!background?(selectedOnly&&$('ocr-use-level')?.checked?$('ocr-value-level').value:options.getContext().level):null);
+        results[field.id]=field.id==='exp'?C.convertPercent(C.selectPercent(reads),level):field.id==='map'?MapleMapMatcher.select(reads):C.select(field.id,reads);
       }
     return results;
   }
@@ -194,6 +196,13 @@
       if(token!==run)return;showReview(results,selectedOnly);$('ocr-progress-text').textContent='Reading complete. Review every value before applying.';if(selectedOnly)$('ocr-field-status').textContent=fields[0].label+' updated below. Other reviewed values were kept.';
     }catch(e){if(token===run){restoreReview();error('ocr-error','Screenshot reading could not finish. '+e.message+' You can continue with manual entry.');}}
     finally{if(token===run){if(worker)await worker.terminate();worker=null;releaseReadCanvases();for(const url of workerUrls)URL.revokeObjectURL(url);workerUrls=[];setBusy(false);}}
+  }
+  function syncExpEstimate(){
+    const input=$('ocr-value-exp');if(!input?.dataset.percent)return;
+    const levelInput=$('ocr-value-level'),levelUse=$('ocr-use-level'),level=(levelUse?.checked||levelUse?.disabled)?levelInput?.value:options.getContext().level;
+    const value=C.percentExp(level,input.dataset.percent),wasEmpty=input.value==='';input.value=value??'';
+    if(value===null)$('ocr-use-exp').checked=false;else if(wasEmpty)$('ocr-use-exp').checked=true;
+    const note=$('ocr-review-exp')?.querySelector('.ocr-review-note');if(note)note.textContent=value===null?'Read '+input.dataset.percent+'%. Enter or select the correct level to estimate EXP, or type an EXP total manually.':'Estimated '+Number(value).toLocaleString('en-US')+' EXP from '+input.dataset.percent+'% at level '+level+'. The HUD shows two decimal places, so this is approximate. Edit the total if you know the exact EXP.';
   }
   function showReview(results,partial=false){
     const container=$('ocr-review-fields');if(!partial){MaplePotionPicker.dispose(container);container.replaceChildren();}
@@ -207,21 +216,25 @@
       if(field.numeric){input.min=field.id==='level'?'1':'0';input.step='1';if(field.id==='level')input.max='100';}else input.maxLength=80;
       if(field.id==='map'){input.placeholder='Search MeowDB maps';input.setAttribute('aria-describedby','ocr-map-help');}
       input.addEventListener('input',()=>{use.checked=(field.id==='map'?!!MapleMapMatcher.resolve(input.value):input.value.trim()!=='')&&supported;});row.append(input);
+      if(field.id==='exp'&&result.percent){input.dataset.percent=result.percent;input.addEventListener('input',()=>{delete input.dataset.percent;row.querySelector('.ocr-review-note').textContent='EXP total entered manually. Check it against your screenshot before applying.';});}
+      if(field.id==='level'){input.addEventListener('input',syncExpEstimate);use.addEventListener('change',syncExpEstimate);}
       if(field.id==='map'){
         const matches=text('div','','ocr-map-matches');
         function paintMatches(candidates,searching=false){matches.replaceChildren(text('span',candidates.length?(searching?'Search results · choose a map':'MeowDB matches · choose a map'):'No close map found. Try another name.'));for(const candidate of candidates){const choice=text('div','','ocr-map-choice'),pick=text('button',candidate.label,'secondary');pick.type='button';pick.disabled=busy;pick.setAttribute('aria-label','Use map '+candidate.label);pick.addEventListener('click',()=>{input.value=candidate.label;use.checked=true;row.querySelector('.ocr-review-note').textContent='MeowDB map selected. Check it against your screenshot before applying.';});const link=text('a','MeowDB ↗');link.href=candidate.sourceUrl;link.target='_blank';link.rel='noopener noreferrer';link.setAttribute('aria-label','View '+candidate.label+' on MeowDB');choice.append(pick,link);matches.append(choice);}}
         paintMatches(result.candidates||[]);input.addEventListener('input',()=>{paintMatches(MapleMapMatcher.lookup(input.value),true);row.querySelector('.ocr-review-note').textContent=MapleMapMatcher.resolve(input.value)?'Catalog map found. Check it against your screenshot before applying.':'Choose a catalog map below or leave this field unchecked.';});row.append(matches);
         const help=text('small','Choose a suggested map or search by name. Only catalog maps can be applied from this import.','form-note');help.id='ocr-map-help';row.append(help);
       }
-      if(result.alternatives?.length){const alternatives=text('div','','ocr-alternatives');alternatives.append(text('span','Other readings: '));for(const value of result.alternatives){const pick=text('button',value,'text-button');pick.type='button';pick.disabled=!supported;pick.dataset.unsupported=String(!supported);pick.setAttribute('aria-label','Use '+value+' for '+field.label);pick.addEventListener('click',()=>{input.value=value;use.checked=supported;});alternatives.append(pick);}row.append(alternatives);}
+      if(result.alternatives?.length){const alternatives=text('div','','ocr-alternatives');alternatives.append(text('span','Other readings: '));for(const value of result.alternatives){const pick=text('button',value,'text-button');pick.type='button';pick.disabled=!supported;pick.dataset.unsupported=String(!supported);pick.setAttribute('aria-label','Use '+value+' for '+field.label);pick.addEventListener('click',()=>{input.value=value;use.checked=supported;if(field.id==='exp')delete input.dataset.percent;if(field.id==='level')syncExpEstimate();});alternatives.append(pick);}row.append(alternatives);}
       if(['hp','mp'].includes(field.id)){
         const supply=text('label','Count belongs to '),select=document.createElement('select');select.id='ocr-potion-'+field.id;select.setAttribute('aria-label',field.id.toUpperCase()+' supply in screenshot');select.replaceChildren(...MapleMath.catalog[field.id].map(item=>new Option(item.name,item.id)));select.value=previous?.querySelector('#ocr-potion-'+field.id)?.value||context[field.id+'Potion'];select.disabled=context.stage!=='setup';supply.append(select);row.append(supply);
       }
       row.append(text('small',!supported?'Starting level was not recorded. Keep using the manual level-up adjustment.':field.id==='map'?(result.value===null?'No close catalog match. Search for your map or leave it unchecked.':result.needsConfirmation?'Uncertain match: choose the correct map above or search the catalog. This field is not included yet.':'Matched a MeowDB map. Verify the location before applying.'):result.method==='classic-exp'?(result.value===null?'No clear EXP-font number matched. Keep the complete number inside the region, try another reader, or type the value here.':'Classic EXP digits matched. Check the complete number against your screenshot before applying.'):result.method==='classic-digits'?(result.value===null?'No clear Classic count matched. Draw a tight box around the full number, try General text OCR for another font, or type it here.':'Classic quantity digits matched. Check the complete number against your screenshot before applying.'):result.value===null?'No number or text found. Type it here or leave this field unchecked.':result.disagrees?'Readings differ. Check the enlarged crop carefully.':['hp','mp'].includes(field.id)?'Detected count is included. Choose the matching item and edit the number if needed.':result.confidence<70?'Small text: check the enlarged crop before applying.':'Review this value before applying.','ocr-review-note'));
       if(result.value===null&&result.reason)row.append(text('small',result.reason,'ocr-review-note'));
+      if(field.id==='exp'&&!result.percent)row.querySelector('.ocr-review-note').textContent='No clear EXP percentage was found. Include the decimal point and % sign, try Classic EXP digits or General text OCR, or type an exact EXP total here.';
       const details=document.createElement('details');details.className='ocr-raw';details.append(text('summary','Recognized text'),text('p',result.raw||'No text recognized'));row.append(details);if(previous){MaplePotionPicker.dispose(previous);previous.replaceWith(row);}else container.append(row);
     }
     $('ocr-review-form').hidden=false;$('ocr-empty-review').hidden=true;
+    syncExpEstimate();
     for(const field of ['hp','mp']){const select=$('ocr-potion-'+field);if(select)MaplePotionPicker.enhance(select,field);}
     MaplePotionPicker.syncAll();MaplePotionPicker.setBusy(container,busy);
   }
@@ -239,7 +252,7 @@
     $('ocr-capture-change').addEventListener('click',()=>void captureScreen({changeSource:true}));
     for(const id of ['ocr-capture-stop','capture-stop-sharing'])$(id).addEventListener('click',stopSharing);
     window.addEventListener('pagehide',()=>{stop();captureSession.stop();});
-    try{const saved=JSON.parse(localStorage.getItem(layoutKey));if(saved)for(const field of C.fields)regions[field.id]=C.region(saved[field.id]);}catch{regions=structuredClone(C.defaults);}
+    try{const current=localStorage.getItem(layoutKey),saved=JSON.parse(current||localStorage.getItem(legacyLayoutKey));if(saved){for(const field of C.fields)regions[field.id]=C.region(!current&&field.id==='exp'?C.migrateExpRegion(saved.exp):saved[field.id]);if(!current)localStorage.setItem(layoutKey,JSON.stringify(regions));}}catch{regions=structuredClone(C.defaults);}
     try{const saved=JSON.parse(localStorage.getItem(tuningKey));if(saved)for(const field of C.fields)if(saved[field.id])tunings[field.id]=C.tuning(field.id,saved[field.id]);}catch{tunings={};}
     $('screenshot-start').addEventListener('click',open);$('screenshot-end').addEventListener('click',open);
     $('ocr-close').addEventListener('click',()=>$('screenshot-dialog').close());$('screenshot-dialog').addEventListener('close',()=>{stop();clearImage();$('ocr-file').value='';$('ocr-file-name').textContent='PNG, JPG, or WebP · up to 15 MB';MaplePotionPicker.dispose($('ocr-review-fields'));$('ocr-review-fields').replaceChildren();});
@@ -250,7 +263,7 @@
     $('ocr-reset-tuning').addEventListener('click',()=>{const id=$('ocr-region-field').value;delete tunings[id];paintTuning();invalidateReview(id);$('ocr-field-status').textContent='Default image settings restored for this field.';});
     for(const key of ['x','y','w','h'])$('ocr-region-'+key).addEventListener('change',()=>{try{const id=$('ocr-region-field').value;regions[id]=C.region(Object.fromEntries(['x','y','w','h'].map(k=>[k,Number($('ocr-region-'+k).value)/100])));paintRegion();invalidateReview(id);error('ocr-error','');}catch(e){error('ocr-error',e.message);paintRegion();}});
     $('ocr-save-layout').addEventListener('click',()=>{try{localStorage.setItem(layoutKey,JSON.stringify(regions));localStorage.setItem(tuningKey,JSON.stringify(tunings));$('ocr-layout-status').textContent='Read regions and image settings remembered in this browser. The screenshot is not saved.';}catch{$('ocr-layout-status').textContent='Browser storage is unavailable; settings remain for this visit.';}});
-    $('ocr-reset-layout').addEventListener('click',()=>{regions=structuredClone(C.defaults);tunings={};try{localStorage.removeItem(layoutKey);localStorage.removeItem(tuningKey);}catch{}paintRegion();invalidateReview();$('ocr-layout-status').textContent='Example regions and image settings restored.';});
+    $('ocr-reset-layout').addEventListener('click',()=>{regions=structuredClone(C.defaults);tunings={};try{localStorage.removeItem(layoutKey);localStorage.removeItem(legacyLayoutKey);localStorage.removeItem(tuningKey);}catch{}paintRegion();invalidateReview();$('ocr-layout-status').textContent='Example regions and image settings restored.';});
     const overlay=$('ocr-region-overlay'),point=event=>{const rect=overlay.getBoundingClientRect();return {x:Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width)),y:Math.max(0,Math.min(1,(event.clientY-rect.top)/rect.height))};};
     overlay.addEventListener('pointerdown',event=>{if(!image||busy||event.button!==0)return;event.preventDefault();drag=point(event);overlay.setPointerCapture(event.pointerId);});
     overlay.addEventListener('pointermove',event=>{if(!drag)return;const end=point(event),next={x:Math.min(drag.x,end.x),y:Math.min(drag.y,end.y),w:Math.abs(end.x-drag.x),h:Math.abs(end.y-drag.y)};if(next.w*image.naturalWidth<3||next.h*image.naturalHeight<3)return;regions[$('ocr-region-field').value]=C.region(next);paintRegion();});
@@ -260,6 +273,7 @@
       try{
         if(context.calibration)throw new Error('This is a calibration preview. Remember regions & image settings, close it, and enable Auto screenshots.');
         const current=options.getContext();if(current.stage!==context.stage)throw new Error('The session changed. Close this window and import the screenshot again.');
+        syncExpEstimate();
         const values={};for(const field of activeFields()){if(!$('ocr-use-'+field.id).checked)continue;const value=$('ocr-value-'+field.id).value.trim();const parsed=field.id==='map'?MapleMapMatcher.resolve(value)?.label||null:C.parse(field.id,value);if(parsed===null)throw new Error(field.id==='map'?'Choose a map from the MeowDB list, or uncheck Training map.':'Enter a valid '+field.label.toLowerCase()+', or uncheck it.');values[field.id]=parsed;if(['hp','mp'].includes(field.id))values[field.id+'Potion']=$('ocr-potion-'+field.id).value;}
         if(!Object.keys(values).length)throw new Error('Check at least one field to apply.');
         options.apply(values);$('screenshot-dialog').close();
@@ -281,7 +295,7 @@
       if(token!==run)throw new DOMException('Reading cancelled.','AbortError');
       image=img;const width=img.naturalWidth,height=img.naturalHeight;
       const box=sourceRegion('mesos'),probe=document.createElement('canvas');probe.width=box.w;probe.height=box.h;const ctx=probe.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,box.x,box.y,box.w,box.h,0,0,box.w,box.h);const inventoryVisible=C.inventoryVisible(ctx.getImageData(0,0,box.w,box.h).data);probe.width=probe.height=1;
-      const results=await Promise.race([recognize(C.fields.filter(field=>field.numeric&&(inventoryVisible||field.id!=='mesos')),token),aborted]);
+      const results=await Promise.race([recognize(C.fields.filter(field=>field.numeric&&(inventoryVisible||field.id!=='mesos')),token,{background:true}),aborted]);
       if(!inventoryVisible)results.mesos={value:null,confidence:0,reason:'Inventory balance box is not visible.'};
       if(token!==run||signal?.aborted)throw new DOMException('Reading cancelled.','AbortError');
       return {results,at,width,height,inventoryVisible,layout:JSON.stringify({regions,tunings})};

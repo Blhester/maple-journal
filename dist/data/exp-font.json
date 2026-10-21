@@ -97,5 +97,16 @@
       "sha256": "049d1eb9822c0d963ecfc8179c9019da78a5e35faf20bff2c222788a57475ed1",
       "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/StatusBar.img/number/9"
     }
+  ],
+  "symbols": [
+    {
+      "digit": "%",
+      "icon": "assets/exp-font/percent.png",
+      "width": 7,
+      "height": 7,
+      "bytes": 373,
+      "sha256": "4fb71a0121fda326ebf1e79c59bae47b9427c89d32d6d602d388034ddf849406",
+      "sourceUrl": "https://maplestory.io/api/wz/img/GMS/83/UI/StatusBar.img/number/percent"
+    }
   ]
 }

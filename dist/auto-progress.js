@@ -6,7 +6,7 @@
     const end={hpAdded:0,mpAdded:0,extraExp:0,ledger:[]};
     for(const key of keys){
       const r=read.results[key],consensus=r?.votes>=2&&r.votes>r.readCount/2;
-      const font=['classic-exp','classic-digits'].includes(r?.method),trustedText=consensus||(!r?.disagrees&&Number.isFinite(r?.confidence)&&r.confidence>=70);
+      const font=['classic-exp','classic-exp-percent','classic-digits'].includes(r?.method),trustedText=consensus||(!r?.disagrees&&Number.isFinite(r?.confidence)&&r.confidence>=70);
       const readable=r&&r.value!==null&&r.value!==undefined&&!r.needsConfirmation&&(font||trustedText);
       if(key==='mesos'){try{end.mesos=readable&&read.inventoryVisible!==false?M.integer(r.value,key):null;}catch{end.mesos=null;}continue;}
       if(!readable)throw new Error('Uncertain '+key+' reading; sample skipped.');

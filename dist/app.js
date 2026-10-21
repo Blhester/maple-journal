@@ -29,7 +29,7 @@
   MapleEtc.init({getEntries:()=>state.ledger||[],onChange:entries=>{state.ledger=entries;persist();renderLedger();}});
   MapleScreenshot.init({
     onCaptureEnded:()=>{if(autoRecorder?.active())stopAuto('Screen sharing stopped. Turn Auto screenshots on to choose a monitor again.',false);},
-    getContext:()=>({stage:state.stage,hasLevel:!!state.start?.level,hpPotion:state.start?.hpPotion||$('hp-potion').value,mpPotion:state.start?.mpPotion||$('mp-potion').value}),
+    getContext:()=>({stage:state.stage,hasLevel:!!state.start?.level,level:state.stage==='setup'?$('start-level').value:state.stage==='ending'?$('end-level').value:progressPoints().at(-1)?.end.level||state.start?.level,hpPotion:state.start?.hpPotion||$('hp-potion').value,mpPotion:state.start?.mpPotion||$('mp-potion').value}),
     apply:incoming=>{
       const setup=state.stage==='setup';if(!setup&&state.stage!=='ending')throw new Error('Screenshot values can only fill the setup or ending form.');
       const prefix=setup?'start':'end',level=incoming.level??(setup?$('start-level').value:state.start.level?$('end-level').value:null),exp=incoming.exp??$(prefix+'-exp').value;
