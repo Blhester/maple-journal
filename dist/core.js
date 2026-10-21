@@ -140,6 +140,18 @@
     }
     return [...groups.values()].map(g=>({...g,expHour:g.exp*3600000/g.time,netHour:g.mesos*3600000/g.time})).sort((a,b)=>b.expHour-a.expHour);
   }
+  function normalizeProgress(start,points=[],maxTime=Infinity){
+    if(!Array.isArray(points)||points.length>5000)throw new Error('Invalid automatic progress list.');let previous=0;
+    return points.map(point=>{
+      const elapsedMs=integer(point.elapsedMs,'Progress time'),e=point.end;if(elapsedMs<=previous||elapsedMs>maxTime||!e)throw new Error('Invalid automatic progress timing.');previous=elapsedMs;
+      const end={mesos:e.mesos===null?null:integer(e.mesos,'Progress mesos'),level:levelNumber(e.level),extraExp:0,ledger:[]};
+      for(const key of ['exp','hp','mp','hpAdded','mpAdded'])end[key]=integer(e[key]??(['hpAdded','mpAdded'].includes(key)?0:undefined),'Progress '+key);
+      if(!start.level||end.level<start.level)throw new Error('Invalid progress level.');position(end.level,end.exp);
+      let supplyCost=0;for(const key of ['hp','mp']){const used=start[key]+end[key+'Added']-end[key];if(used<0)throw new Error('Progress supplies need confirmed additions.');if(!Number.isSafeInteger(used))throw new Error('Progress supplies are too large.');supplyCost+=used*start[key+'Cost'];}if(!Number.isSafeInteger(supplyCost))throw new Error('Progress cost is too large.');
+      if(end.mesos!==null)calculate(start,end,elapsedMs);
+      return {elapsedMs,end,source:'automatic',...(point.at?{at:integer(point.at,'Progress capture time')}: {})};
+    });
+  }
   function normalizeSession(raw) {
     if(!raw||typeof raw!=='object')throw new Error('Invalid session record.');
     const startedAt=integer(raw.startedAt,'Start time'),stoppedAt=integer(raw.stoppedAt,'Stop time'),pausedMs=integer(raw.pausedMs??0,'Paused time');
@@ -157,7 +169,7 @@
     const record={stage:'complete',id:String(raw.id||'run-'+startedAt).slice(0,100),startedAt,stoppedAt,pausedMs,start,end:cleanEnd(raw.end),meta:{map:String(raw.meta?.map||'').slice(0,80),class:String(raw.meta?.class||'').slice(0,80)},checkpoints:[]};
     if(!Array.isArray(raw.checkpoints??[])||(raw.checkpoints?.length||0)>5000)throw new Error('Invalid checkpoint list.');
     record.checkpoints=(raw.checkpoints||[]).map(cp=>({elapsedMs:integer(cp.elapsedMs,'Checkpoint time'),end:cleanEnd(cp.end)}));
-    const time=activeElapsed(record);calculate(start,record.end,time);intervals(start,record.checkpoints,record.end,time);return record;
+    const time=activeElapsed(record);calculate(start,record.end,time);intervals(start,record.checkpoints,record.end,time);if(raw.autoPoints!==undefined){const points=normalizeProgress(start,raw.autoPoints,time);if(points.length)record.autoPoints=points;}return record;
   }
   function mergeHistory(current,incoming) {
     if(!Array.isArray(incoming)||incoming.length>5000)throw new Error('Import up to 5,000 session records at a time.');
@@ -165,6 +177,6 @@
     for(const record of clean)records.set(record.id,record);
     return [...records.values()].sort((a,b)=>b.stoppedAt-a.stoppedAt);
   }
-  root.MapleMath = {catalog,integer,calculate,expTable,cumulative,levelNumber,position,activeElapsed,ledgerValue,ledgerTotals,profitRates,forecast,intervals,groupMaps,normalizeSession,mergeHistory};
+  root.MapleMath = {catalog,integer,calculate,expTable,cumulative,levelNumber,position,activeElapsed,ledgerValue,ledgerTotals,profitRates,forecast,intervals,groupMaps,normalizeProgress,normalizeSession,mergeHistory};
   if (typeof module !== 'undefined') module.exports = root.MapleMath;
 })(typeof window !== 'undefined' ? window : globalThis);

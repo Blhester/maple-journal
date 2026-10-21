@@ -19,12 +19,18 @@
     svg.append(svgElement('text',{x:(left+width-right)/2,y:height-4,'text-anchor':'middle',class:'chart-axis'},xLabel),svgElement('text',{x:left,y:12,class:'chart-axis'},yLabel));container.append(svg);return {svg,X,Y};
   }
   function emptyChart(container,message){container.replaceChildren(text('p',message,'chart-empty'));}
-  function lineChart(container,rows,metric){
-    if(!rows.length){emptyChart(container,'Your pace chart appears after the first checkpoint or completed run.');return;}
-    const points=rows.map(r=>({x:r.to/60000,y:r[metric]})),ys=points.map(p=>p.y),min=Math.min(0,...ys),max=Math.max(0,...ys),pad=Math.max(1,(max-min)*.12);
-    const {svg,X,Y}=baseChart(container,'Interval '+(metric==='expHour'?'EXP':'net mesos')+' per hour','Active minutes',metric==='expHour'?'EXP / hour':'Net mesos / hour',0,Math.max(...points.map(p=>p.x)),min-pad,max+pad);
-    svg.append(svgElement('polyline',{points:points.map(p=>X(p.x)+','+Y(p.y)).join(' '),class:'trend-line',fill:'none'}));
-    for(const p of points){const dot=svgElement('circle',{cx:X(p.x),cy:Y(p.y),r:5,class:'trend-dot'});dot.append(svgElement('title',{},fmt(p.y)+' per hour at '+fmt(p.x)+' active minutes'));svg.append(dot);}
+  function lineChart(container,rows,metric,{live=false}={}){
+    const points=rows.map(r=>({x:r.to/60000,y:Number.isFinite(r[metric])?r[metric]:null,preview:!!r.preview})),values=points.filter(p=>p.y!==null);
+    if(!values.length){emptyChart(container,live?(metric==='expHour'?'Your first usable capture starts the EXP graph.':'Mesos N/A. Keep your inventory balance visible for a readable capture.'):'Your pace chart appears after the first checkpoint or completed run.');return;}
+    const ys=values.map(p=>p.y),min=Math.min(0,...ys),max=Math.max(0,...ys),pad=Math.max(1,(max-min)*.12);
+    const {svg,X,Y}=baseChart(container,(live?'Session average ':'Interval ')+(metric==='expHour'?'EXP':'net mesos')+' per hour','Active minutes',metric==='expHour'?'EXP / hour':'Net mesos / hour',0,Math.max(...points.map(p=>p.x)),min-pad,max+pad);
+    let segment=[];function draw(){if(segment.length>1)svg.append(svgElement('polyline',{points:segment.map(p=>X(p.x)+','+Y(p.y)).join(' '),class:'trend-line',fill:'none'}));segment=[];}
+    for(const [i,p]of points.entries()){
+      if(p.y===null){draw();continue;}
+      if(p.preview){draw();const previous=points[i-1];if(previous?.y!==null&&previous)svg.append(svgElement('line',{x1:X(previous.x),y1:Y(previous.y),x2:X(p.x),y2:Y(p.y),class:'trend-line live-preview-line'}));}
+      else segment.push(p);
+      const dot=svgElement('circle',{cx:X(p.x),cy:Y(p.y),r:5,class:'trend-dot'+(p.preview?' live-preview-dot':'')});dot.append(svgElement('title',{},fmt(p.y)+' per hour at '+fmt(p.x)+' active minutes'+(p.preview?' · pending validation':'')));svg.append(dot);
+    }draw();
   }
   function filtered(){
     const job=$('filter-class').value,min=$('filter-min').value?Number($('filter-min').value):1,max=$('filter-max').value?Number($('filter-max').value):100;

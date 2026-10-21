@@ -40,3 +40,5 @@ Verification details and device/file-picker limits: VERIFICATION.txt.
 [x] Expose per-field Recognition reader in Improve a difficult read for every preset, with both digit templates for numeric fields, letter-field guidance, backward-compatible defaults and local preference memory.
 
 [x] Add periodic monitor screenshot mode with one-minute scheduling, 45-second timeout, local numeric OCR, quality and temporal outlier gates, manual checkpoint reset, explicit user opt-in and complete capture cleanup.
+
+[x] Add live EXP/hour and net-mesos/hour graphs and stats, one-time starting validation, default automatic start option, hidden running inputs, missing-inventory support and partial progress persistence.

@@ -7,7 +7,9 @@
     for(const key of keys){
       const r=read.results[key],consensus=r?.votes>=2&&r.votes>r.readCount/2;
       const font=['classic-exp','classic-digits'].includes(r?.method),trustedText=consensus||(!r?.disagrees&&Number.isFinite(r?.confidence)&&r.confidence>=70);
-      if(!r||r.value===null||r.value===undefined||r.needsConfirmation||(!font&&!trustedText))throw new Error('Uncertain '+key+' reading; sample skipped.');
+      const readable=r&&r.value!==null&&r.value!==undefined&&!r.needsConfirmation&&(font||trustedText);
+      if(key==='mesos'){try{end.mesos=readable&&read.inventoryVisible!==false?M.integer(r.value,key):null;}catch{end.mesos=null;}continue;}
+      if(!readable)throw new Error('Uncertain '+key+' reading; sample skipped.');
       end[key]=M.integer(r.value,key);
     }
     if(!start.level)throw new Error('Record a starting level before enabling automatic progress.');
@@ -16,13 +18,13 @@
     if(!Number.isSafeInteger(read.at)||!Number.isFinite(elapsedMs)||elapsedMs<=0)throw new Error('Invalid snapshot time.');
     return {end,elapsedMs,at:read.at,source:'automatic'};
   }
-  function createFilter({start,anchor}){
-    let base=anchor||{end:{...start,hpAdded:0,mpAdded:0,extraExp:0,ledger:[]},elapsedMs:0},pending=null,held=[],rates=[],lastTime=base.elapsedMs;
-    function vector(point){return {exp:M.position(point.end.level,point.end.exp),mesos:point.end.mesos,hp:point.end.hp,mp:point.end.mp};}
+  function createFilter({start,anchor,mesoAnchor}){
+    let base=anchor||{end:{...start,hpAdded:0,mpAdded:0,extraExp:0,ledger:[]},elapsedMs:0},pending=null,held=[],rates=[],lastTime=base.elapsedMs,mesoBase=mesoAnchor||(base.end.mesos===null?{end:{...start},elapsedMs:0}:base),mesoRates=[];
+    function vector(point){return {exp:M.position(point.end.level,point.end.exp),hp:point.end.hp,mp:point.end.mp};}
     function follows(a,b){
       if(b.elapsedMs<=a.elapsedMs)return false;
       const x=vector(a),y=vector(b);
-      return y.exp>=x.exp&&y.mesos>=x.mesos&&y.hp<=x.hp&&y.mp<=x.mp;
+      return y.exp>=x.exp&&y.hp<=x.hp&&y.mp<=x.mp;
     }
     function speed(a,b){const x=vector(a),y=vector(b),minutes=(b.elapsedMs-a.elapsedMs)/60000;return Object.fromEntries(Object.keys(x).map(k=>[k,Math.abs(y[k]-x[k])/minutes]));}
     function unusual(point){
@@ -36,22 +38,39 @@
       vector(point);lastTime=point.elapsedMs;const accepted=[],rejected=[];
       if(!follows(base,point)){
         held.push(point);if(held.length>4)rejected.push({point:held.shift(),reason:'Unconfirmed change; review a manual checkpoint.'});
-        return {accepted,rejected,pending,held:held.length,message:'Reading held: possible OCR error, restock, spend or EXP loss. A return to the prior trend discards it; log a manual checkpoint for a real change.'};
+        return {preview:null,accepted,rejected,pending,held:held.length,message:'Reading held: possible OCR error, restock, spend or EXP loss. A return to the prior trend discards it; log a manual checkpoint for a real change.'};
       }
       for(const suspect of held)rejected.push({point:suspect,reason:'Later reading returned to the prior trend.'});held=[];
       if(pending){
         if(!follows(pending,point))rejected.push({point:pending,reason:'Isolated spike or dip contradicted by the next reading.'});
         else if(unusual(pending))rejected.push({point:pending,reason:'Rate is far outside the recent pattern; review manually.'});
         else {
-          M.calculate(start,pending.end,pending.elapsedMs);
-          rates.push(speed(base,pending));rates=rates.slice(-7);base=pending;accepted.push(pending);
+          let mesos=pending.end.mesos,mesosNote='';
+          if(mesos===null||point.end.mesos===null){mesos=null;mesosNote='Inventory mesos not readable in both confirming captures.';}
+          else if(mesos<mesoBase.end.mesos||point.end.mesos<mesos){mesos=null;mesosNote='Mesos spike, decrease or spend needs another reading or manual validation.';}
+          else if(mesoRates.length>=3){const rate=(mesos-mesoBase.end.mesos)*60000/(pending.elapsedMs-mesoBase.elapsedMs),m=median(mesoRates),mad=median(mesoRates.map(x=>Math.abs(x-m)));if(rate>m*5+mad*6+5000){mesos=null;mesosNote='Mesos rate is outside the recent pattern; validate manually.';}}
+          const confirmed={...pending,end:{...pending.end,mesos},mesosNote};stats(start,confirmed);
+          if(mesos!==null){mesoRates.push((mesos-mesoBase.end.mesos)*60000/(pending.elapsedMs-mesoBase.elapsedMs));mesoRates=mesoRates.slice(-7);mesoBase=confirmed;}
+          rates.push(speed(base,pending));rates=rates.slice(-7);base=confirmed;accepted.push(confirmed);
         }
       }
       pending=point;
-      return {accepted,rejected,pending,held:0,message:accepted.length?'Checkpoint confirmed. Latest sample is waiting for the next reading.':'Sample waiting for the next reading. No value was guessed or filled in.'};
+      const preview={...point,end:{...point.end,mesos:point.end.mesos!==null&&point.end.mesos>=mesoBase.end.mesos?point.end.mesos:null},preview:true};
+      return {preview,accepted,rejected,pending,held:0,message:accepted.length?'Checkpoint confirmed. Latest sample is waiting for the next reading.':'Sample waiting for the next reading. No value was guessed or filled in.'};
     }
-    function rebase(point){base=point;pending=null;held=[];rates=[];lastTime=point.elapsedMs;}
+    function rebase(point){base=point;pending=null;held=[];rates=[];lastTime=point.elapsedMs;mesoBase=point;mesoRates=[];}
     return {offer,rebase};
+  }
+  function stats(start,point){
+    const e=point.end,ms=point.elapsedMs;if(!Number.isFinite(ms)||ms<=0)throw new Error('Invalid progress time.');
+    const exp=start.level?M.position(e.level,e.exp)-M.position(start.level,start.exp):M.integer(e.exp,'EXP')-M.integer(start.exp,'Starting EXP')+M.integer(e.extraExp??0,'Extra EXP');
+    const hpUsed=M.integer(start.hp,'HP')+M.integer(e.hpAdded??0,'HP added')-M.integer(e.hp,'HP remaining'),mpUsed=M.integer(start.mp,'MP')+M.integer(e.mpAdded??0,'MP added')-M.integer(e.mp,'MP remaining');
+    if(hpUsed<0||mpUsed<0)throw new Error('Confirm supply restocks with a manual checkpoint.');
+    const supplyCost=hpUsed*M.integer(start.hpCost,'HP price')+mpUsed*M.integer(start.mpCost,'MP price');
+    if(![exp,supplyCost].every(Number.isSafeInteger))throw new Error('Progress totals are too large.');
+    const net=e.mesos===null?null:M.calculate(start,e,ms).net;
+    const remaining=!start.level?null:e.level===100?0:M.expTable[e.level]-e.exp;
+    return {exp,expHour:exp*3600000/ms,net,netHour:net===null?null:net*3600000/ms,hpUsed,mpUsed,supplyCost,remaining,etaMs:remaining===0?0:remaining!==null&&exp>0?remaining*ms/exp:null};
   }
   // One bounded job at a time. Late browser timers take one fresh sample, never
   // replay missed minutes or invent timestamps. Permission is requested only
@@ -81,5 +100,5 @@
     function cancelPending(){generation++;job?.abort();job=null;schedule();}
     return {start,stop,cancelPending,active:()=>enabled};
   }
-  return {fromRead,createFilter,createRecorder};
+  return {fromRead,createFilter,createRecorder,stats};
 });

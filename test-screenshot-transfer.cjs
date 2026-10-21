@@ -24,7 +24,7 @@ function harness(storage=new Map(),{realHistory=false,screenCapture=null,progres
   // Review fields are normally built after OCR. Supply those reviewed results
   // directly, leaving parsing, checkbox filtering and form transfer to real code.
   for(const field of require('./dist/ocr-core.js').fields)for(const prefix of ['ocr-use-','ocr-value-','ocr-potion-'])nodes.set(prefix+field.id,new Element('input'));
-  let now=Date.parse('2026-10-20T20:00:00Z'),etcOptions,saved;const windowEvents=new Map();
+  let now=Date.parse('2026-10-20T20:00:00Z'),etcOptions,saved;const charts=new Map();const windowEvents=new Map();
   const context={document:{getElementById:id=>nodes.get(id)||null,createElement:tag=>new Element(tag),createElementNS:(_ns,tag)=>new Element(tag),createTextNode:value=>{const n=new Element('#text');n.textContent=value;return n;},addEventListener(){}},
     localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,String(value)),removeItem:key=>storage.delete(key)},
     Date:class extends Date{static now(){return now;}},Event,Intl,structuredClone,console,URL,AbortController,Option:class extends Element{constructor(label,value){super('option');this.textContent=label;this.value=value;}},
@@ -32,7 +32,7 @@ function harness(storage=new Map(),{realHistory=false,screenCapture=null,progres
     MapleAutoProgress:progressClock?{...require('./dist/auto-progress.js'),createRecorder:options=>require('./dist/auto-progress.js').createRecorder({...options,...progressClock})}:require('./dist/auto-progress.js'),MapleMath:require('./dist/core.js'),MapleOcrCore:require('./dist/ocr-core.js'),MapleMapMatcher:require('./dist/map-matcher.js'),
     MapleScreenCapture:screenCapture||{supported:()=>false,createSession:()=>({active:()=>false,stop(){}})},MaplePotionPicker:{enhance(){},syncAll(){},setBusy(){},dispose(){}},
     MapleEtc:{init:options=>{etcOptions=options;},render(){},reset(){},icon:()=>new Element('img'),describe:entry=>entry.label},
-    MapleHistory:{save:record=>{saved=structuredClone(record);},lineChart(){}}
+    MapleHistory:{save:record=>{saved=structuredClone(record);},lineChart:(container,rows,metric,options)=>charts.set(container.id,{rows:structuredClone(rows),metric,options})}
   };
   if(setupRuntime)setupRuntime(context,Element);
   context.window=context;vm.createContext(context);
@@ -46,7 +46,7 @@ function harness(storage=new Map(),{realHistory=false,screenCapture=null,progres
     fire('ocr-review-form','submit');
     assert.equal(node('ocr-review-error').textContent,'','Screenshot applied successfully');
   }
-  return {node,fire,applyReview,storage,screenshot:context.MapleScreenshot,history:context.MapleHistory,windowEvent:event=>{for(const handler of windowEvents.get(event.type)||[])handler(event);},setTime:value=>{now=Date.parse(value);},entries:values=>etcOptions.onChange(values),state:()=>JSON.parse(storage.get('maple-journal-session-v1')),saved:()=>saved};
+  return {node,fire,applyReview,storage,charts,screenshot:context.MapleScreenshot,history:context.MapleHistory,windowEvent:event=>{for(const handler of windowEvents.get(event.type)||[])handler(event);},setTime:value=>{now=Date.parse(value);},entries:values=>etcOptions.onChange(values),state:()=>JSON.parse(storage.get('maple-journal-session-v1')),saved:()=>saved};
 }
 
 // This is the real reviewed-screenshot -> start form -> timer -> ending form ->

@@ -15,6 +15,7 @@ function fixture({deferDecode=false,deferText=false}={}){
       const element=new Element(tag);if(tag!=='canvas')return element;
       trace.canvases.push(element);let sourceX=null;
       element.getContext=()=>({drawImage:(_image,x)=>{sourceX=x;},fillRect(){},putImageData(){},getImageData:(_x,_y,width,height)=>{
+        if(sourceX===1608&&width===197&&height===16)return {width,height,data:new Uint8ClampedArray(width*height*4).fill(255)};
         const key=sourceX===1047?'exp':sourceX===1417?'hp':sourceX===1467?'mp':null;
         if(key){const picture=pictures[key];assert.equal(width,picture.width);assert.equal(height,picture.height);return {width,height,data:new Uint8ClampedArray(picture.data)};}
         return {width,height,data:new Uint8ClampedArray(width*height*4)};

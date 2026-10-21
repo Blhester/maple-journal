@@ -84,7 +84,14 @@
     }
     return d;
   }
+  // The Classic inventory balance sits inside a pale, neutral box. Require
+  // that visual cue as well as OCR, so digits on the scenery are not a balance.
+  function inventoryVisible(data){
+    if(!data||data.length<16||data.length%4)return false;let pale=0;
+    for(let i=0;i<data.length;i+=4){const low=Math.min(data[i],data[i+1],data[i+2]),high=Math.max(data[i],data[i+1],data[i+2]);if(data[i+3]>220&&low>=185&&high-low<45)pale++;}
+    return pale/(data.length/4)>=.6;
+  }
   const scaleFor=(width,height,preferred)=>Math.min(preferred,Math.sqrt(2000000/(width*height)),6000/width,6000/height);
-  root.MapleOcrCore={fields,defaults,region,parse,select,readerFor,tuning,processPixels,scaleFor};
+  root.MapleOcrCore={fields,defaults,region,parse,select,readerFor,tuning,processPixels,inventoryVisible,scaleFor};
   if(typeof module!=='undefined')module.exports=root.MapleOcrCore;
 })(typeof window!=='undefined'?window:globalThis);

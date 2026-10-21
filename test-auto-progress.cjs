@@ -16,7 +16,7 @@ assert.equal(filter.offer(point(2,{hp:150})).held,1,'Unexpected increase is held
 const recovered=filter.offer(point(3));assert.equal(recovered.accepted[0].end.hp,95);assert.equal(recovered.rejected[0].point.end.hp,150);
 const steady=filter.offer(point(4));assert.equal(steady.accepted[0].end.hp,85);assert.equal(steady.accepted[0].elapsedMs,180000);
 assert.equal(M.calculate(start,steady.accepted[0].end,180000).net,-450,'Confirmed checkpoint uses original costs and exact capture time');
-for(const [key,spike]of [['hp',10],['mp',10],['mesos',9000000],['exp',900000]]){
+for(const [key,spike]of [['hp',10],['mp',10],['exp',900000]]){
   const f=A.createFilter({start});f.offer(point(1,{[key]:spike}));const result=f.offer(point(2));
   assert.equal(result.accepted.length,0,key+' spike never accepted');assert.equal(result.rejected.length,1,key+' isolated spike rejected');
   assert.equal(f.offer(point(3)).accepted[0].elapsedMs,120000);
@@ -24,11 +24,11 @@ for(const [key,spike]of [['hp',10],['mp',10],['mesos',9000000],['exp',900000]]){
 const restock=A.createFilter({start});restock.offer(point(1));restock.offer(point(2,{hp:150}));assert.equal(restock.offer(point(3,{hp:145})).accepted.length,0,'Persistent increase needs manual confirmation');
 const manual=point(3,{hp:145,hpAdded:60});restock.rebase(manual);restock.offer(point(4,{hp:140}));const afterRestock=restock.offer(point(5,{hp:135}));assert.equal(afterRestock.accepted[0].end.hpAdded,60);assert.equal(afterRestock.accepted[0].end.hp,140);M.calculate(start,afterRestock.accepted[0].end,240000);
 const levelStart={...start,exp:M.expTable[58]-500},levels=A.createFilter({start:levelStart});levels.offer(point(1,{level:59,exp:500}));assert.equal(levels.offer(point(2,{level:59,exp:1500})).accepted[0].end.level,59,'Level-up uses cumulative EXP');
-const learned=A.createFilter({start});for(let m=1;m<=5;m++)learned.offer(point(m));learned.offer(point(6,{mesos:1000000}));const unusual=learned.offer(point(7,{mesos:1001000}));assert.equal(unusual.accepted.length,0);assert.match(unusual.rejected[0].reason,/Rate/);
+const learned=A.createFilter({start});for(let m=1;m<=5;m++)learned.offer(point(m));learned.offer(point(6,{mesos:1000000}));const unusual=learned.offer(point(7,{mesos:1001000}));assert.equal(unusual.accepted.length,1);assert.equal(unusual.accepted[0].end.mesos,null);assert.match(unusual.accepted[0].mesosNote,/rate/i);
 assert.throws(()=>filter.offer(point(4)),/increase/);assert.throws(()=>filter.offer(point(2)),/increase/);
 const valid=read(point(1).at);assert.equal(A.fromRead(valid,start,60000).end.hp,100);
 for(const bad of [null,undefined,'bad','-1']){const input=structuredClone(valid);input.results.hp.value=bad;assert.throws(()=>A.fromRead(input,start,60000));}
-for(const change of [{confidence:20},{disagrees:true},{needsConfirmation:true},{confidence:NaN}]){const input=structuredClone(valid);Object.assign(input.results.mesos,change);assert.throws(()=>A.fromRead(input,start,60000));}
+for(const change of [{confidence:20},{disagrees:true},{needsConfirmation:true},{confidence:NaN}]){const input=structuredClone(valid);Object.assign(input.results.mesos,change);assert.equal(A.fromRead(input,start,60000).end.mesos,null);}
 const agreement=structuredClone(valid);Object.assign(agreement.results.level,{confidence:20,disagrees:true,votes:2,readCount:3});A.fromRead(agreement,start,60000);
 const font=structuredClone(valid);Object.assign(font.results.hp,{confidence:0,method:'classic-digits'});A.fromRead(font,start,60000);
 assert.throws(()=>A.fromRead(valid,{...start,level:null},60000),/starting level/);

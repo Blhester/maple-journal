@@ -274,9 +274,11 @@
       captureController=null;url=URL.createObjectURL(blob);img=new Image();img.src=url;await Promise.race([img.decode(),aborted]);
       if(token!==run)throw new DOMException('Reading cancelled.','AbortError');
       image=img;const width=img.naturalWidth,height=img.naturalHeight;
-      const results=await Promise.race([recognize(C.fields.filter(field=>field.numeric),token),aborted]);
+      const box=sourceRegion('mesos'),probe=document.createElement('canvas');probe.width=box.w;probe.height=box.h;const ctx=probe.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,box.x,box.y,box.w,box.h,0,0,box.w,box.h);const inventoryVisible=C.inventoryVisible(ctx.getImageData(0,0,box.w,box.h).data);probe.width=probe.height=1;
+      const results=await Promise.race([recognize(C.fields.filter(field=>field.numeric&&(inventoryVisible||field.id!=='mesos')),token),aborted]);
+      if(!inventoryVisible)results.mesos={value:null,confidence:0,reason:'Inventory balance box is not visible.'};
       if(token!==run||signal?.aborted)throw new DOMException('Reading cancelled.','AbortError');
-      return {results,at,width,height,layout:JSON.stringify({regions,tunings})};
+      return {results,at,width,height,inventoryVisible,layout:JSON.stringify({regions,tunings})};
     }finally{
       signal?.removeEventListener('abort',cancel);if(img)img.src='';if(url)URL.revokeObjectURL(url);
       if(token===run){if(worker)await worker.terminate();worker=null;releaseReadCanvases();for(const item of workerUrls)URL.revokeObjectURL(item);workerUrls=[];captureController=null;clearImage();setBusy(false);}

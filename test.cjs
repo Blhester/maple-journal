@@ -93,3 +93,4 @@ require('./test-capture.cjs');
 require('./test-capture-controls.cjs');
 require('./test-auto-progress.cjs');
 require('./test-background-ocr.cjs');
+require('./test-live-dashboard.cjs');

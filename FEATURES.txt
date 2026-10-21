@@ -61,3 +61,5 @@ EXP screenshot recognition: dedicated local status-bar font matcher with scaled/
 Recognition reader is visible for every screenshot preset; all five numeric fields can choose either Classic digit template or general OCR. Text fields explain why digit-only templates are unavailable. Saved reader choices and color settings are independent per field, with legacy setting migration.
 
 Automatic progress: opt-in monitor-only snapshots once a minute while running; five numeric fields read locally, per-field settings reused, pending validation delay, outlier/quality gates, manual restock rebase, actual capture timestamps, bounded jobs, pause/stop lifecycle, value-only decision log and confirmed checkpoints in history. Final totals remain reviewed.
+
+Live training dashboard replaces the running input form: two capture-time session-average rate charts, provisional/confirmed markers, gain/profit/supply/ETA stats, optional mesos with honest N/A gaps, independent mesos validation, and partial confirmed progress in drafts/history/JSON. Initial form defaults to automatic capture after validation.
