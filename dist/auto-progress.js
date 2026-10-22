@@ -8,7 +8,9 @@
       const r=read.results[key],consensus=r?.votes>=2&&r.votes>r.readCount/2;
       const font=['classic-exp','classic-exp-percent','classic-digits'].includes(r?.method),trustedText=consensus||(!r?.disagrees&&Number.isFinite(r?.confidence)&&r.confidence>=70);
       const readable=r&&r.value!==null&&r.value!==undefined&&!r.needsConfirmation&&(font||trustedText);
-      if(key==='mesos'){try{end.mesos=readable&&read.inventoryVisible!==false?M.integer(r.value,key):null;}catch{end.mesos=null;}continue;}
+      // An unreadable supply must not discard good EXP. Keep unknowns explicit;
+      // net profit is unavailable until both potion costs can be calculated.
+      if(['mesos','hp','mp'].includes(key)){try{end[key]=readable&&(key!=='mesos'||read.inventoryVisible!==false)?M.integer(r.value,key):null;}catch{end[key]=null;}continue;}
       if(!readable)throw new Error('Uncertain '+key+' reading; sample skipped.');
       end[key]=M.integer(r.value,key);
     }
@@ -20,17 +22,20 @@
   }
   function createFilter({start,anchor,mesoAnchor}){
     let base=anchor||{end:{...start,hpAdded:0,mpAdded:0,extraExp:0,ledger:[]},elapsedMs:0},pending=null,held=[],rates=[],lastTime=base.elapsedMs,mesoBase=mesoAnchor||(base.end.mesos===null?{end:{...start},elapsedMs:0}:base),mesoRates=[];
+    // Keep trend anchors across missing counts, without copying old quantities
+    // into a new snapshot or inventing a supply cost.
+    let supplyBase={hp:base.end.hp??mesoAnchor?.end.hp??start.hp,mp:base.end.mp??mesoAnchor?.end.mp??start.mp};
     function vector(point){return {exp:M.position(point.end.level,point.end.exp),hp:point.end.hp,mp:point.end.mp};}
     function follows(a,b){
       if(b.elapsedMs<=a.elapsedMs)return false;
       const x=vector(a),y=vector(b);
-      return y.exp>=x.exp&&y.hp<=x.hp&&y.mp<=x.mp;
+      return y.exp>=x.exp&&['hp','mp'].every(k=>y[k]===null||y[k]<=(x[k]??supplyBase[k]));
     }
-    function speed(a,b){const x=vector(a),y=vector(b),minutes=(b.elapsedMs-a.elapsedMs)/60000;return Object.fromEntries(Object.keys(x).map(k=>[k,Math.abs(y[k]-x[k])/minutes]));}
+    function speed(a,b){const x=vector(a),y=vector(b),minutes=(b.elapsedMs-a.elapsedMs)/60000;return Object.fromEntries(Object.keys(x).filter(k=>x[k]!==null&&y[k]!==null).map(k=>[k,Math.abs(y[k]-x[k])/minutes]));}
     function unusual(point){
       if(rates.length<3)return false;
       const rate=speed(base,point),floor={exp:Math.max(100,(M.expTable[base.end.level]||100)*.02),mesos:5000,hp:10,mp:10};
-      return Object.keys(rate).some(k=>{const values=rates.map(r=>r[k]),m=median(values),mad=median(values.map(x=>Math.abs(x-m)));return rate[k]>m*5+mad*6+floor[k];});
+      return Object.keys(rate).some(k=>{const values=rates.map(r=>r[k]).filter(Number.isFinite);if(values.length<3)return false;const m=median(values),mad=median(values.map(x=>Math.abs(x-m)));return rate[k]>m*5+mad*6+floor[k];});
     }
     function offer(point){
       if(!Number.isFinite(point.elapsedMs)||point.elapsedMs<=lastTime)throw new Error('Snapshot times must increase.');
@@ -49,26 +54,27 @@
           if(mesos===null||point.end.mesos===null){mesos=null;mesosNote='Inventory mesos not readable in both confirming captures.';}
           else if(mesos<mesoBase.end.mesos||point.end.mesos<mesos){mesos=null;mesosNote='Mesos spike, decrease or spend needs another reading or manual validation.';}
           else if(mesoRates.length>=3){const rate=(mesos-mesoBase.end.mesos)*60000/(pending.elapsedMs-mesoBase.elapsedMs),m=median(mesoRates),mad=median(mesoRates.map(x=>Math.abs(x-m)));if(rate>m*5+mad*6+5000){mesos=null;mesosNote='Mesos rate is outside the recent pattern; validate manually.';}}
-          const confirmed={...pending,end:{...pending.end,mesos},mesosNote};stats(start,confirmed);
+          const confirmed={...pending,end:{...pending.end,mesos,hp:point.end.hp===null?null:pending.end.hp,mp:point.end.mp===null?null:pending.end.mp},mesosNote};stats(start,confirmed);
           if(mesos!==null){mesoRates.push((mesos-mesoBase.end.mesos)*60000/(pending.elapsedMs-mesoBase.elapsedMs));mesoRates=mesoRates.slice(-7);mesoBase=confirmed;}
-          rates.push(speed(base,pending));rates=rates.slice(-7);base=confirmed;accepted.push(confirmed);
+          rates.push(speed(base,confirmed));rates=rates.slice(-7);base=confirmed;for(const k of ['hp','mp'])if(confirmed.end[k]!==null)supplyBase[k]=confirmed.end[k];accepted.push(confirmed);
         }
       }
       pending=point;
       const preview={...point,end:{...point.end,mesos:point.end.mesos!==null&&point.end.mesos>=mesoBase.end.mesos?point.end.mesos:null},preview:true};
-      return {preview,accepted,rejected,pending,held:0,message:accepted.length?'Checkpoint confirmed. Latest sample is waiting for the next reading.':'Sample waiting for the next reading. No value was guessed or filled in.'};
+      const missing=['hp','mp'].filter(k=>point.end[k]===null);
+      return {preview,accepted,rejected,pending,held:0,message:(accepted.length?'Progress confirmed. Latest sample is waiting for the next reading.':'Sample waiting for the next reading. No value was guessed or filled in.')+(missing.length?' EXP continues; '+missing.map(k=>k.toUpperCase()).join('/')+' unreadable. Supply cost and net mesos are N/A.':'')};
     }
-    function rebase(point){base=point;pending=null;held=[];rates=[];lastTime=point.elapsedMs;mesoBase=point;mesoRates=[];}
+    function rebase(point){base=point;supplyBase={hp:point.end.hp,mp:point.end.mp};pending=null;held=[];rates=[];lastTime=point.elapsedMs;mesoBase=point;mesoRates=[];}
     return {offer,rebase};
   }
   function stats(start,point){
     const e=point.end,ms=point.elapsedMs;if(!Number.isFinite(ms)||ms<=0)throw new Error('Invalid progress time.');
     const exp=start.level?M.position(e.level,e.exp)-M.position(start.level,start.exp):M.integer(e.exp,'EXP')-M.integer(start.exp,'Starting EXP')+M.integer(e.extraExp??0,'Extra EXP');
-    const hpUsed=M.integer(start.hp,'HP')+M.integer(e.hpAdded??0,'HP added')-M.integer(e.hp,'HP remaining'),mpUsed=M.integer(start.mp,'MP')+M.integer(e.mpAdded??0,'MP added')-M.integer(e.mp,'MP remaining');
-    if(hpUsed<0||mpUsed<0)throw new Error('Confirm supply restocks with a manual checkpoint.');
-    const supplyCost=hpUsed*M.integer(start.hpCost,'HP price')+mpUsed*M.integer(start.mpCost,'MP price');
-    if(![exp,supplyCost].every(Number.isSafeInteger))throw new Error('Progress totals are too large.');
-    const net=e.mesos===null?null:M.calculate(start,e,ms).net;
+    const hpUsed=e.hp===null?null:M.integer(start.hp,'HP')+M.integer(e.hpAdded??0,'HP added')-M.integer(e.hp,'HP remaining'),mpUsed=e.mp===null?null:M.integer(start.mp,'MP')+M.integer(e.mpAdded??0,'MP added')-M.integer(e.mp,'MP remaining');
+    if((hpUsed!==null&&hpUsed<0)||(mpUsed!==null&&mpUsed<0))throw new Error('Confirm supply restocks with a manual checkpoint.');
+    const supplyCost=hpUsed===null||mpUsed===null?null:hpUsed*M.integer(start.hpCost,'HP price')+mpUsed*M.integer(start.mpCost,'MP price');
+    if(!Number.isSafeInteger(exp)||(supplyCost!==null&&!Number.isSafeInteger(supplyCost)))throw new Error('Progress totals are too large.');
+    const net=e.mesos===null||supplyCost===null?null:M.calculate(start,e,ms).net;
     const remaining=!start.level?null:e.level===100?0:M.expTable[e.level]-e.exp;
     // The immediate startup snapshot can be only milliseconds after validation.
     // Keep live rates at their starting zero until a full active minute has

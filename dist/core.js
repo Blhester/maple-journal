@@ -145,10 +145,10 @@
     return points.map(point=>{
       const elapsedMs=integer(point.elapsedMs,'Progress time'),e=point.end;if(elapsedMs<=previous||elapsedMs>maxTime||!e)throw new Error('Invalid automatic progress timing.');previous=elapsedMs;
       const end={mesos:e.mesos===null?null:integer(e.mesos,'Progress mesos'),level:levelNumber(e.level),extraExp:0,ledger:[]};
-      for(const key of ['exp','hp','mp','hpAdded','mpAdded'])end[key]=integer(e[key]??(['hpAdded','mpAdded'].includes(key)?0:undefined),'Progress '+key);
+      for(const key of ['exp','hp','mp','hpAdded','mpAdded'])end[key]=['hp','mp'].includes(key)&&e[key]===null?null:integer(e[key]??(['hpAdded','mpAdded'].includes(key)?0:undefined),'Progress '+key);
       if(!start.level||end.level<start.level)throw new Error('Invalid progress level.');position(end.level,end.exp);
-      let supplyCost=0;for(const key of ['hp','mp']){const used=start[key]+end[key+'Added']-end[key];if(used<0)throw new Error('Progress supplies need confirmed additions.');if(!Number.isSafeInteger(used))throw new Error('Progress supplies are too large.');supplyCost+=used*start[key+'Cost'];}if(!Number.isSafeInteger(supplyCost))throw new Error('Progress cost is too large.');
-      if(end.mesos!==null)calculate(start,end,elapsedMs);
+      let supplyCost=0;for(const key of ['hp','mp']){const available=start[key]+end[key+'Added'];if(!Number.isSafeInteger(available))throw new Error('Progress supplies are too large.');if(end[key]===null)continue;const used=available-end[key];if(used<0)throw new Error('Progress supplies need confirmed additions.');if(!Number.isSafeInteger(used))throw new Error('Progress supplies are too large.');supplyCost+=used*start[key+'Cost'];}if(!Number.isSafeInteger(supplyCost))throw new Error('Progress cost is too large.');
+      if(end.mesos!==null&&end.hp!==null&&end.mp!==null)calculate(start,end,elapsedMs);
       return {elapsedMs,end,source:'automatic',...(point.at?{at:integer(point.at,'Progress capture time')}: {})};
     });
   }

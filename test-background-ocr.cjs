@@ -1,7 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),harness=require('./test-screenshot-transfer.cjs'),{decode}=require('./lib/png-rgba.cjs');
 const screenshot=decode(fs.readFileSync('dist/assets/ocr-example.png'));
-function fixture({deferDecode=false,deferText=false,tight=false,oldExp=false,levelText='58'}={}){
+function fixture({deferDecode=false,deferText=false,tight=false,oldExp=false,unreadableHp=false,levelText='58'}={}){
   const urls=new Map(),trace={requests:[],canvases:[],fontWorkers:0,terminated:0,textWorkers:0,textTerminated:0},pending={};let id=0,recognitions=0;
   const storage=new Map();if(tight||oldExp){const regions=structuredClone(require('./dist/ocr-core.js').defaults);if(tight)for(const [key,x]of [['hp',1419],['mp',1469]])regions[key]={x:x/1919,y:960/1079,w:30/1919,h:17/1079};if(oldExp)regions.exp={x:1047/1919,y:1037/1079,w:66/1919,h:17/1079};storage.set('maple-journal-ocr-regions-v1',JSON.stringify(regions));}
   const h=harness(storage,{screenCapture:{supported:()=>true,createSession:()=>({active:()=>true,stop(){},capture:async options=>{trace.requests.push(options);return new Blob(['pixels']);}})},setupRuntime:(context,Element)=>{
@@ -17,6 +17,7 @@ function fixture({deferDecode=false,deferText=false,tight=false,oldExp=false,lev
       trace.canvases.push(element);let sourceX=null,sourceY=null;
       element.getContext=()=>({drawImage:(_image,x,y)=>{sourceX=x;sourceY=y;},fillRect(){},putImageData(){},getImageData:(_x,_y,width,height)=>{
         if(sourceX===1608&&width===197&&height===16)return {width,height,data:new Uint8ClampedArray(width*height*4).fill(255)};
+        if(unreadableHp&&sourceX>=1410&&sourceX<1460)return {width,height,data:new Uint8ClampedArray(width*height*4)};
         if(sourceX>=1410&&sourceX<1480){const data=new Uint8ClampedArray(width*height*4);for(let row=0;row<height;row++)data.set(screenshot.data.subarray(((sourceY+row)*screenshot.width+sourceX)*4,((sourceY+row)*screenshot.width+sourceX+width)*4),row*width*4);return {width,height,data};}
         if(sourceX>=1040&&sourceX<1115){const data=new Uint8ClampedArray(width*height*4);for(let row=0;row<height;row++)data.set(screenshot.data.subarray(((sourceY+row)*screenshot.width+sourceX)*4,((sourceY+row)*screenshot.width+sourceX+width)*4),row*width*4);return {width,height,data};}
         return {width,height,data:new Uint8ClampedArray(width*height*4)};
@@ -33,6 +34,8 @@ const flush=async predicate=>{for(let i=0;i<100&&!predicate();i++)await new Prom
   const tight=fixture({tight:true}),tightResult=await tight.h.screenshot.sampleProgress({allowPrompt:false});assert.equal(tightResult.results.hp.value,'441');assert.equal(tightResult.results.mp.value,'761');assert.equal(tight.urls.size,0,'Padded automatic reads release all pixel URLs too');
   const migrated=fixture({oldExp:true}),migratedRead=await migrated.h.screenshot.sampleProgress();assert.equal(migratedRead.results.exp.value,'268621');assert.equal(JSON.parse(migrated.h.storage.get('maple-journal-ocr-regions-v2')).exp.w,134/1919);
   const noLevel=fixture({levelText:''});noLevel.h.node('start-level').value='58';const unknown=await noLevel.h.screenshot.sampleProgress();assert.equal(unknown.results.exp.percent,'24.70');assert.equal(unknown.results.exp.value,null,'Automatic captures cannot infer the current level from the starting form');
+  const missingHp=fixture({unreadableHp:true}),partial=await missingHp.h.screenshot.sampleProgress();assert.equal(partial.results.hp.value,null);assert.equal(partial.results.exp.value,'268621');assert.equal(partial.results.mp.value,'761');
+  const progress=require('./dist/auto-progress.js').fromRead(partial,{level:58},60000);assert.equal(progress.end.exp,268621);assert.equal(progress.end.hp,null,'Real unreadable potion pixels no longer discard good percentage EXP');assert.equal(missingHp.urls.size,0);
   assert.equal(h.node('ocr-workspace').hidden,true);assert.equal(h.node('ocr-image').attributes.src,undefined);assert.equal(h.node('ocr-review-fields').children.length,0,'No background sample opens or fills the manual review dialog');
   // All numeric preprocessing canvases must be released too, including the
   // scaled intermediates, rather than merely dropping the final output canvas.

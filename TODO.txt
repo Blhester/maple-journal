@@ -46,3 +46,5 @@ Verification details and device/file-picker limits: VERIFICATION.txt.
 [x] Make no-download same-browser pop-out overlays the default; keep the direct-URL helper optional. Add local messaging/storage sync, publisher locks, sharing/reset/hide controls, magenta capture background, OBS instructions and regression tests.
 [x] Replace screenshot EXP-total reading with HUD percentage plus captured level, including percent font asset, automatic/manual conversion, rounding disclosure, review-level recalculation, legacy-region migration and clipped-total/level-up fixtures.
 [ ] Verify native Firefox pop-out Window Capture and Magenta Chroma Key in the user's OBS setup; the in-app preview is not exposed as a desktop window. Follow BROWSER-OVERLAY.txt with the pop-out open in Firefox/Chrome.
+
+[x] Keep percentage EXP tracking active when a potion count is unreadable; preserve unknown supplies and financial graph gaps through history, reload, stream feed and final review.

@@ -27,7 +27,7 @@ const levelStart={...start,exp:M.expTable[58]-500},levels=A.createFilter({start:
 const learned=A.createFilter({start});for(let m=1;m<=5;m++)learned.offer(point(m));learned.offer(point(6,{mesos:1000000}));const unusual=learned.offer(point(7,{mesos:1001000}));assert.equal(unusual.accepted.length,1);assert.equal(unusual.accepted[0].end.mesos,null);assert.match(unusual.accepted[0].mesosNote,/rate/i);
 assert.throws(()=>filter.offer(point(4)),/increase/);assert.throws(()=>filter.offer(point(2)),/increase/);
 const valid=read(point(1).at);assert.equal(A.fromRead(valid,start,60000).end.hp,100);
-for(const bad of [null,undefined,'bad','-1']){const input=structuredClone(valid);input.results.hp.value=bad;assert.throws(()=>A.fromRead(input,start,60000));}
+for(const bad of [null,undefined,'bad','-1']){const input=structuredClone(valid);input.results.hp.value=bad;assert.equal(A.fromRead(input,start,60000).end.hp,null,'Unreadable HP must not reject valid EXP');input.results.exp.value=bad;assert.throws(()=>A.fromRead(input,start,60000));}
 for(const change of [{confidence:20},{disagrees:true},{needsConfirmation:true},{confidence:NaN}]){const input=structuredClone(valid);Object.assign(input.results.mesos,change);assert.equal(A.fromRead(input,start,60000).end.mesos,null);}
 const agreement=structuredClone(valid);Object.assign(agreement.results.level,{confidence:20,disagrees:true,votes:2,readCount:3});A.fromRead(agreement,start,60000);
 const font=structuredClone(valid);Object.assign(font.results.hp,{confidence:0,method:'classic-digits'});A.fromRead(font,start,60000);

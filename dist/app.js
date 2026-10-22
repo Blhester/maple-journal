@@ -51,10 +51,10 @@
     $('auto-progress-toggle').disabled=!running||(!on&&(!!state.pausedAt||!state.start?.level||!MapleScreenCapture.supported()));
     $('auto-progress-status').textContent=running&&!state.start?.level?'Automatic mode needs a recorded starting level. Finish this run manually; add a level before your next session.':autoMessage;
     const cp=state.autoPoints?.at(-1)||state.checkpoints?.filter(point=>point.source==='automatic').at(-1);
-    $('auto-progress-last').textContent=cp?'Last confirmed at '+duration(cp.elapsedMs)+' · EXP '+format(cp.end.exp)+' · mesos '+(cp.end.mesos===null?'N/A':format(cp.end.mesos))+' · HP '+cp.end.hp+' · MP '+cp.end.mp+'. Latest unconfirmed readings are not counted.':'No automatic checkpoints confirmed yet. Final values always need your review.';
+    $('auto-progress-last').textContent=cp?'Last confirmed at '+duration(cp.elapsedMs)+' · EXP '+format(cp.end.exp)+' · mesos '+(cp.end.mesos===null?'N/A':format(cp.end.mesos))+' · HP '+(cp.end.hp??'N/A')+' · MP '+(cp.end.mp??'N/A')+'. Latest unconfirmed readings are not counted.':'No automatic checkpoints confirmed yet. Final values always need your review.';
     paintLive();
     $('auto-progress-log').replaceChildren(...(state.autoLog||[]).slice(-30).reverse().map(item=>{
-      const li=document.createElement('li');li.textContent=duration(item.elapsedMs||0)+' · '+item.status+' · '+item.message+(item.values?' [Lv '+item.values.level+', EXP '+item.values.exp+', mesos '+(item.values.mesos===null?'N/A':item.values.mesos)+', HP '+item.values.hp+', MP '+item.values.mp+']':'');return li;
+      const li=document.createElement('li');li.textContent=duration(item.elapsedMs||0)+' · '+item.status+' · '+item.message+(item.values?' [Lv '+item.values.level+', EXP '+item.values.exp+', mesos '+(item.values.mesos===null?'N/A':item.values.mesos)+', HP '+(item.values.hp??'N/A')+', MP '+(item.values.mp??'N/A')+']':'');return li;
     }));
   }
   function progressPoints(){
@@ -70,13 +70,13 @@
     const rows=model.rows;
     MapleHistory.lineChart($('live-exp-chart'),rows,'expHour',{live:true});MapleHistory.lineChart($('live-mesos-chart'),rows,'netHour',{live:true});
     if(!point){$('live-exp-hour').textContent='0';$('live-exp-gained').textContent='0 EXP gained';$('live-mesos-hour').textContent=autoLastSample?'N/A':'0';$('live-net-total').textContent=autoLastSample?'Mesos N/A · awaiting a readable capture':'0 net mesos · starting balance';$('live-snapshot-note').textContent='Rates start at 0. A usable capture after one full active minute starts the rate estimates. Keep the HUD and potion counts visible; mesos needs an open inventory.';return;}
-    const stats=model.stats,mesosAvailable=point.end.mesos!==null&&autoLastSample?.mesosReadable!==false;
+    const stats=model.stats,mesosAvailable=stats.net!==null&&autoLastSample?.mesosReadable!==false;
     if(!stats.rateReady)$('live-quality').textContent='Gathering first minute';
     $('live-exp-hour').textContent=format(stats.expHour);$('live-exp-gained').textContent=format(stats.exp)+' EXP gained';
     if(mesosAvailable){$('live-mesos-hour').textContent=format(stats.netHour);$('live-net-total').textContent=format(stats.net)+' net mesos · after potion costs';}
-    else $('live-net-total').textContent='Mesos N/A · inventory hidden, unreadable or awaiting validation';
-    $('live-level').textContent=(point.end.level||'Level N/A')+' · '+format(point.end.exp)+' EXP';$('live-hp').textContent=format(point.end.hp)+' '+(M.catalog.hp.find(item=>item.id===state.start.hpPotion)?.name||'items');$('live-mp').textContent=format(point.end.mp)+' '+(M.catalog.mp.find(item=>item.id===state.start.mpPotion)?.name||'items');$('live-supply-cost').textContent=format(stats.supplyCost)+' mesos';$('live-eta').textContent=eta(stats.etaMs);
-    $('live-snapshot-note').textContent=(pending?'Pending capture':'Confirmed snapshot')+' at '+duration(point.elapsedMs)+' active training. '+(!stats.rateReady?'Rates stay at 0 until a usable capture after one full active minute. Totals still show detected changes. ':pending?'Provisional rates update after each capture; this point is excluded from confirmed history until validated.':'Only confirmed values are counted.')+(!mesosAvailable?' EXP continues while mesos is N/A.':'');
+    else $('live-net-total').textContent='Net mesos N/A · balance or supply counts unreadable / awaiting validation';
+    $('live-level').textContent=(point.end.level||'Level N/A')+' · '+format(point.end.exp)+' EXP';$('live-hp').textContent=(point.end.hp===null?'N/A':format(point.end.hp))+' '+(M.catalog.hp.find(item=>item.id===state.start.hpPotion)?.name||'items');$('live-mp').textContent=(point.end.mp===null?'N/A':format(point.end.mp))+' '+(M.catalog.mp.find(item=>item.id===state.start.mpPotion)?.name||'items');$('live-supply-cost').textContent=stats.supplyCost===null?'N/A':format(stats.supplyCost)+' mesos';$('live-eta').textContent=eta(stats.etaMs);
+    $('live-snapshot-note').textContent=(pending?'Pending capture':'Confirmed snapshot')+' at '+duration(point.elapsedMs)+' active training. '+(!stats.rateReady?'Rates stay at 0 until a usable capture after one full active minute. Totals still show detected changes. ':pending?'Provisional rates update after each capture; this point is excluded from confirmed history until validated.':'Only confirmed values are counted.')+(!mesosAvailable?' EXP continues while net mesos is N/A; check balance and both supply regions.':'');
   }
   function autoLog(point,status,message){
     state.autoLog??=[];const at=point?.at||Date.now(),entry={at,elapsedMs:point?.elapsedMs||elapsed(),status,message};
@@ -101,14 +101,14 @@
         const layout=read.width+'x'+read.height+':'+read.layout;
         if(autoLayout&&autoLayout!==layout){autoLog(null,'Skipped','Screen size or read settings changed. Recalibrate before restarting.');stopAuto('Capture layout changed. Check your regions and restart automatic mode.');persist();return;}autoLayout=layout;
         autoLastSample={at:read.at,elapsedMs:M.activeElapsed(state,read.at),mesosReadable:false,usable:false};
-        const point=MapleAutoProgress.fromRead(read,state.start,autoLastSample.elapsedMs),result=autoFilter.offer(point);autoPreview=result.preview;autoLastSample.mesosReadable=autoPreview?.end.mesos!==null&&!!autoPreview;autoLastSample.usable=!!autoPreview;
+        const point=MapleAutoProgress.fromRead(read,state.start,autoLastSample.elapsedMs),result=autoFilter.offer(point);autoPreview=result.preview;autoLastSample.mesosReadable=!!autoPreview&&MapleAutoProgress.stats(state.start,autoPreview).net!==null;autoLastSample.usable=!!autoPreview;
         for(const rejected of result.rejected)autoLog(rejected.point,'Discarded',rejected.reason);
         autoLog(point,result.held?'Held':'Waiting',result.message);
         for(const accepted of result.accepted){
           if((state.autoPoints?.length||0)>=4999||state.checkpoints.length>=4999){stopAuto('Checkpoint limit reached. Finish this session before starting another.');return;}
           state.autoPoints??=[];if(accepted.elapsedMs>(state.autoPoints.at(-1)?.elapsedMs||0))state.autoPoints.push(accepted);
-          if(accepted.end.mesos!==null&&accepted.elapsedMs>(state.checkpoints.at(-1)?.elapsedMs||0))state.checkpoints.push(accepted);
-          autoLog(accepted,'Confirmed',accepted.end.mesos===null?'EXP and supplies confirmed. Mesos N/A: '+accepted.mesosNote:'Saved as a full progress checkpoint.');
+          if(accepted.end.mesos!==null&&accepted.end.hp!==null&&accepted.end.mp!==null&&accepted.elapsedMs>(state.checkpoints.at(-1)?.elapsedMs||0))state.checkpoints.push(accepted);
+          autoLog(accepted,'Confirmed',MapleAutoProgress.stats(state.start,accepted).net===null?'EXP confirmed. Net mesos N/A: balance or supply counts could not be confirmed.':'Saved as a full progress checkpoint.');
         }
         autoMessage=result.message;persist();paintAuto();tick();
       }catch(error){autoPreview=null;if(autoLastSample)autoLastSample.mesosReadable=false;autoLog(null,'Skipped',error.message);autoMessage=error.message;persist();paintAuto();}
