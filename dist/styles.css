@@ -95,3 +95,4 @@ tbody td{font-size:16px}.totals span{font-size:12px}.insight-grid strong{font-si
 .ocr-layout-actions>.text-button,.ocr-review-field-heading>.text-button,.ocr-alternatives .text-button{font-size:13px}.ocr-empty-review,.ocr-progress-wrap{font-size:14px}
 .live-stat-grid span,.live-rate-cards span{font-size:13px}
 @media(max-width:700px){.live-rate-cards{gap:10px}.live-rate-cards>div{padding:12px}.live-rate-cards strong{font-size:clamp(22px,6.4vw,28px)}.live-charts .chart-label,.live-charts .chart-axis{font-size:20px}}
+.session-supplies{border:1px solid var(--line);border-radius:7px;padding:12px 15px;margin:0 0 14px}.session-supplies summary{font-size:15px;font-weight:600;cursor:pointer}.session-supplies summary span{font-size:14px;font-weight:400;color:var(--muted);margin-left:10px}.session-supplies label{margin-top:12px}.session-supplies .two-col{gap:18px}.session-supplies .form-note:last-child{margin-bottom:0}

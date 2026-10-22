@@ -75,3 +75,5 @@ Partial automatic reads: unreadable HP/MP counts no longer discard valid EXP. Un
 Screen capture automatically recognizes the captured image and populates editable OCR review values; no second Read screenshot click is required.
 
 Readable form/OCR text; compact live view with stats above graphs; independent HP/MP usage per minute and time remaining; gentler level OCR default verified on real level-60 pixels and 6/8/0 digit combinations.
+
+Supply corrections: editable potion dropdowns in calibration/ending screenshot review plus Supplies & prices controls during training/final review. Reprice the current recording, preserve quantities/timestamps, retain custom prices and remember corrected items next time.

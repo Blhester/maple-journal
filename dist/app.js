@@ -28,6 +28,7 @@
   let state={stage:'setup',ledger:[],checkpoints:[]},timerInterval,latest=null,autoRecorder=null,autoFilter=null,autoLayout=null,autoPreview=null,autoLastSample=null,autoMessage='Off. Enable Auto screenshots to choose a monitor.';
   MapleEtc.init({getEntries:()=>state.ledger||[],onChange:entries=>{state.ledger=entries;persist();renderLedger();}});
   MapleScreenshot.init({
+    correctSupply:(type,item)=>correctSupply(type,item),
     onCaptureEnded:()=>{if(autoRecorder?.active())stopAuto('Screen sharing stopped. Turn Auto screenshots on to choose a monitor again.',false);},
     getContext:()=>({stage:state.stage,hasLevel:!!state.start?.level,level:state.stage==='setup'?$('start-level').value:state.stage==='ending'?$('end-level').value:progressPoints().at(-1)?.end.level||state.start?.level,hpPotion:state.start?.hpPotion||$('hp-potion').value,mpPotion:state.start?.mpPotion||$('mp-potion').value}),
     apply:incoming=>{
@@ -45,6 +46,21 @@
       persist();render();$('screenshot-applied').textContent='Screenshot values applied. Check your supply items and total quantities before continuing.';
     }
   });
+  function syncSessionSupplies(){
+    $('session-supplies').hidden=!['running','ending'].includes(state.stage);
+    if(!state.start)return;
+    for(const type of ['hp','mp']){$('session-'+type+'-potion').value=state.start[type+'Potion'];$('session-'+type+'-cost').value=state.start[type+'Cost'];}
+    $('session-supplies-summary').textContent=['hp','mp'].map(type=>M.catalog[type].find(item=>item.id===state.start[type+'Potion'])?.name||'Custom item').join(' + ');
+  }
+  function correctSupply(type,id,price){
+    if(!['running','ending'].includes(state.stage)||!['hp','mp'].includes(type))throw new Error('Supply corrections are available during training and final review.');
+    const item=M.catalog[type].find(item=>item.id===id);if(!item)throw new Error('Choose a valid supply item.');
+    const cost=price===undefined?(id===state.start[type+'Potion']?state.start[type+'Cost']:item.cost):M.integer(price,'Supply price');
+    state.start[type+'Potion']=id;state.start[type+'Cost']=cost;
+    $(type+'-potion').value=id;$(type+'-cost').value=cost;
+    syncSessionSupplies();persist();paintAuto();renderResults();MaplePotionPicker.syncAll();
+    $('session-supply-status').textContent='Supply correction saved. Costs for this recording now use these items and prices.';
+  }
   function paintAuto(){
     const on=!!autoRecorder?.active(),running=state.stage==='running';
     $('auto-progress-toggle').checked=on;
@@ -196,12 +212,15 @@
     for(let i=1;i<=3;i++)$('step-'+i).classList.toggle('active',i===(setup?1:running?2:3));
     $('timer-state').textContent=setup?'NOT STARTED':running?(paused?'PAUSED':'RECORDING'):complete?'COMPLETE':'STOPPED';$('timer-note').textContent=setup?'Your next adventure starts here.':running?(paused?'Take your time. Breaks do not count toward your pace.':'Every little bit of progress adds up.'):'Training time saved. Take your time with the numbers.';
     $('pause-button').textContent=paused?'▶ Resume':'Ⅱ Pause';$('running-message').textContent=paused?'A well-earned break.':'You’re on the clock.';$('cp-save').disabled=paused;$('end-level-wrap').hidden=!hasLevel;$('end-level').required=hasLevel;$('manual-exp-wrap').hidden=hasLevel;$('cp-level-wrap').hidden=!hasLevel;$('cp-level').required=hasLevel;$('cp-extra-wrap').hidden=hasLevel;
-    clearInterval(timerInterval);tick();if(running)timerInterval=setInterval(tick,250);renderLedger();renderResults();updateLevelHint();MaplePotionPicker.syncAll();paintAuto();
+    clearInterval(timerInterval);tick();if(running)timerInterval=setInterval(tick,250);renderLedger();renderResults();updateLevelHint();syncSessionSupplies();MaplePotionPicker.syncAll();paintAuto();
   }
   function updateLevelHint(){$('auto-start').disabled=!$('start-level').value||!MapleScreenCapture.supported();try{const v=$('start-level').value;$('level-hint').textContent=v?(Number(v)===100?'Level 100 is the end of the supported EXP table.':format(M.expTable[M.levelNumber(v)])+' EXP needed for this level. Enter within-level EXP below.'):'Add a level to handle level-ups and estimate time to your next level.';}catch(e){$('level-hint').textContent=e.message;}}
   for(const type of ['hp','mp']){
     $(type+'-potion').replaceChildren(...M.catalog[type].map(p=>new Option(p.name+(p.id==='custom'?'':' · '+format(p.cost)+' mesos'),p.id)));$(type+'-potion').value=type==='hp'?'meat':'lemon';const updatePrice=()=>{$(type+'-cost').value=M.catalog[type].find(p=>p.id===$(type+'-potion').value).cost;};updatePrice();$(type+'-potion').addEventListener('change',()=>{updatePrice();persist();});
     MaplePotionPicker.enhance($(type+'-potion'),type);
+    const current=$('session-'+type+'-potion');current.replaceChildren(...M.catalog[type].map(p=>new Option(p.name,p.id)));MaplePotionPicker.enhance(current,type);
+    const updateSupply=withPrice=>{try{correctSupply(type,current.value,withPrice?$('session-'+type+'-cost').value:undefined);}catch(e){$('session-supply-status').textContent=e.message;}};
+    current.addEventListener('change',()=>updateSupply(false));$('session-'+type+'-cost').addEventListener('change',()=>updateSupply(true));
   }
   $('start-form').addEventListener('submit',event=>{
     event.preventDefault();if(state.stage!=='setup')return;
