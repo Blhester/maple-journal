@@ -1,0 +1,1525 @@
+{
+  "engine": "Bundled browser Tesseract with local English model",
+  "note": "60 and 58 are real crops. Other levels use digit tiles from those crops; scaled variants use bilinear interpolation.",
+  "selected": {
+    "mode": "light",
+    "contrast": 1,
+    "brightness": 0,
+    "threshold": 180,
+    "scale": 6
+  },
+  "results": [
+    {
+      "file": "real-60.png",
+      "expected": "60",
+      "preset": "previous",
+      "mode": "8",
+      "text": "60",
+      "value": "60",
+      "confidence": 57
+    },
+    {
+      "file": "real-60.png",
+      "expected": "60",
+      "preset": "previous",
+      "mode": "7",
+      "text": "60",
+      "value": "60",
+      "confidence": 95
+    },
+    {
+      "file": "real-60.png",
+      "expected": "60",
+      "preset": "previous",
+      "mode": "13",
+      "text": "60",
+      "value": "60",
+      "confidence": 57
+    },
+    {
+      "file": "real-60.png",
+      "expected": "60",
+      "preset": "white",
+      "mode": "8",
+      "text": "60",
+      "value": "60",
+      "confidence": 66
+    },
+    {
+      "file": "real-60.png",
+      "expected": "60",
+      "preset": "white",
+      "mode": "7",
+      "text": "60",
+      "value": "60",
+      "confidence": 82
+    },
+    {
+      "file": "real-60.png",
+      "expected": "60",
+      "preset": "white",
+      "mode": "13",
+      "text": "60",
+      "value": "60",
+      "confidence": 66
+    },
+    {
+      "file": "real-58.png",
+      "expected": "58",
+      "preset": "previous",
+      "mode": "8",
+      "text": "58",
+      "value": "58",
+      "confidence": 2
+    },
+    {
+      "file": "real-58.png",
+      "expected": "58",
+      "preset": "previous",
+      "mode": "7",
+      "text": "8",
+      "value": "8",
+      "confidence": 0
+    },
+    {
+      "file": "real-58.png",
+      "expected": "58",
+      "preset": "previous",
+      "mode": "13",
+      "text": "58",
+      "value": "58",
+      "confidence": 2
+    },
+    {
+      "file": "real-58.png",
+      "expected": "58",
+      "preset": "white",
+      "mode": "8",
+      "text": "58",
+      "value": "58",
+      "confidence": 0
+    },
+    {
+      "file": "real-58.png",
+      "expected": "58",
+      "preset": "white",
+      "mode": "7",
+      "text": "58",
+      "value": "58",
+      "confidence": 0
+    },
+    {
+      "file": "real-58.png",
+      "expected": "58",
+      "preset": "white",
+      "mode": "13",
+      "text": "58",
+      "value": "58",
+      "confidence": 0
+    },
+    {
+      "file": "composed-68.png",
+      "expected": "68",
+      "preset": "previous",
+      "mode": "8",
+      "text": "68",
+      "value": "68",
+      "confidence": 58
+    },
+    {
+      "file": "composed-68.png",
+      "expected": "68",
+      "preset": "previous",
+      "mode": "7",
+      "text": "68",
+      "value": "68",
+      "confidence": 85
+    },
+    {
+      "file": "composed-68.png",
+      "expected": "68",
+      "preset": "previous",
+      "mode": "13",
+      "text": "68",
+      "value": "68",
+      "confidence": 58
+    },
+    {
+      "file": "composed-68.png",
+      "expected": "68",
+      "preset": "white",
+      "mode": "8",
+      "text": "68",
+      "value": "68",
+      "confidence": 66
+    },
+    {
+      "file": "composed-68.png",
+      "expected": "68",
+      "preset": "white",
+      "mode": "7",
+      "text": "68",
+      "value": "68",
+      "confidence": 92
+    },
+    {
+      "file": "composed-68.png",
+      "expected": "68",
+      "preset": "white",
+      "mode": "13",
+      "text": "68",
+      "value": "68",
+      "confidence": 66
+    },
+    {
+      "file": "composed-86.png",
+      "expected": "86",
+      "preset": "previous",
+      "mode": "8",
+      "text": "86",
+      "value": "86",
+      "confidence": 53
+    },
+    {
+      "file": "composed-86.png",
+      "expected": "86",
+      "preset": "previous",
+      "mode": "7",
+      "text": "86",
+      "value": "86",
+      "confidence": 96
+    },
+    {
+      "file": "composed-86.png",
+      "expected": "86",
+      "preset": "previous",
+      "mode": "13",
+      "text": "86",
+      "value": "86",
+      "confidence": 53
+    },
+    {
+      "file": "composed-86.png",
+      "expected": "86",
+      "preset": "white",
+      "mode": "8",
+      "text": "86",
+      "value": "86",
+      "confidence": 61
+    },
+    {
+      "file": "composed-86.png",
+      "expected": "86",
+      "preset": "white",
+      "mode": "7",
+      "text": "86",
+      "value": "86",
+      "confidence": 96
+    },
+    {
+      "file": "composed-86.png",
+      "expected": "86",
+      "preset": "white",
+      "mode": "13",
+      "text": "86",
+      "value": "86",
+      "confidence": 61
+    },
+    {
+      "file": "composed-80.png",
+      "expected": "80",
+      "preset": "previous",
+      "mode": "8",
+      "text": "80",
+      "value": "80",
+      "confidence": 50
+    },
+    {
+      "file": "composed-80.png",
+      "expected": "80",
+      "preset": "previous",
+      "mode": "7",
+      "text": "80",
+      "value": "80",
+      "confidence": 96
+    },
+    {
+      "file": "composed-80.png",
+      "expected": "80",
+      "preset": "previous",
+      "mode": "13",
+      "text": "80",
+      "value": "80",
+      "confidence": 50
+    },
+    {
+      "file": "composed-80.png",
+      "expected": "80",
+      "preset": "white",
+      "mode": "8",
+      "text": "80",
+      "value": "80",
+      "confidence": 53
+    },
+    {
+      "file": "composed-80.png",
+      "expected": "80",
+      "preset": "white",
+      "mode": "7",
+      "text": "80",
+      "value": "80",
+      "confidence": 88
+    },
+    {
+      "file": "composed-80.png",
+      "expected": "80",
+      "preset": "white",
+      "mode": "13",
+      "text": "80",
+      "value": "80",
+      "confidence": 53
+    },
+    {
+      "file": "composed-66.png",
+      "expected": "66",
+      "preset": "previous",
+      "mode": "8",
+      "text": "66",
+      "value": "66",
+      "confidence": 62
+    },
+    {
+      "file": "composed-66.png",
+      "expected": "66",
+      "preset": "previous",
+      "mode": "7",
+      "text": "66",
+      "value": "66",
+      "confidence": 14
+    },
+    {
+      "file": "composed-66.png",
+      "expected": "66",
+      "preset": "previous",
+      "mode": "13",
+      "text": "66",
+      "value": "66",
+      "confidence": 62
+    },
+    {
+      "file": "composed-66.png",
+      "expected": "66",
+      "preset": "white",
+      "mode": "8",
+      "text": "66",
+      "value": "66",
+      "confidence": 69
+    },
+    {
+      "file": "composed-66.png",
+      "expected": "66",
+      "preset": "white",
+      "mode": "7",
+      "text": "66",
+      "value": "66",
+      "confidence": 94
+    },
+    {
+      "file": "composed-66.png",
+      "expected": "66",
+      "preset": "white",
+      "mode": "13",
+      "text": "66",
+      "value": "66",
+      "confidence": 69
+    },
+    {
+      "file": "composed-88.png",
+      "expected": "88",
+      "preset": "previous",
+      "mode": "8",
+      "text": "88",
+      "value": "88",
+      "confidence": 47
+    },
+    {
+      "file": "composed-88.png",
+      "expected": "88",
+      "preset": "previous",
+      "mode": "7",
+      "text": "88",
+      "value": "88",
+      "confidence": 94
+    },
+    {
+      "file": "composed-88.png",
+      "expected": "88",
+      "preset": "previous",
+      "mode": "13",
+      "text": "88",
+      "value": "88",
+      "confidence": 47
+    },
+    {
+      "file": "composed-88.png",
+      "expected": "88",
+      "preset": "white",
+      "mode": "8",
+      "text": "88",
+      "value": "88",
+      "confidence": 52
+    },
+    {
+      "file": "composed-88.png",
+      "expected": "88",
+      "preset": "white",
+      "mode": "7",
+      "text": "88",
+      "value": "88",
+      "confidence": 68
+    },
+    {
+      "file": "composed-88.png",
+      "expected": "88",
+      "preset": "white",
+      "mode": "13",
+      "text": "88",
+      "value": "88",
+      "confidence": 52
+    },
+    {
+      "file": "real-60-1.25x.png",
+      "expected": "60",
+      "preset": "previous",
+      "mode": "8",
+      "text": "60",
+      "value": "60",
+      "confidence": 55
+    },
+    {
+      "file": "real-60-1.25x.png",
+      "expected": "60",
+      "preset": "previous",
+      "mode": "7",
+      "text": "60",
+      "value": "60",
+      "confidence": 95
+    },
+    {
+      "file": "real-60-1.25x.png",
+      "expected": "60",
+      "preset": "previous",
+      "mode": "13",
+      "text": "60",
+      "value": "60",
+      "confidence": 55
+    },
+    {
+      "file": "real-60-1.25x.png",
+      "expected": "60",
+      "preset": "white",
+      "mode": "8",
+      "text": "60",
+      "value": "60",
+      "confidence": 68
+    },
+    {
+      "file": "real-60-1.25x.png",
+      "expected": "60",
+      "preset": "white",
+      "mode": "7",
+      "text": "60",
+      "value": "60",
+      "confidence": 82
+    },
+    {
+      "file": "real-60-1.25x.png",
+      "expected": "60",
+      "preset": "white",
+      "mode": "13",
+      "text": "60",
+      "value": "60",
+      "confidence": 68
+    },
+    {
+      "file": "real-60-1.5x.png",
+      "expected": "60",
+      "preset": "previous",
+      "mode": "8",
+      "text": "60",
+      "value": "60",
+      "confidence": 63
+    },
+    {
+      "file": "real-60-1.5x.png",
+      "expected": "60",
+      "preset": "previous",
+      "mode": "7",
+      "text": "60",
+      "value": "60",
+      "confidence": 95
+    },
+    {
+      "file": "real-60-1.5x.png",
+      "expected": "60",
+      "preset": "previous",
+      "mode": "13",
+      "text": "60",
+      "value": "60",
+      "confidence": 63
+    },
+    {
+      "file": "real-60-1.5x.png",
+      "expected": "60",
+      "preset": "white",
+      "mode": "8",
+      "text": "60",
+      "value": "60",
+      "confidence": 69
+    },
+    {
+      "file": "real-60-1.5x.png",
+      "expected": "60",
+      "preset": "white",
+      "mode": "7",
+      "text": "60",
+      "value": "60",
+      "confidence": 76
+    },
+    {
+      "file": "real-60-1.5x.png",
+      "expected": "60",
+      "preset": "white",
+      "mode": "13",
+      "text": "60",
+      "value": "60",
+      "confidence": 69
+    },
+    {
+      "file": "real-60-2x.png",
+      "expected": "60",
+      "preset": "previous",
+      "mode": "8",
+      "text": "60",
+      "value": "60",
+      "confidence": 64
+    },
+    {
+      "file": "real-60-2x.png",
+      "expected": "60",
+      "preset": "previous",
+      "mode": "7",
+      "text": "60",
+      "value": "60",
+      "confidence": 81
+    },
+    {
+      "file": "real-60-2x.png",
+      "expected": "60",
+      "preset": "previous",
+      "mode": "13",
+      "text": "60",
+      "value": "60",
+      "confidence": 64
+    },
+    {
+      "file": "real-60-2x.png",
+      "expected": "60",
+      "preset": "white",
+      "mode": "8",
+      "text": "60",
+      "value": "60",
+      "confidence": 74
+    },
+    {
+      "file": "real-60-2x.png",
+      "expected": "60",
+      "preset": "white",
+      "mode": "7",
+      "text": "60",
+      "value": "60",
+      "confidence": 60
+    },
+    {
+      "file": "real-60-2x.png",
+      "expected": "60",
+      "preset": "white",
+      "mode": "13",
+      "text": "60",
+      "value": "60",
+      "confidence": 74
+    },
+    {
+      "file": "real-58-1.25x.png",
+      "expected": "58",
+      "preset": "previous",
+      "mode": "8",
+      "text": "58",
+      "value": "58",
+      "confidence": 0
+    },
+    {
+      "file": "real-58-1.25x.png",
+      "expected": "58",
+      "preset": "previous",
+      "mode": "7",
+      "text": "8",
+      "value": "8",
+      "confidence": 0
+    },
+    {
+      "file": "real-58-1.25x.png",
+      "expected": "58",
+      "preset": "previous",
+      "mode": "13",
+      "text": "58",
+      "value": "58",
+      "confidence": 0
+    },
+    {
+      "file": "real-58-1.25x.png",
+      "expected": "58",
+      "preset": "white",
+      "mode": "8",
+      "text": "58",
+      "value": "58",
+      "confidence": 2
+    },
+    {
+      "file": "real-58-1.25x.png",
+      "expected": "58",
+      "preset": "white",
+      "mode": "7",
+      "text": "58",
+      "value": "58",
+      "confidence": 0
+    },
+    {
+      "file": "real-58-1.25x.png",
+      "expected": "58",
+      "preset": "white",
+      "mode": "13",
+      "text": "58",
+      "value": "58",
+      "confidence": 2
+    },
+    {
+      "file": "real-58-1.5x.png",
+      "expected": "58",
+      "preset": "previous",
+      "mode": "8",
+      "text": "58",
+      "value": "58",
+      "confidence": 44
+    },
+    {
+      "file": "real-58-1.5x.png",
+      "expected": "58",
+      "preset": "previous",
+      "mode": "7",
+      "text": "8",
+      "value": "8",
+      "confidence": 0
+    },
+    {
+      "file": "real-58-1.5x.png",
+      "expected": "58",
+      "preset": "previous",
+      "mode": "13",
+      "text": "58",
+      "value": "58",
+      "confidence": 44
+    },
+    {
+      "file": "real-58-1.5x.png",
+      "expected": "58",
+      "preset": "white",
+      "mode": "8",
+      "text": "58",
+      "value": "58",
+      "confidence": 22
+    },
+    {
+      "file": "real-58-1.5x.png",
+      "expected": "58",
+      "preset": "white",
+      "mode": "7",
+      "text": "58",
+      "value": "58",
+      "confidence": 67
+    },
+    {
+      "file": "real-58-1.5x.png",
+      "expected": "58",
+      "preset": "white",
+      "mode": "13",
+      "text": "58",
+      "value": "58",
+      "confidence": 22
+    },
+    {
+      "file": "real-58-2x.png",
+      "expected": "58",
+      "preset": "previous",
+      "mode": "8",
+      "text": "8",
+      "value": "8",
+      "confidence": 0
+    },
+    {
+      "file": "real-58-2x.png",
+      "expected": "58",
+      "preset": "previous",
+      "mode": "7",
+      "text": "8",
+      "value": "8",
+      "confidence": 0
+    },
+    {
+      "file": "real-58-2x.png",
+      "expected": "58",
+      "preset": "previous",
+      "mode": "13",
+      "text": "8",
+      "value": "8",
+      "confidence": 0
+    },
+    {
+      "file": "real-58-2x.png",
+      "expected": "58",
+      "preset": "white",
+      "mode": "8",
+      "text": "58",
+      "value": "58",
+      "confidence": 67
+    },
+    {
+      "file": "real-58-2x.png",
+      "expected": "58",
+      "preset": "white",
+      "mode": "7",
+      "text": "58",
+      "value": "58",
+      "confidence": 64
+    },
+    {
+      "file": "real-58-2x.png",
+      "expected": "58",
+      "preset": "white",
+      "mode": "13",
+      "text": "58",
+      "value": "58",
+      "confidence": 67
+    },
+    {
+      "file": "composed-68-1.25x.png",
+      "expected": "68",
+      "preset": "previous",
+      "mode": "8",
+      "text": "68",
+      "value": "68",
+      "confidence": 65
+    },
+    {
+      "file": "composed-68-1.25x.png",
+      "expected": "68",
+      "preset": "previous",
+      "mode": "7",
+      "text": "68",
+      "value": "68",
+      "confidence": 68
+    },
+    {
+      "file": "composed-68-1.25x.png",
+      "expected": "68",
+      "preset": "previous",
+      "mode": "13",
+      "text": "68",
+      "value": "68",
+      "confidence": 65
+    },
+    {
+      "file": "composed-68-1.25x.png",
+      "expected": "68",
+      "preset": "white",
+      "mode": "8",
+      "text": "68",
+      "value": "68",
+      "confidence": 71
+    },
+    {
+      "file": "composed-68-1.25x.png",
+      "expected": "68",
+      "preset": "white",
+      "mode": "7",
+      "text": "68",
+      "value": "68",
+      "confidence": 88
+    },
+    {
+      "file": "composed-68-1.25x.png",
+      "expected": "68",
+      "preset": "white",
+      "mode": "13",
+      "text": "68",
+      "value": "68",
+      "confidence": 71
+    },
+    {
+      "file": "composed-68-1.5x.png",
+      "expected": "68",
+      "preset": "previous",
+      "mode": "8",
+      "text": "68",
+      "value": "68",
+      "confidence": 67
+    },
+    {
+      "file": "composed-68-1.5x.png",
+      "expected": "68",
+      "preset": "previous",
+      "mode": "7",
+      "text": "68",
+      "value": "68",
+      "confidence": 76
+    },
+    {
+      "file": "composed-68-1.5x.png",
+      "expected": "68",
+      "preset": "previous",
+      "mode": "13",
+      "text": "68",
+      "value": "68",
+      "confidence": 67
+    },
+    {
+      "file": "composed-68-1.5x.png",
+      "expected": "68",
+      "preset": "white",
+      "mode": "8",
+      "text": "68",
+      "value": "68",
+      "confidence": 69
+    },
+    {
+      "file": "composed-68-1.5x.png",
+      "expected": "68",
+      "preset": "white",
+      "mode": "7",
+      "text": "68",
+      "value": "68",
+      "confidence": 88
+    },
+    {
+      "file": "composed-68-1.5x.png",
+      "expected": "68",
+      "preset": "white",
+      "mode": "13",
+      "text": "68",
+      "value": "68",
+      "confidence": 69
+    },
+    {
+      "file": "composed-68-2x.png",
+      "expected": "68",
+      "preset": "previous",
+      "mode": "8",
+      "text": "68",
+      "value": "68",
+      "confidence": 71
+    },
+    {
+      "file": "composed-68-2x.png",
+      "expected": "68",
+      "preset": "previous",
+      "mode": "7",
+      "text": "68",
+      "value": "68",
+      "confidence": 82
+    },
+    {
+      "file": "composed-68-2x.png",
+      "expected": "68",
+      "preset": "previous",
+      "mode": "13",
+      "text": "68",
+      "value": "68",
+      "confidence": 71
+    },
+    {
+      "file": "composed-68-2x.png",
+      "expected": "68",
+      "preset": "white",
+      "mode": "8",
+      "text": "68",
+      "value": "68",
+      "confidence": 75
+    },
+    {
+      "file": "composed-68-2x.png",
+      "expected": "68",
+      "preset": "white",
+      "mode": "7",
+      "text": "68",
+      "value": "68",
+      "confidence": 65
+    },
+    {
+      "file": "composed-68-2x.png",
+      "expected": "68",
+      "preset": "white",
+      "mode": "13",
+      "text": "68",
+      "value": "68",
+      "confidence": 75
+    },
+    {
+      "file": "composed-86-1.25x.png",
+      "expected": "86",
+      "preset": "previous",
+      "mode": "8",
+      "text": "86",
+      "value": "86",
+      "confidence": 54
+    },
+    {
+      "file": "composed-86-1.25x.png",
+      "expected": "86",
+      "preset": "previous",
+      "mode": "7",
+      "text": "86",
+      "value": "86",
+      "confidence": 96
+    },
+    {
+      "file": "composed-86-1.25x.png",
+      "expected": "86",
+      "preset": "previous",
+      "mode": "13",
+      "text": "86",
+      "value": "86",
+      "confidence": 54
+    },
+    {
+      "file": "composed-86-1.25x.png",
+      "expected": "86",
+      "preset": "white",
+      "mode": "8",
+      "text": "86",
+      "value": "86",
+      "confidence": 69
+    },
+    {
+      "file": "composed-86-1.25x.png",
+      "expected": "86",
+      "preset": "white",
+      "mode": "7",
+      "text": "86",
+      "value": "86",
+      "confidence": 95
+    },
+    {
+      "file": "composed-86-1.25x.png",
+      "expected": "86",
+      "preset": "white",
+      "mode": "13",
+      "text": "86",
+      "value": "86",
+      "confidence": 69
+    },
+    {
+      "file": "composed-86-1.5x.png",
+      "expected": "86",
+      "preset": "previous",
+      "mode": "8",
+      "text": "86",
+      "value": "86",
+      "confidence": 52
+    },
+    {
+      "file": "composed-86-1.5x.png",
+      "expected": "86",
+      "preset": "previous",
+      "mode": "7",
+      "text": "86",
+      "value": "86",
+      "confidence": 94
+    },
+    {
+      "file": "composed-86-1.5x.png",
+      "expected": "86",
+      "preset": "previous",
+      "mode": "13",
+      "text": "86",
+      "value": "86",
+      "confidence": 52
+    },
+    {
+      "file": "composed-86-1.5x.png",
+      "expected": "86",
+      "preset": "white",
+      "mode": "8",
+      "text": "86",
+      "value": "86",
+      "confidence": 60
+    },
+    {
+      "file": "composed-86-1.5x.png",
+      "expected": "86",
+      "preset": "white",
+      "mode": "7",
+      "text": "86",
+      "value": "86",
+      "confidence": 96
+    },
+    {
+      "file": "composed-86-1.5x.png",
+      "expected": "86",
+      "preset": "white",
+      "mode": "13",
+      "text": "86",
+      "value": "86",
+      "confidence": 60
+    },
+    {
+      "file": "composed-86-2x.png",
+      "expected": "86",
+      "preset": "previous",
+      "mode": "8",
+      "text": "86",
+      "value": "86",
+      "confidence": 63
+    },
+    {
+      "file": "composed-86-2x.png",
+      "expected": "86",
+      "preset": "previous",
+      "mode": "7",
+      "text": "86",
+      "value": "86",
+      "confidence": 94
+    },
+    {
+      "file": "composed-86-2x.png",
+      "expected": "86",
+      "preset": "previous",
+      "mode": "13",
+      "text": "86",
+      "value": "86",
+      "confidence": 63
+    },
+    {
+      "file": "composed-86-2x.png",
+      "expected": "86",
+      "preset": "white",
+      "mode": "8",
+      "text": "86",
+      "value": "86",
+      "confidence": 68
+    },
+    {
+      "file": "composed-86-2x.png",
+      "expected": "86",
+      "preset": "white",
+      "mode": "7",
+      "text": "86",
+      "value": "86",
+      "confidence": 93
+    },
+    {
+      "file": "composed-86-2x.png",
+      "expected": "86",
+      "preset": "white",
+      "mode": "13",
+      "text": "86",
+      "value": "86",
+      "confidence": 68
+    },
+    {
+      "file": "composed-80-1.25x.png",
+      "expected": "80",
+      "preset": "previous",
+      "mode": "8",
+      "text": "80",
+      "value": "80",
+      "confidence": 57
+    },
+    {
+      "file": "composed-80-1.25x.png",
+      "expected": "80",
+      "preset": "previous",
+      "mode": "7",
+      "text": "80",
+      "value": "80",
+      "confidence": 95
+    },
+    {
+      "file": "composed-80-1.25x.png",
+      "expected": "80",
+      "preset": "previous",
+      "mode": "13",
+      "text": "80",
+      "value": "80",
+      "confidence": 57
+    },
+    {
+      "file": "composed-80-1.25x.png",
+      "expected": "80",
+      "preset": "white",
+      "mode": "8",
+      "text": "80",
+      "value": "80",
+      "confidence": 62
+    },
+    {
+      "file": "composed-80-1.25x.png",
+      "expected": "80",
+      "preset": "white",
+      "mode": "7",
+      "text": "80",
+      "value": "80",
+      "confidence": 90
+    },
+    {
+      "file": "composed-80-1.25x.png",
+      "expected": "80",
+      "preset": "white",
+      "mode": "13",
+      "text": "80",
+      "value": "80",
+      "confidence": 62
+    },
+    {
+      "file": "composed-80-1.5x.png",
+      "expected": "80",
+      "preset": "previous",
+      "mode": "8",
+      "text": "80",
+      "value": "80",
+      "confidence": 57
+    },
+    {
+      "file": "composed-80-1.5x.png",
+      "expected": "80",
+      "preset": "previous",
+      "mode": "7",
+      "text": "80",
+      "value": "80",
+      "confidence": 93
+    },
+    {
+      "file": "composed-80-1.5x.png",
+      "expected": "80",
+      "preset": "previous",
+      "mode": "13",
+      "text": "80",
+      "value": "80",
+      "confidence": 57
+    },
+    {
+      "file": "composed-80-1.5x.png",
+      "expected": "80",
+      "preset": "white",
+      "mode": "8",
+      "text": "80",
+      "value": "80",
+      "confidence": 55
+    },
+    {
+      "file": "composed-80-1.5x.png",
+      "expected": "80",
+      "preset": "white",
+      "mode": "7",
+      "text": "80",
+      "value": "80",
+      "confidence": 55
+    },
+    {
+      "file": "composed-80-1.5x.png",
+      "expected": "80",
+      "preset": "white",
+      "mode": "13",
+      "text": "80",
+      "value": "80",
+      "confidence": 55
+    },
+    {
+      "file": "composed-80-2x.png",
+      "expected": "80",
+      "preset": "previous",
+      "mode": "8",
+      "text": "80",
+      "value": "80",
+      "confidence": 58
+    },
+    {
+      "file": "composed-80-2x.png",
+      "expected": "80",
+      "preset": "previous",
+      "mode": "7",
+      "text": "80",
+      "value": "80",
+      "confidence": 94
+    },
+    {
+      "file": "composed-80-2x.png",
+      "expected": "80",
+      "preset": "previous",
+      "mode": "13",
+      "text": "80",
+      "value": "80",
+      "confidence": 58
+    },
+    {
+      "file": "composed-80-2x.png",
+      "expected": "80",
+      "preset": "white",
+      "mode": "8",
+      "text": "80",
+      "value": "80",
+      "confidence": 60
+    },
+    {
+      "file": "composed-80-2x.png",
+      "expected": "80",
+      "preset": "white",
+      "mode": "7",
+      "text": "80",
+      "value": "80",
+      "confidence": 52
+    },
+    {
+      "file": "composed-80-2x.png",
+      "expected": "80",
+      "preset": "white",
+      "mode": "13",
+      "text": "80",
+      "value": "80",
+      "confidence": 60
+    },
+    {
+      "file": "composed-66-1.25x.png",
+      "expected": "66",
+      "preset": "previous",
+      "mode": "8",
+      "text": "",
+      "value": null,
+      "confidence": 0
+    },
+    {
+      "file": "composed-66-1.25x.png",
+      "expected": "66",
+      "preset": "previous",
+      "mode": "7",
+      "text": "",
+      "value": null,
+      "confidence": 0
+    },
+    {
+      "file": "composed-66-1.25x.png",
+      "expected": "66",
+      "preset": "previous",
+      "mode": "13",
+      "text": "66",
+      "value": "66",
+      "confidence": 67
+    },
+    {
+      "file": "composed-66-1.25x.png",
+      "expected": "66",
+      "preset": "white",
+      "mode": "8",
+      "text": "66",
+      "value": "66",
+      "confidence": 68
+    },
+    {
+      "file": "composed-66-1.25x.png",
+      "expected": "66",
+      "preset": "white",
+      "mode": "7",
+      "text": "66",
+      "value": "66",
+      "confidence": 93
+    },
+    {
+      "file": "composed-66-1.25x.png",
+      "expected": "66",
+      "preset": "white",
+      "mode": "13",
+      "text": "66",
+      "value": "66",
+      "confidence": 68
+    },
+    {
+      "file": "composed-66-1.5x.png",
+      "expected": "66",
+      "preset": "previous",
+      "mode": "8",
+      "text": "",
+      "value": null,
+      "confidence": 0
+    },
+    {
+      "file": "composed-66-1.5x.png",
+      "expected": "66",
+      "preset": "previous",
+      "mode": "7",
+      "text": "",
+      "value": null,
+      "confidence": 0
+    },
+    {
+      "file": "composed-66-1.5x.png",
+      "expected": "66",
+      "preset": "previous",
+      "mode": "13",
+      "text": "66",
+      "value": "66",
+      "confidence": 66
+    },
+    {
+      "file": "composed-66-1.5x.png",
+      "expected": "66",
+      "preset": "white",
+      "mode": "8",
+      "text": "66",
+      "value": "66",
+      "confidence": 64
+    },
+    {
+      "file": "composed-66-1.5x.png",
+      "expected": "66",
+      "preset": "white",
+      "mode": "7",
+      "text": "66",
+      "value": "66",
+      "confidence": 91
+    },
+    {
+      "file": "composed-66-1.5x.png",
+      "expected": "66",
+      "preset": "white",
+      "mode": "13",
+      "text": "66",
+      "value": "66",
+      "confidence": 64
+    },
+    {
+      "file": "composed-66-2x.png",
+      "expected": "66",
+      "preset": "previous",
+      "mode": "8",
+      "text": "66",
+      "value": "66",
+      "confidence": 62
+    },
+    {
+      "file": "composed-66-2x.png",
+      "expected": "66",
+      "preset": "previous",
+      "mode": "7",
+      "text": "66",
+      "value": "66",
+      "confidence": 71
+    },
+    {
+      "file": "composed-66-2x.png",
+      "expected": "66",
+      "preset": "previous",
+      "mode": "13",
+      "text": "66",
+      "value": "66",
+      "confidence": 62
+    },
+    {
+      "file": "composed-66-2x.png",
+      "expected": "66",
+      "preset": "white",
+      "mode": "8",
+      "text": "66",
+      "value": "66",
+      "confidence": 76
+    },
+    {
+      "file": "composed-66-2x.png",
+      "expected": "66",
+      "preset": "white",
+      "mode": "7",
+      "text": "66",
+      "value": "66",
+      "confidence": 81
+    },
+    {
+      "file": "composed-66-2x.png",
+      "expected": "66",
+      "preset": "white",
+      "mode": "13",
+      "text": "66",
+      "value": "66",
+      "confidence": 76
+    },
+    {
+      "file": "composed-88-1.25x.png",
+      "expected": "88",
+      "preset": "previous",
+      "mode": "8",
+      "text": "88",
+      "value": "88",
+      "confidence": 52
+    },
+    {
+      "file": "composed-88-1.25x.png",
+      "expected": "88",
+      "preset": "previous",
+      "mode": "7",
+      "text": "88",
+      "value": "88",
+      "confidence": 94
+    },
+    {
+      "file": "composed-88-1.25x.png",
+      "expected": "88",
+      "preset": "previous",
+      "mode": "13",
+      "text": "88",
+      "value": "88",
+      "confidence": 52
+    },
+    {
+      "file": "composed-88-1.25x.png",
+      "expected": "88",
+      "preset": "white",
+      "mode": "8",
+      "text": "88",
+      "value": "88",
+      "confidence": 58
+    },
+    {
+      "file": "composed-88-1.25x.png",
+      "expected": "88",
+      "preset": "white",
+      "mode": "7",
+      "text": "88",
+      "value": "88",
+      "confidence": 93
+    },
+    {
+      "file": "composed-88-1.25x.png",
+      "expected": "88",
+      "preset": "white",
+      "mode": "13",
+      "text": "88",
+      "value": "88",
+      "confidence": 58
+    },
+    {
+      "file": "composed-88-1.5x.png",
+      "expected": "88",
+      "preset": "previous",
+      "mode": "8",
+      "text": "88",
+      "value": "88",
+      "confidence": 57
+    },
+    {
+      "file": "composed-88-1.5x.png",
+      "expected": "88",
+      "preset": "previous",
+      "mode": "7",
+      "text": "88",
+      "value": "88",
+      "confidence": 85
+    },
+    {
+      "file": "composed-88-1.5x.png",
+      "expected": "88",
+      "preset": "previous",
+      "mode": "13",
+      "text": "88",
+      "value": "88",
+      "confidence": 57
+    },
+    {
+      "file": "composed-88-1.5x.png",
+      "expected": "88",
+      "preset": "white",
+      "mode": "8",
+      "text": "88",
+      "value": "88",
+      "confidence": 64
+    },
+    {
+      "file": "composed-88-1.5x.png",
+      "expected": "88",
+      "preset": "white",
+      "mode": "7",
+      "text": "88",
+      "value": "88",
+      "confidence": 82
+    },
+    {
+      "file": "composed-88-1.5x.png",
+      "expected": "88",
+      "preset": "white",
+      "mode": "13",
+      "text": "88",
+      "value": "88",
+      "confidence": 64
+    },
+    {
+      "file": "composed-88-2x.png",
+      "expected": "88",
+      "preset": "previous",
+      "mode": "8",
+      "text": "88",
+      "value": "88",
+      "confidence": 65
+    },
+    {
+      "file": "composed-88-2x.png",
+      "expected": "88",
+      "preset": "previous",
+      "mode": "7",
+      "text": "88",
+      "value": "88",
+      "confidence": 82
+    },
+    {
+      "file": "composed-88-2x.png",
+      "expected": "88",
+      "preset": "previous",
+      "mode": "13",
+      "text": "88",
+      "value": "88",
+      "confidence": 65
+    },
+    {
+      "file": "composed-88-2x.png",
+      "expected": "88",
+      "preset": "white",
+      "mode": "8",
+      "text": "88",
+      "value": "88",
+      "confidence": 56
+    },
+    {
+      "file": "composed-88-2x.png",
+      "expected": "88",
+      "preset": "white",
+      "mode": "7",
+      "text": "88",
+      "value": "88",
+      "confidence": 69
+    },
+    {
+      "file": "composed-88-2x.png",
+      "expected": "88",
+      "preset": "white",
+      "mode": "13",
+      "text": "88",
+      "value": "88",
+      "confidence": 56
+    }
+  ]
+}

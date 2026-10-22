@@ -93,7 +93,7 @@
     const preset={
       map:{mode:'neutral',contrast:1.6,brightness:10,threshold:30,chroma:35,invert:true},
       class:{mode:'gray',contrast:2.5,brightness:-5,invert:true},
-      level:{mode:'neutral',contrast:3,brightness:80,threshold:115,chroma:255},
+      level:{mode:'light',contrast:1,brightness:0,threshold:180,chroma:55,scale:6},
       mesos:{mode:'dark',contrast:0.5,brightness:5,invert:true},
       exp:{mode:'light'},hp:{mode:'neutral'},mp:{mode:'neutral'}
     }[id];
@@ -103,6 +103,12 @@
     return {reader:readerFor(id,value.reader),mode:['gray','light','dark','neutral','gold'].includes(value.mode)?value.mode:defaults.mode,contrast:number('contrast',defaults.contrast,.5,3),brightness:number('brightness',defaults.brightness,-80,80),threshold:number('threshold',defaults.threshold,30,240),chroma:number('chroma',defaults.chroma,0,255),scale:Math.round(number('scale',defaults.scale,2,6)),invert:value.invert===undefined?defaults.invert:!!value.invert};
   }
   // Pure RGBA preprocessing. Input pixels are never modified or persisted.
+  function migrateLevelTuning(value){
+    // Replace only the previous shipped default; intentional custom settings
+    // and Classic font-reader selections stay intact.
+    const old=value&&readerFor('level',value.reader)==='general'&&value.mode==='neutral'&&value.contrast===3&&value.brightness===80&&value.threshold===115&&value.chroma===255&&(value.scale===undefined||value.scale===4)&&!value.invert;
+    return tuning('level',old?{}:value);
+  }
   function processPixels(input,settings){
     const d=new Uint8ClampedArray(input.length),adjust=v=>Math.max(0,Math.min(255,(v-128)*settings.contrast+128+settings.brightness));
     for(let i=0;i<input.length;i+=4){
@@ -124,6 +130,6 @@
     return pale/(data.length/4)>=.6;
   }
   const scaleFor=(width,height,preferred)=>Math.min(preferred,Math.sqrt(2000000/(width*height)),6000/width,6000/height);
-  root.MapleOcrCore={fields,defaults,region,digitRegion,parse,select,parsePercent,selectPercent,percentExp,convertPercent,migrateExpRegion,readerFor,tuning,processPixels,inventoryVisible,scaleFor};
+  root.MapleOcrCore={fields,defaults,region,digitRegion,parse,select,parsePercent,selectPercent,percentExp,convertPercent,migrateExpRegion,migrateLevelTuning,readerFor,tuning,processPixels,inventoryVisible,scaleFor};
   if(typeof module!=='undefined')module.exports=root.MapleOcrCore;
 })(typeof window!=='undefined'?window:globalThis);

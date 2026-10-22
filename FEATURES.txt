@@ -73,3 +73,5 @@ No-download stream overlay is now the website default: Open stream overlay opens
 Partial automatic reads: unreadable HP/MP counts no longer discard valid EXP. Unknown counts, supply cost and net profit display N/A; complete readings restore financial tracking without guessed counts. Partial progress survives reload and JSON.
 
 Screen capture automatically recognizes the captured image and populates editable OCR review values; no second Read screenshot click is required.
+
+Readable form/OCR text; compact live view with stats above graphs; independent HP/MP usage per minute and time remaining; gentler level OCR default verified on real level-60 pixels and 6/8/0 digit combinations.

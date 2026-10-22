@@ -257,7 +257,7 @@
     for(const id of ['ocr-capture-stop','capture-stop-sharing'])$(id).addEventListener('click',stopSharing);
     window.addEventListener('pagehide',()=>{stop();captureSession.stop();});
     try{const current=localStorage.getItem(layoutKey),saved=JSON.parse(current||localStorage.getItem(legacyLayoutKey));if(saved){for(const field of C.fields)regions[field.id]=C.region(!current&&field.id==='exp'?C.migrateExpRegion(saved.exp):saved[field.id]);if(!current)localStorage.setItem(layoutKey,JSON.stringify(regions));}}catch{regions=structuredClone(C.defaults);}
-    try{const saved=JSON.parse(localStorage.getItem(tuningKey));if(saved)for(const field of C.fields)if(saved[field.id])tunings[field.id]=C.tuning(field.id,saved[field.id]);}catch{tunings={};}
+    try{const saved=JSON.parse(localStorage.getItem(tuningKey));if(saved)for(const field of C.fields)if(saved[field.id])tunings[field.id]=field.id==='level'?C.migrateLevelTuning(saved[field.id]):C.tuning(field.id,saved[field.id]);}catch{tunings={};}
     $('screenshot-start').addEventListener('click',open);$('screenshot-end').addEventListener('click',open);
     $('ocr-close').addEventListener('click',()=>$('screenshot-dialog').close());$('screenshot-dialog').addEventListener('close',()=>{stop();clearImage();$('ocr-file').value='';$('ocr-file-name').textContent='PNG, JPG, or WebP · up to 15 MB';MaplePotionPicker.dispose($('ocr-review-fields'));$('ocr-review-fields').replaceChildren();});
     $('ocr-capture').addEventListener('click',()=>void captureScreen());$('ocr-capture-cancel').addEventListener('click',()=>{stop();$('ocr-capture-status').textContent='Capture cancelled. Your previous screenshot and reviewed values were kept. If the browser picker is still open, dismiss it there too.';});

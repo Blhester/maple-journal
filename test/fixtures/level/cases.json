@@ -1,0 +1,144 @@
+{
+  "cases": [
+    {
+      "file": "real-60.png",
+      "expected": "60",
+      "source": "User supplied level-60 screenshot, original level crop."
+    },
+    {
+      "file": "real-58.png",
+      "expected": "58",
+      "source": "Existing OCR example, original level crop."
+    },
+    {
+      "file": "composed-68.png",
+      "expected": "68",
+      "source": "Digit tiles composed from the real level-60 and level-58 crops; synthetic level fixture."
+    },
+    {
+      "file": "composed-86.png",
+      "expected": "86",
+      "source": "Digit tiles composed from the real level-60 and level-58 crops; synthetic level fixture."
+    },
+    {
+      "file": "composed-80.png",
+      "expected": "80",
+      "source": "Digit tiles composed from the real level-60 and level-58 crops; synthetic level fixture."
+    },
+    {
+      "file": "composed-66.png",
+      "expected": "66",
+      "source": "Digit tiles composed from the real level-60 and level-58 crops; synthetic level fixture."
+    },
+    {
+      "file": "composed-88.png",
+      "expected": "88",
+      "source": "Digit tiles composed from the real level-60 and level-58 crops; synthetic level fixture."
+    },
+    {
+      "file": "real-60-1.25x.png",
+      "expected": "60",
+      "source": "User supplied level-60 screenshot, original level crop. Bilinear scaling at 1.25x."
+    },
+    {
+      "file": "real-60-1.5x.png",
+      "expected": "60",
+      "source": "User supplied level-60 screenshot, original level crop. Bilinear scaling at 1.5x."
+    },
+    {
+      "file": "real-60-2x.png",
+      "expected": "60",
+      "source": "User supplied level-60 screenshot, original level crop. Bilinear scaling at 2x."
+    },
+    {
+      "file": "real-58-1.25x.png",
+      "expected": "58",
+      "source": "Existing OCR example, original level crop. Bilinear scaling at 1.25x."
+    },
+    {
+      "file": "real-58-1.5x.png",
+      "expected": "58",
+      "source": "Existing OCR example, original level crop. Bilinear scaling at 1.5x."
+    },
+    {
+      "file": "real-58-2x.png",
+      "expected": "58",
+      "source": "Existing OCR example, original level crop. Bilinear scaling at 2x."
+    },
+    {
+      "file": "composed-68-1.25x.png",
+      "expected": "68",
+      "source": "Digit tiles composed from the real level-60 and level-58 crops; synthetic level fixture. Bilinear scaling at 1.25x."
+    },
+    {
+      "file": "composed-68-1.5x.png",
+      "expected": "68",
+      "source": "Digit tiles composed from the real level-60 and level-58 crops; synthetic level fixture. Bilinear scaling at 1.5x."
+    },
+    {
+      "file": "composed-68-2x.png",
+      "expected": "68",
+      "source": "Digit tiles composed from the real level-60 and level-58 crops; synthetic level fixture. Bilinear scaling at 2x."
+    },
+    {
+      "file": "composed-86-1.25x.png",
+      "expected": "86",
+      "source": "Digit tiles composed from the real level-60 and level-58 crops; synthetic level fixture. Bilinear scaling at 1.25x."
+    },
+    {
+      "file": "composed-86-1.5x.png",
+      "expected": "86",
+      "source": "Digit tiles composed from the real level-60 and level-58 crops; synthetic level fixture. Bilinear scaling at 1.5x."
+    },
+    {
+      "file": "composed-86-2x.png",
+      "expected": "86",
+      "source": "Digit tiles composed from the real level-60 and level-58 crops; synthetic level fixture. Bilinear scaling at 2x."
+    },
+    {
+      "file": "composed-80-1.25x.png",
+      "expected": "80",
+      "source": "Digit tiles composed from the real level-60 and level-58 crops; synthetic level fixture. Bilinear scaling at 1.25x."
+    },
+    {
+      "file": "composed-80-1.5x.png",
+      "expected": "80",
+      "source": "Digit tiles composed from the real level-60 and level-58 crops; synthetic level fixture. Bilinear scaling at 1.5x."
+    },
+    {
+      "file": "composed-80-2x.png",
+      "expected": "80",
+      "source": "Digit tiles composed from the real level-60 and level-58 crops; synthetic level fixture. Bilinear scaling at 2x."
+    },
+    {
+      "file": "composed-66-1.25x.png",
+      "expected": "66",
+      "source": "Digit tiles composed from the real level-60 and level-58 crops; synthetic level fixture. Bilinear scaling at 1.25x."
+    },
+    {
+      "file": "composed-66-1.5x.png",
+      "expected": "66",
+      "source": "Digit tiles composed from the real level-60 and level-58 crops; synthetic level fixture. Bilinear scaling at 1.5x."
+    },
+    {
+      "file": "composed-66-2x.png",
+      "expected": "66",
+      "source": "Digit tiles composed from the real level-60 and level-58 crops; synthetic level fixture. Bilinear scaling at 2x."
+    },
+    {
+      "file": "composed-88-1.25x.png",
+      "expected": "88",
+      "source": "Digit tiles composed from the real level-60 and level-58 crops; synthetic level fixture. Bilinear scaling at 1.25x."
+    },
+    {
+      "file": "composed-88-1.5x.png",
+      "expected": "88",
+      "source": "Digit tiles composed from the real level-60 and level-58 crops; synthetic level fixture. Bilinear scaling at 1.5x."
+    },
+    {
+      "file": "composed-88-2x.png",
+      "expected": "88",
+      "source": "Digit tiles composed from the real level-60 and level-58 crops; synthetic level fixture. Bilinear scaling at 2x."
+    }
+  ]
+}

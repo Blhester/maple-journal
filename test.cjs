@@ -97,6 +97,7 @@ require('./test-auto-progress.cjs');
 require('./test-background-ocr.cjs');
 require('./test-live-dashboard.cjs');
 require('./test-partial-supplies.cjs');
+require('./test-supply-runway.cjs');
 // Keep real HTTP timing independent of synchronous font-worker VM fixtures.
 require('node:child_process').execFileSync(process.execPath,['test-overlay.cjs'],{stdio:'inherit'});
 require('node:child_process').execFileSync(process.execPath,['test-browser-overlay.cjs'],{stdio:'inherit'});

@@ -63,3 +63,35 @@ html{scroll-behavior:smooth;scroll-padding-top:20px}.jump-links{display:flex;fle
 .live-charts .chart-label,.live-charts .chart-axis{font-size:13px}
 /* Local stream controls share the journal palette and never cover the tracker. */
 .stream-panel{margin:24px 0;padding:28px}.stream-panel h2{margin:10px 0 14px}.overlay-actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:16px 0}.overlay-check{display:flex;gap:8px;align-items:center}.overlay-check input{width:auto;margin:0}.overlay-settings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:18px 0}#overlay-url{font-size:12px;font-family:monospace}#overlay-reset-confirm{padding:16px;border:1px solid currentColor;border-radius:8px;margin-top:16px}@media(max-width:640px){.overlay-settings{grid-template-columns:1fr}.stream-panel{padding:20px}}
+
+/* Readable controls and supporting text across setup, OCR and session review. */
+body{font-size:16px}label,.ocr-enhance>label,.ocr-enhance .two-col label,.ocr-tuning-grid label{font-size:15px;line-height:1.45}
+input,select,.potion-block input,.ocr-enhance select,.history-filters input,.history-filters select{font-size:16px;min-height:44px}
+small,.form-note,.muted,.under-button,.end-intro,.completion-note,.running-note p,.ocr-review-note,.ocr-enhance summary>span{font-size:14px;line-height:1.6}
+.primary,.secondary,.text-button,.auto-toggle,.auto-start-choice,.journal-tabs [role=tab],.ocr-enhance summary,.ocr-file-label,.context-details summary,#checkpoint-details summary,#ledger-details summary{font-size:15px}
+.eyebrow,.edition,.section-label,.section-label span,.editable,.potion-title a,.badge,.steps li,.metric-label,.insight-grid span,.live-rate-cards span,.live-stat-grid span{font-size:12px;letter-spacing:.6px}
+.potion-title h3,h3,.live-charts h3{font-size:17px}.potion-item-name,.potion-item-label,.potion-option,.etc-option,.ocr-map-choice button{font-size:15px}
+.auto-status,.auto-progress details,.auto-log,.ocr-map-matches,.ocr-map-choice a,.method,.method summary,.method p,.breakdown,.ledger-list,.history-review li{font-size:14px}
+thead th,tbody th,.history-table th,.history-table td,.history-table td strong,#trend-rows td,#map-rows td{font-size:14px}
+tbody td{font-size:16px}.totals span{font-size:12px}.insight-grid strong{font-size:21px}.history-review .insight-grid strong{font-size:18px}
+.intro p,footer,footer>span:last-child,.footer-fine,.rounding,.context-details summary span,#checkpoint-details summary span,#ledger-details summary span{font-size:13px}
+:root{--muted:#64715e}.form-note,small,.ocr-review-note{color:var(--muted)}
+
+/* During training, make room for both graphs and the actionable numbers. */
+.is-training .intro{display:none}.is-training .topbar{height:64px}.is-training .journal-tabs{margin:12px 0}.is-training .workspace{gap:12px}
+.is-training .workspace>.timer-card{padding:13px 22px}.is-training .workspace>.timer-card .timer{font-size:36px}.is-training .workspace>.timer-card .timer-top{font-size:12px}.is-training .wall-time{font-size:12px}
+.is-training .workspace>.session-panel{padding:18px 22px}.is-training .session-panel>.panel-heading,.is-training .steps,.is-training .running-note{display:none}.is-training .action-row{margin-top:0;gap:12px}
+.live-dashboard{margin:16px 0 0}.live-heading{gap:12px}.live-heading h2{font-size:28px;margin:3px 0}.live-context,.live-dashboard>.form-note{margin:6px 0}
+.live-rate-cards{gap:14px;margin:12px 0}.live-rate-cards>div{padding:13px 16px}.live-rate-cards strong{font-size:32px;margin:5px 0}.live-rate-cards small{font-size:14px}
+.live-stat-grid{grid-template-columns:repeat(6,minmax(0,1fr));gap:14px;margin:16px 0;padding:14px 0;border-block:1px solid var(--line);align-items:start}
+.live-stat-grid strong{font-size:19px;margin-top:5px;line-height:1.35}.live-stat-grid small{font-size:13px;line-height:1.5;margin:5px 0 0}.live-stat-grid>div{min-width:0}
+.live-charts{gap:16px}.live-charts .chart{margin:7px 0}.live-charts .chart-label,.live-charts .chart-axis{font-size:17px}.live-charts h3{margin:0}
+.live-explainer{margin-top:7px;font-size:13px}.live-explainer .form-note{margin:8px 0}.live-dashboard #live-snapshot-note{font-size:13px;line-height:1.5;margin:8px 0 0}
+@media(max-width:1000px){.live-stat-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.live-charts .chart-label,.live-charts .chart-axis{font-size:20px}}
+@media(max-width:700px){.live-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.live-charts{grid-template-columns:1fr}.live-heading{flex-direction:row;align-items:center}.live-rate-cards strong{font-size:28px}.is-training .workspace>.timer-card .timer{font-size:32px}.is-training .workspace>.timer-card .timer-top{font-size:11px}.is-training .workspace>.session-panel{padding:16px}.live-charts .chart-label,.live-charts .chart-axis{font-size:17px}.journal-tabs [role=tab]{padding:10px 12px;font-size:14px}}
+.ocr-region-controls label,.ocr-review-field-heading label,.ocr-review-field>label{font-size:15px}
+.ocr-region-controls input,.ocr-review-field>input,.ocr-review-field>label select{font-size:16px}
+.ocr-review-field .potion-item-name{font-size:15px}.potion-item-price,.ocr-raw,.ocr-raw p,.ocr-crop-preview>span,.ocr-guide summary span,.ocr-guide-legend,.ocr-privacy,.ocr-alternatives{font-size:13px}
+.ocr-layout-actions>.text-button,.ocr-review-field-heading>.text-button,.ocr-alternatives .text-button{font-size:13px}.ocr-empty-review,.ocr-progress-wrap{font-size:14px}
+.live-stat-grid span,.live-rate-cards span{font-size:13px}
+@media(max-width:700px){.live-rate-cards{gap:10px}.live-rate-cards>div{padding:12px}.live-rate-cards strong{font-size:clamp(22px,6.4vw,28px)}.live-charts .chart-label,.live-charts .chart-axis{font-size:20px}}

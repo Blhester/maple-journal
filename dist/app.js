@@ -66,7 +66,7 @@
     $('live-quality').textContent=point?(pending?'Latest capture · pending':'Confirmed progress'):'Waiting for a capture';
     $('live-context').textContent=[state.meta?.map,state.meta?.class].filter(Boolean).join(' · ')||'Rates use active training time and your validated starting values.';
     for(const id of ['exp-hour','mesos-hour','level','hp','mp','supply-cost','eta'])$('live-'+id).textContent='N/A';
-    $('live-confirmed').textContent=String(state.autoPoints?.length||0);$('live-exp-gained').textContent='No usable capture yet';$('live-net-total').textContent='Keep your inventory open to read mesos';
+    for(const k of ['hp','mp'])$('live-'+k+'-drain').textContent='Waiting for a capture';$('live-confirmed').textContent=String(state.autoPoints?.length||0);$('live-exp-gained').textContent='No usable capture yet';$('live-net-total').textContent='Keep your inventory open to read mesos';
     const rows=model.rows;
     MapleHistory.lineChart($('live-exp-chart'),rows,'expHour',{live:true});MapleHistory.lineChart($('live-mesos-chart'),rows,'netHour',{live:true});
     if(!point){$('live-exp-hour').textContent='0';$('live-exp-gained').textContent='0 EXP gained';$('live-mesos-hour').textContent=autoLastSample?'N/A':'0';$('live-net-total').textContent=autoLastSample?'Mesos N/A · awaiting a readable capture':'0 net mesos · starting balance';$('live-snapshot-note').textContent='Rates start at 0. A usable capture after one full active minute starts the rate estimates. Keep the HUD and potion counts visible; mesos needs an open inventory.';return;}
@@ -75,7 +75,7 @@
     $('live-exp-hour').textContent=format(stats.expHour);$('live-exp-gained').textContent=format(stats.exp)+' EXP gained';
     if(mesosAvailable){$('live-mesos-hour').textContent=format(stats.netHour);$('live-net-total').textContent=format(stats.net)+' net mesos · after potion costs';}
     else $('live-net-total').textContent='Net mesos N/A · balance or supply counts unreadable / awaiting validation';
-    $('live-level').textContent=(point.end.level||'Level N/A')+' · '+format(point.end.exp)+' EXP';$('live-hp').textContent=(point.end.hp===null?'N/A':format(point.end.hp))+' '+(M.catalog.hp.find(item=>item.id===state.start.hpPotion)?.name||'items');$('live-mp').textContent=(point.end.mp===null?'N/A':format(point.end.mp))+' '+(M.catalog.mp.find(item=>item.id===state.start.mpPotion)?.name||'items');$('live-supply-cost').textContent=stats.supplyCost===null?'N/A':format(stats.supplyCost)+' mesos';$('live-eta').textContent=eta(stats.etaMs);
+    $('live-level').textContent=(point.end.level||'Level N/A')+' · '+format(point.end.exp)+' EXP';$('live-hp').textContent=(point.end.hp===null?'N/A':format(point.end.hp))+' '+(M.catalog.hp.find(item=>item.id===state.start.hpPotion)?.name||'items');$('live-mp').textContent=(point.end.mp===null?'N/A':format(point.end.mp))+' '+(M.catalog.mp.find(item=>item.id===state.start.mpPotion)?.name||'items');$('live-supply-cost').textContent=stats.supplyCost===null?'N/A':format(stats.supplyCost)+' mesos';$('live-eta').textContent=eta(stats.etaMs);for(const k of ['hp','mp']){const rate=stats[k+'PerMinute'],left=stats[k+'RunwayMs'];$('live-'+k+'-drain').textContent=point.end[k]===null?'Count unreadable':point.end[k]===0?'Empty':rate===null?'Gathering usage rate':rate===0?'No use recorded':format(rate)+'/min · '+eta(left)+' left';}
     $('live-snapshot-note').textContent=(pending?'Pending capture':'Confirmed snapshot')+' at '+duration(point.elapsedMs)+' active training. '+(!stats.rateReady?'Rates stay at 0 until a usable capture after one full active minute. Totals still show detected changes. ':pending?'Provisional rates update after each capture; this point is excluded from confirmed history until validated.':'Only confirmed values are counted.')+(!mesosAvailable?' EXP continues while net mesos is N/A; check balance and both supply regions.':'');
   }
   function autoLog(point,status,message){
@@ -190,7 +190,7 @@
     }
   }
   function render(){
-    const setup=state.stage==='setup',running=state.stage==='running',ending=state.stage==='ending',complete=state.stage==='complete',paused=!!state.pausedAt,hasLevel=!!state.start?.level;
+    const setup=state.stage==='setup',running=state.stage==='running',ending=state.stage==='ending',complete=state.stage==='complete',paused=!!state.pausedAt,hasLevel=!!state.start?.level;document.body?.classList.toggle('is-training',running);
     $('ocr-start-actions').hidden=!setup;$('start-form').hidden=!setup;$('start-fields').disabled=!setup;$('start-button').hidden=!setup;$('start-note').hidden=!setup;$('running-actions').hidden=!running;$('end-form').hidden=!ending;$('completed-actions').hidden=!complete;$('discard-button').hidden=setup||complete;$('discard-confirm').hidden=true;
     $('stage-label').textContent=setup?'01 / PREPARE':running?'02 / TRAIN':'03 / REVIEW';$('session-title').textContent=setup?'Before the adventure':running?'Enjoy the adventure':ending?'Back from the adventure':'A session well spent';$('status').textContent=setup?'Ready when you are':running?(paused?'Taking a break':'Session in progress'):ending?'Timer stopped':'Session complete';
     for(let i=1;i<=3;i++)$('step-'+i).classList.toggle('active',i===(setup?1:running?2:3));

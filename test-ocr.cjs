@@ -51,7 +51,9 @@ for(const field of C.fields){
     assert.equal(settings.contrast,2.1);assert.equal(settings.threshold,109);
   }
 }
-assert.equal(C.tuning('level',{reader:'classic'}).contrast,3);
+assert.equal(C.tuning('level',{reader:'classic'}).contrast,1);
+assert.deepEqual(C.migrateLevelTuning({reader:'general',mode:'neutral',contrast:3,brightness:80,threshold:115,chroma:255,scale:4,invert:false}),C.tuning('level'));
+for(const custom of [{mode:'gray',contrast:2},{reader:'exp-font',mode:'neutral',contrast:3,brightness:80,threshold:115,chroma:255,scale:4},{mode:'neutral',contrast:3,brightness:79,threshold:115,chroma:255,scale:4}])assert.deepEqual(C.migrateLevelTuning(custom),C.tuning('level',custom),'Custom level settings are preserved');
 assert.equal(C.tuning('mesos',{reader:'classic'}).contrast,.5);
 assert.throws(()=>C.readerFor('unknown','general'));
 for(const r of [null,{x:0,y:0,w:0,h:1},{x:.9,y:0,w:.2,h:1},{x:NaN,y:0,w:1,h:1}])assert.throws(()=>C.region(r));

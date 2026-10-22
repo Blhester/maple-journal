@@ -50,3 +50,5 @@ Verification details and device/file-picker limits: VERIFICATION.txt.
 [x] Keep percentage EXP tracking active when a potion count is unreadable; preserve unknown supplies and financial graph gaps through history, reload, stream feed and final review.
 
 [x] Run manual screen-snapshot OCR automatically after successful capture/decode; retain review, re-read, retry and cancellation.
+
+[x] Enlarge form and OCR text, consolidate live stats/graphs, expose HP/MP drain/runway, and calibrate/migrate level OCR defaults against 60/68/86/80 fixtures.

@@ -8,22 +8,22 @@
   const time=ms=>{const m=Math.floor(ms/60000),s=Math.floor(ms/1000)%60;return m>=60?Math.floor(m/60)+'h '+m%60+'m':m+'m '+s+'s';};
   function notice(message){$('history-error').textContent=message;$('history-error').hidden=!message;}
   function svgElement(tag,attrs={},value){const node=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [k,v]of Object.entries(attrs))node.setAttribute(k,String(v));if(value!==undefined)node.textContent=value;return node;}
-  function baseChart(container,title,xLabel,yLabel,xMin,xMax,yMin,yMax){
-    container.replaceChildren();const width=720,height=260,left=78,right=24,top=22,bottom=48;
+  function baseChart(container,title,xLabel,yLabel,xMin,xMax,yMin,yMax,{live=false}={}){
+    container.replaceChildren();const width=live?520:720,height=live?210:260,left=78,right=24,top=live?30:22,bottom=48;
     if(xMin===xMax)xMax=xMin+1;if(yMin===yMax)yMax=yMin+1;
     const X=x=>left+(x-xMin)*(width-left-right)/(xMax-xMin),Y=y=>height-bottom-(y-yMin)*(height-top-bottom)/(yMax-yMin);
     const svg=svgElement('svg',{viewBox:'0 0 '+width+' '+height,role:'img','aria-label':title});svg.append(svgElement('title',{},title));
     for(let i=0;i<=4;i++){const v=yMin+(yMax-yMin)*i/4,py=Y(v);svg.append(svgElement('line',{x1:left,x2:width-right,y1:py,y2:py,class:'chart-grid'}),svgElement('text',{x:left-10,y:py+4,'text-anchor':'end',class:'chart-label'},compact.format(v)));}
     for(let i=0;i<=4;i++){const v=xMin+(xMax-xMin)*i/4;svg.append(svgElement('text',{x:X(v),y:height-bottom+20,'text-anchor':'middle',class:'chart-label'},compact.format(v)));}
     if(yMin<=0&&yMax>=0)svg.append(svgElement('line',{x1:left,x2:width-right,y1:Y(0),y2:Y(0),class:'chart-zero'}));
-    svg.append(svgElement('text',{x:(left+width-right)/2,y:height-4,'text-anchor':'middle',class:'chart-axis'},xLabel),svgElement('text',{x:left,y:12,class:'chart-axis'},yLabel));container.append(svg);return {svg,X,Y};
+    svg.append(svgElement('text',{x:(left+width-right)/2,y:height-4,'text-anchor':'middle',class:'chart-axis'},xLabel),svgElement('text',{x:left,y:live?20:12,class:'chart-axis'},yLabel));container.append(svg);return {svg,X,Y};
   }
   function emptyChart(container,message){container.replaceChildren(text('p',message,'chart-empty'));}
   function lineChart(container,rows,metric,{live=false}={}){
     const points=rows.map(r=>({x:r.to/60000,y:Number.isFinite(r[metric])?r[metric]:null,preview:!!r.preview})),values=points.filter(p=>p.y!==null);
     if(!values.length){emptyChart(container,live?(metric==='expHour'?'Your first usable capture starts the EXP graph.':'Mesos N/A. Keep your inventory balance visible for a readable capture.'):'Your pace chart appears after the first checkpoint or completed run.');return;}
     const ys=values.map(p=>p.y),min=Math.min(0,...ys),max=Math.max(0,...ys),pad=Math.max(1,(max-min)*.12);
-    const {svg,X,Y}=baseChart(container,(live?'Session average ':'Interval ')+(metric==='expHour'?'EXP':'net mesos')+' per hour','Active minutes',metric==='expHour'?'EXP / hour':'Net mesos / hour',0,Math.max(...points.map(p=>p.x)),min-pad,max+pad);
+    const {svg,X,Y}=baseChart(container,(live?'Session average ':'Interval ')+(metric==='expHour'?'EXP':'net mesos')+' per hour','Active minutes',metric==='expHour'?'EXP / hour':'Net mesos / hour',0,Math.max(...points.map(p=>p.x)),min-pad,max+pad,{live});
     let segment=[];function draw(){if(segment.length>1)svg.append(svgElement('polyline',{points:segment.map(p=>X(p.x)+','+Y(p.y)).join(' '),class:'trend-line',fill:'none'}));segment=[];}
     for(const [i,p]of points.entries()){
       if(p.y===null){draw();continue;}
