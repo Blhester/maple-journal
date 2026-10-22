@@ -95,15 +95,19 @@
     if(!MapleScreenCapture.supported()){$('ocr-capture-status').textContent='Screen capture is unavailable in this browser. Open grindjournal.com in desktop Chrome or Edge over HTTPS, or choose a screenshot file.';return;}
     if(changeSource)captureSession.stop();
     stop();const controller=new AbortController();captureController=controller;setBusy(true);$('ocr-progress-wrap').hidden=true;$('ocr-capture-cancel').hidden=false;$('ocr-capture-status').textContent=captureSession.active()?'Taking a snapshot of your selected screen…':'Choose Entire screen / Screen 1 / Screen 2 containing MapleStory in the browser’s share picker. It stays connected for later snapshots until you stop sharing or leave this page.';
+    let shouldRead=false;
     try{
       const blob=await captureSession.capture({signal:controller.signal});if(captureController!==controller)return;
       const loaded=await loadImage(blob,{name:'Screen capture.png',signal:controller.signal});
-      if(loaded&&captureController===controller&&$('screenshot-dialog').open)$('ocr-capture-status').textContent='Snapshot captured. Click Capture snapshot for another image from the same source. Sharing stays on until you stop it; no audio or recording.'+(captureSession.sourceVerified?.()===false?' Your browser cannot verify the source type. Choose Screen 1 or Screen 2 when sharing, rather than a window.':'');
+      if(loaded&&captureController===controller&&$('screenshot-dialog').open){shouldRead=true;$('ocr-capture-status').textContent='Snapshot captured. Reading values automatically; review them before applying. Click Capture snapshot for another image from the same source. Sharing stays on until you stop it; no audio or recording.'+(captureSession.sourceVerified?.()===false?' Your browser cannot verify the source type. Choose Screen 1 or Screen 2 when sharing, rather than a window.':'');}
     }catch(e){if(captureController===controller){
       const cancelled=['NotAllowedError','AbortError'].includes(e.name),message=cancelled?'Capture was cancelled or permission was denied. Your previous screenshot and reviewed values were kept. You can retry or upload instead.':['NotSupportedError','SecurityError'].includes(e.name)?'Screen capture is blocked or unsupported in this browser. Try another desktop browser, or upload a screenshot.':(e.message||'The snapshot could not be opened.')+' Try again or upload a screenshot.';
       $('ocr-capture-status').textContent=message;error('ocr-capture-error',cancelled?'':message);
     }}
     finally{if(captureController===controller){captureController=null;$('ocr-capture-cancel').hidden=true;setBusy(false);}paintCaptureConnection();}
+    // Release capture's busy state before handing the decoded image to OCR.
+    // A cancelled/failed decode must never re-read the previous screenshot.
+    if(shouldRead&&!controller.signal.aborted&&$('screenshot-dialog').open)await read();
   }
   function readDigits(id,choice){
     const exp=choice==='exp-font',r=C.digitRegion(sourceRegion(id),image.naturalWidth,image.naturalHeight,id==='exp'&&exp?'exp-percent':choice),scale=Math.min(1,(exp?512:96)/r.w,(exp?64:32)/r.h),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(r.w*scale));canvas.height=Math.max(1,Math.round(r.h*scale));

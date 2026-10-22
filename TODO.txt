@@ -48,3 +48,5 @@ Verification details and device/file-picker limits: VERIFICATION.txt.
 [ ] Verify native Firefox pop-out Window Capture and Magenta Chroma Key in the user's OBS setup; the in-app preview is not exposed as a desktop window. Follow BROWSER-OVERLAY.txt with the pop-out open in Firefox/Chrome.
 
 [x] Keep percentage EXP tracking active when a potion count is unreadable; preserve unknown supplies and financial graph gaps through history, reload, stream feed and final review.
+
+[x] Run manual screen-snapshot OCR automatically after successful capture/decode; retain review, re-read, retry and cancellation.

@@ -71,3 +71,5 @@ Reset stats during a shared run: clear the overlay's rates, gains and graphs fro
 No-download stream overlay is now the website default: Open stream overlay opens a browser pop-out with a magenta capture background and solid panel. Same-profile BroadcastChannel/storage sync, explicit per-run sharing, Stats/Graphs/Combined, metric/time/size settings, reset/hide, reload recovery, one-publisher Web Lock, bounded confirmed snapshots and 24-hour local expiry. Use OBS Window Capture plus Magenta Chroma Key. The localhost helper remains optional for direct Browser Source URLs.
 
 Partial automatic reads: unreadable HP/MP counts no longer discard valid EXP. Unknown counts, supply cost and net profit display N/A; complete readings restore financial tracking without guessed counts. Partial progress survives reload and JSON.
+
+Screen capture automatically recognizes the captured image and populates editable OCR review values; no second Read screenshot click is required.
