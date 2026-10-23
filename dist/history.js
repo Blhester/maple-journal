@@ -43,6 +43,7 @@
     box.append(text('p',new Date(record.stoppedAt).toLocaleString()+' · '+(record.meta.class||'Unspecified class')+' · '+(record.start.level?'Lv '+record.start.level+' → '+record.end.level:'No level metadata'),'form-note'));
     const stats=document.createElement('div');stats.className='insight-grid';
     for(const [label,value]of [['Active / breaks',time(r.durationMs)+' / '+time(record.pausedMs)],['EXP gained',fmt(r.exp)],['Original net',fmt(r.net)],['Adjusted cash net',fmt(r.adjustedNet)],['Estimated net with loot',fmt(r.estimatedNet)],['Checkpoints',String(record.checkpoints.length)]]){const div=document.createElement('div');div.append(text('span',label),text('strong',value));stats.append(div);}box.append(stats);
+    if(r.uses?.length){const supplyList=document.createElement('ul');supplyList.className='review-ledger';for(const item of r.uses)supplyList.append(text('li',item.name+' · '+fmt(item.used)+' used × '+fmt(item.cost)+' = '+fmt(item.totalCost)+' mesos'));box.append(supplyList);}
     const list=document.createElement('ul');list.className='review-ledger';for(const item of record.end.ledger||[]){const li=document.createElement('li');if(item.source==='etc')li.append(MapleEtc.icon(item.itemId),text('span',MapleEtc.describe(item)));else li.append(text('span',item.label+' · '+item.kind+' · '+fmt(item.value)+' mesos'));list.append(li);}box.append(list);
     const close=text('button','Close review','secondary');close.type='button';close.addEventListener('click',()=>{selected=null;box.hidden=true;});box.append(close);
   }

@@ -11,6 +11,12 @@
     if(x<0||y<0||w<=0||h<=0||x+w>1.00001||y+h>1.00001)throw new Error('Keep the read region inside the screenshot.');
     return {x,y,w,h};
   }
+  function slotCountRegion(value,width,height){
+    const r=region(value),x=Math.max(0,Math.floor(r.x*width)-1),y=Math.max(0,Math.floor((r.y+r.h*.52)*height));
+    // The top half contains the key label and icon. Keeping it out avoids
+    // confusing label fragments with the blue-shadow inventory digits.
+    return {x,y,w:Math.min(width-x,Math.ceil(r.w*width)+2),h:Math.min(height-y,Math.ceil(r.h*height*.48))};
+  }
   function digitRegion(box,width,height,reader){
     if(!['quantity-font','exp-percent'].includes(reader))return {...box};
     if(reader==='exp-percent'){const pad=Math.max(2,Math.min(8,Math.round(box.h*.12))),x=Math.max(0,box.x-pad);return {x,y:box.y,w:Math.min(width,box.x+box.w+pad)-x,h:box.h};}
@@ -130,6 +136,6 @@
     return pale/(data.length/4)>=.6;
   }
   const scaleFor=(width,height,preferred)=>Math.min(preferred,Math.sqrt(2000000/(width*height)),6000/width,6000/height);
-  root.MapleOcrCore={fields,defaults,region,digitRegion,parse,select,parsePercent,selectPercent,percentExp,convertPercent,migrateExpRegion,migrateLevelTuning,readerFor,tuning,processPixels,inventoryVisible,scaleFor};
+  root.MapleOcrCore={slotCountRegion,fields,defaults,region,digitRegion,parse,select,parsePercent,selectPercent,percentExp,convertPercent,migrateExpRegion,migrateLevelTuning,readerFor,tuning,processPixels,inventoryVisible,scaleFor};
   if(typeof module!=='undefined')module.exports=root.MapleOcrCore;
 })(typeof window!=='undefined'?window:globalThis);

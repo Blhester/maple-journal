@@ -2,18 +2,19 @@
   'use strict';
   const keys=['level','exp','mesos','hp','mp'];
   const median=values=>{const a=[...values].sort((a,b)=>a-b),i=Math.floor(a.length/2);return a.length%2?a[i]:(a[i-1]+a[i])/2;};
+  function readableResult(r){const consensus=r?.votes>=2&&r.votes>r.readCount/2,font=['classic-exp','classic-exp-percent','classic-digits'].includes(r?.method),trusted=consensus||(!r?.disagrees&&Number.isFinite(r?.confidence)&&r.confidence>=70);return !!r&&r.value!==null&&r.value!==undefined&&!r.needsConfirmation&&(font||trusted);}
   function fromRead(read,start,elapsedMs){
     const end={hpAdded:0,mpAdded:0,extraExp:0,ledger:[]};
     for(const key of keys){
-      const r=read.results[key],consensus=r?.votes>=2&&r.votes>r.readCount/2;
-      const font=['classic-exp','classic-exp-percent','classic-digits'].includes(r?.method),trustedText=consensus||(!r?.disagrees&&Number.isFinite(r?.confidence)&&r.confidence>=70);
-      const readable=r&&r.value!==null&&r.value!==undefined&&!r.needsConfirmation&&(font||trustedText);
+      if(start.uses!==undefined&&['hp','mp'].includes(key)){end[key]=0;continue;}
+      const r=read.results[key],readable=readableResult(r);
       // An unreadable supply must not discard good EXP. Keep unknowns explicit;
       // net profit is unavailable until both potion costs can be calculated.
       if(['mesos','hp','mp'].includes(key)){try{end[key]=readable&&(key!=='mesos'||read.inventoryVisible!==false)?M.integer(r.value,key):null;}catch{end[key]=null;}continue;}
       if(!readable)throw new Error('Uncertain '+key+' reading; sample skipped.');
       end[key]=M.integer(r.value,key);
     }
+    if(start.uses!==undefined){end.uses=start.uses.map(slot=>{const r=read.results.uses?.find(r=>r.id===slot.id),v=r?.result;let quantity=null;try{if(readableResult(v))quantity=M.integer(v.value,'Use count');}catch{}return {id:slot.id,quantity,added:0};});}
     if(!start.level)throw new Error('Record a starting level before enabling automatic progress.');
     M.position(end.level,end.exp);
     if(end.level<start.level)throw new Error('Level is below the starting level; sample skipped.');
@@ -25,21 +26,24 @@
     // Keep trend anchors across missing counts, without copying old quantities
     // into a new snapshot or inventing a supply cost.
     let supplyBase={hp:base.end.hp??mesoAnchor?.end.hp??start.hp,mp:base.end.mp??mesoAnchor?.end.mp??start.mp};
-    function vector(point){return {exp:M.position(point.end.level,point.end.exp),hp:point.end.hp,mp:point.end.mp};}
+    const useIds=(start.uses||[]).map(r=>r.id);
+    for(const slot of start.uses||[])supplyBase['use:'+slot.id]=base.end.uses?.find(r=>r.id===slot.id)?.quantity??slot.quantity;
+    function vector(point){return {exp:M.position(point.end.level,point.end.exp),hp:point.end.hp,mp:point.end.mp,...Object.fromEntries(useIds.map(id=>['use:'+id,point.end.uses?.find(r=>r.id===id)?.quantity??null]))};}
     function follows(a,b){
       if(b.elapsedMs<=a.elapsedMs)return false;
       const x=vector(a),y=vector(b);
-      return y.exp>=x.exp&&['hp','mp'].every(k=>y[k]===null||y[k]<=(x[k]??supplyBase[k]));
+      return y.exp>=x.exp&&['hp','mp',...useIds.map(id=>'use:'+id)].every(k=>y[k]===null||y[k]<=(x[k]??supplyBase[k]));
     }
     function speed(a,b){const x=vector(a),y=vector(b),minutes=(b.elapsedMs-a.elapsedMs)/60000;return Object.fromEntries(Object.keys(x).filter(k=>x[k]!==null&&y[k]!==null).map(k=>[k,Math.abs(y[k]-x[k])/minutes]));}
     function unusual(point){
       if(rates.length<3)return false;
       const rate=speed(base,point),floor={exp:Math.max(100,(M.expTable[base.end.level]||100)*.02),mesos:5000,hp:10,mp:10};
-      return Object.keys(rate).some(k=>{const values=rates.map(r=>r[k]).filter(Number.isFinite);if(values.length<3)return false;const m=median(values),mad=median(values.map(x=>Math.abs(x-m)));return rate[k]>m*5+mad*6+floor[k];});
+      return Object.keys(rate).some(k=>{const values=rates.map(r=>r[k]).filter(Number.isFinite);if(values.length<3)return false;const m=median(values),mad=median(values.map(x=>Math.abs(x-m)));return rate[k]>m*5+mad*6+(floor[k]??10);});
     }
     function offer(point){
       if(!Number.isFinite(point.elapsedMs)||point.elapsedMs<=lastTime)throw new Error('Snapshot times must increase.');
       point={...point,end:{...point.end,hpAdded:base.end.hpAdded||0,mpAdded:base.end.mpAdded||0,extraExp:0,ledger:[]}};
+      if(start.uses!==undefined)point.end.uses=M.cleanUseEnd(start,(point.end.uses||[]).map(r=>({...r,added:base.end.uses?.find(b=>b.id===r.id)?.added||0})),{partial:true});
       vector(point);lastTime=point.elapsedMs;const accepted=[],rejected=[];
       if(!follows(base,point)){
         held.push(point);if(held.length>4)rejected.push({point:held.shift(),reason:'Unconfirmed change; review a manual checkpoint.'});
@@ -54,17 +58,17 @@
           if(mesos===null||point.end.mesos===null){mesos=null;mesosNote='Inventory mesos not readable in both confirming captures.';}
           else if(mesos<mesoBase.end.mesos||point.end.mesos<mesos){mesos=null;mesosNote='Mesos spike, decrease or spend needs another reading or manual validation.';}
           else if(mesoRates.length>=3){const rate=(mesos-mesoBase.end.mesos)*60000/(pending.elapsedMs-mesoBase.elapsedMs),m=median(mesoRates),mad=median(mesoRates.map(x=>Math.abs(x-m)));if(rate>m*5+mad*6+5000){mesos=null;mesosNote='Mesos rate is outside the recent pattern; validate manually.';}}
-          const confirmed={...pending,end:{...pending.end,mesos,hp:point.end.hp===null?null:pending.end.hp,mp:point.end.mp===null?null:pending.end.mp},mesosNote};stats(start,confirmed);
+          const confirmed={...pending,end:{...pending.end,mesos,hp:point.end.hp===null?null:pending.end.hp,mp:point.end.mp===null?null:pending.end.mp},mesosNote};if(start.uses!==undefined)confirmed.end.uses=pending.end.uses.map(r=>({...r,quantity:point.end.uses.find(x=>x.id===r.id)?.quantity===null?null:r.quantity}));stats(start,confirmed);
           if(mesos!==null){mesoRates.push((mesos-mesoBase.end.mesos)*60000/(pending.elapsedMs-mesoBase.elapsedMs));mesoRates=mesoRates.slice(-7);mesoBase=confirmed;}
-          rates.push(speed(base,confirmed));rates=rates.slice(-7);base=confirmed;for(const k of ['hp','mp'])if(confirmed.end[k]!==null)supplyBase[k]=confirmed.end[k];accepted.push(confirmed);
+          rates.push(speed(base,confirmed));rates=rates.slice(-7);base=confirmed;for(const k of ['hp','mp'])if(confirmed.end[k]!==null)supplyBase[k]=confirmed.end[k];for(const row of confirmed.end.uses||[])if(row.quantity!==null)supplyBase['use:'+row.id]=row.quantity;accepted.push(confirmed);
         }
       }
       pending=point;
       const preview={...point,end:{...point.end,mesos:point.end.mesos!==null&&point.end.mesos>=mesoBase.end.mesos?point.end.mesos:null},preview:true};
-      const missing=['hp','mp'].filter(k=>point.end[k]===null);
+      const missing=start.uses!==undefined?point.end.uses.filter(r=>r.quantity===null).map(r=>start.uses.find(s=>s.id===r.id)?.name||r.id):['hp','mp'].filter(k=>point.end[k]===null);
       return {preview,accepted,rejected,pending,held:0,message:(accepted.length?'Progress confirmed. Latest sample is waiting for the next reading.':'Sample waiting for the next reading. No value was guessed or filled in.')+(missing.length?' EXP continues; '+missing.map(k=>k.toUpperCase()).join('/')+' unreadable. Supply cost and net mesos are N/A.':'')};
     }
-    function rebase(point){base=point;supplyBase={hp:point.end.hp,mp:point.end.mp};pending=null;held=[];rates=[];lastTime=point.elapsedMs;mesoBase=point;mesoRates=[];}
+    function rebase(point){base=point;supplyBase={hp:point.end.hp,mp:point.end.mp};pending=null;held=[];rates=[];lastTime=point.elapsedMs;mesoBase=point;mesoRates=[];for(const slot of start.uses||[])supplyBase['use:'+slot.id]=point.end.uses?.find(r=>r.id===slot.id)?.quantity??slot.quantity;}
     return {offer,rebase};
   }
   function stats(start,point){
@@ -72,9 +76,11 @@
     const exp=start.level?M.position(e.level,e.exp)-M.position(start.level,start.exp):M.integer(e.exp,'EXP')-M.integer(start.exp,'Starting EXP')+M.integer(e.extraExp??0,'Extra EXP');
     const hpUsed=e.hp===null?null:M.integer(start.hp,'HP')+M.integer(e.hpAdded??0,'HP added')-M.integer(e.hp,'HP remaining'),mpUsed=e.mp===null?null:M.integer(start.mp,'MP')+M.integer(e.mpAdded??0,'MP added')-M.integer(e.mp,'MP remaining');
     if((hpUsed!==null&&hpUsed<0)||(mpUsed!==null&&mpUsed<0))throw new Error('Confirm supply restocks with a manual checkpoint.');
-    const supplyCost=hpUsed===null||mpUsed===null?null:hpUsed*M.integer(start.hpCost,'HP price')+mpUsed*M.integer(start.mpCost,'MP price');
+    let supplyCost=hpUsed===null||mpUsed===null?null:hpUsed*M.integer(start.hpCost,'HP price')+mpUsed*M.integer(start.mpCost,'MP price');
     if(!Number.isSafeInteger(exp)||(supplyCost!==null&&!Number.isSafeInteger(supplyCost)))throw new Error('Progress totals are too large.');
-    const net=e.mesos===null||supplyCost===null?null:M.calculate(start,e,ms).net;
+    const uses=M.useTotals(start,e,ms,{partial:true});if(uses)supplyCost=uses.cost;
+    const net=e.mesos===null||supplyCost===null?null:M.integer(e.mesos,'Mesos')-M.integer(start.mesos,'Starting mesos')-supplyCost;
+    if(net!==null&&!Number.isSafeInteger(net))throw new Error('Progress totals are too large.');
     const remaining=!start.level?null:e.level===100?0:M.expTable[e.level]-e.exp;
     // The immediate startup snapshot can be only milliseconds after validation.
     // Keep live rates at their starting zero until a full active minute has
@@ -82,7 +88,7 @@
     const rateReady=ms>=60000;
     const hpPerMinute=hpUsed===null||!rateReady?null:hpUsed*60000/ms,mpPerMinute=mpUsed===null||!rateReady?null:mpUsed*60000/ms;
     const runway=(count,used)=>count===null?null:count===0?0:rateReady&&used>0?count*ms/used:null;
-    return {exp,expHour:rateReady?exp*3600000/ms:0,net,netHour:net===null?null:rateReady?net*3600000/ms:0,rateReady,hpUsed,mpUsed,hpPerMinute,mpPerMinute,hpRunwayMs:runway(e.hp,hpUsed),mpRunwayMs:runway(e.mp,mpUsed),supplyCost,remaining,etaMs:remaining===0?0:rateReady&&remaining!==null&&exp>0?remaining*ms/exp:null};
+    return {uses:uses?.details,exp,expHour:rateReady?exp*3600000/ms:0,net,netHour:net===null?null:rateReady?net*3600000/ms:0,rateReady,hpUsed,mpUsed,hpPerMinute,mpPerMinute,hpRunwayMs:runway(e.hp,hpUsed),mpRunwayMs:runway(e.mp,mpUsed),supplyCost,remaining,etaMs:remaining===0?0:rateReady&&remaining!==null&&exp>0?remaining*ms/exp:null};
   }
   // One bounded job at a time. Late browser timers take one fresh sample, never
   // replay missed minutes or invent timestamps. Permission is requested only

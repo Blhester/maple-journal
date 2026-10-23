@@ -75,6 +75,32 @@
     if(!Object.values(totals).every(Number.isSafeInteger))throw new Error('Ledger totals are too large.');
     return totals;
   }
+  // Generic shortcut supplies are authoritative when present. Legacy HP/MP
+  // fields remain readable so existing recordings keep exactly the same totals.
+  function cleanUses(rows){
+    if(!Array.isArray(rows)||rows.length>12)throw new Error('Track up to 12 use slots.');
+    const ids=new Set(),items=new Set();
+    return rows.map(row=>{
+      if(!row||!/^[a-zA-Z0-9_-]{1,40}$/.test(row.id)||ids.has(row.id))throw new Error('Invalid or duplicate use slot.');ids.add(row.id);
+      const itemId=String(row.itemId||'custom');if(!/^(?:[0-9]{1,10}|custom)$/.test(itemId))throw new Error('Invalid use item.');
+      if(itemId!=='custom'&&items.has(itemId))throw new Error('Track each item once: duplicate hotkeys share the same inventory count.');items.add(itemId);
+      const out={id:row.id,itemId,name:String(row.name||'Custom use item').slice(0,100),quantity:integer(row.quantity,'Starting use quantity'),cost:integer(row.cost,'Use item unit cost')};
+      if(row.ocr){const o=row.ocr;if(!['general','quantity-font','exp-font'].includes(o.reader)||!['gray','light','dark','neutral','gold'].includes(o.mode))throw new Error('Invalid use OCR settings.');out.ocr={reader:o.reader,mode:o.mode,invert:!!o.invert};for(const [key,lo,hi]of [['contrast',.5,3],['brightness',-80,80],['threshold',30,240],['chroma',0,255],['scale',2,6]]){if(!Number.isFinite(o[key])||o[key]<lo||o[key]>hi)throw new Error('Invalid use image setting.');out.ocr[key]=o[key];}}
+      for(const field of ['region','countRegion'])if(row[field]){const r=row[field];if(!['x','y','w','h'].every(k=>Number.isFinite(r[k]))||r.x<0||r.y<0||r.w<=0||r.h<=0||r.x+r.w>1.00001||r.y+r.h>1.00001)throw new Error('Invalid use slot region.');out[field]={x:r.x,y:r.y,w:r.w,h:r.h};}
+      return out;
+    });
+  }
+  function cleanUseEnd(start,rows,{partial=false}={}){
+    const slots=cleanUses(start.uses);if(!Array.isArray(rows)||rows.length!==slots.length)throw new Error('Review a remaining quantity for every use slot.');
+    const byId=new Map(rows.map(row=>[row.id,row]));if(byId.size!==rows.length)throw new Error('Duplicate use reading.');
+    return slots.map(slot=>{const row=byId.get(slot.id);if(!row)throw new Error('Missing use reading: '+slot.name);const quantity=partial&&row.quantity===null?null:integer(row.quantity,'Remaining '+slot.name),added=integer(row.added??0,'Added '+slot.name);if(!Number.isSafeInteger(slot.quantity+added))throw new Error('Use quantities are too large.');if(quantity!==null&&quantity>slot.quantity+added)throw new Error('Confirm pickups or restocks for '+slot.name+'.');return {id:slot.id,quantity,added};});
+  }
+  function useTotals(start,end,ms,{partial=false}={}){
+    if(start.uses===undefined)return null;
+    const slots=cleanUses(start.uses),rows=cleanUseEnd(start,end.uses,{partial});
+    const details=slots.map((slot,i)=>{const row=rows[i],used=row.quantity===null?null:slot.quantity+row.added-row.quantity,cost=used===null?null:used*slot.cost;if(cost!==null&&!Number.isSafeInteger(cost))throw new Error('Use costs are too large.');return {...slot,...row,used,totalCost:cost,perMinute:used===null?null:used*60000/ms,runwayMs:row.quantity===null?null:row.quantity===0?0:used>0?row.quantity*ms/used:null};});
+    const cost=details.some(r=>r.totalCost===null)?null:details.reduce((n,r)=>n+r.totalCost,0);if(cost!==null&&!Number.isSafeInteger(cost))throw new Error('Use costs are too large.');return {details,cost};
+  }
   function calculate(start, end, durationMs) {
     if (!Number.isFinite(durationMs) || durationMs <= 0) throw new Error('The session needs a positive elapsed time.');
     const values = {};
@@ -86,7 +112,8 @@
     if (hpUsed < 0 || mpUsed < 0) throw new Error('Ending potions exceed your starting supply. Enter pickups or restocks under Adjustments.');
     const hpCost = hpUsed * initial.hpCost, mpCost = mpUsed * initial.mpCost;
     const gross = values.mesos - initial.mesos;
-    const net = gross - hpCost - mpCost;
+    const uses=useTotals(start,end,durationMs),supplyCost=uses?uses.cost:hpCost+mpCost;
+    const net = gross - supplyCost;
     let exp = values.exp - initial.exp + extraExp;
     const hasLevel=start.level!==undefined&&start.level!==null&&start.level!=='';
     if(hasLevel){
@@ -102,10 +129,10 @@
     const ledger=ledgerTotals(end.ledger||[]);
     const adjustedNet=net+ledger.income-ledger.expense,estimatedNet=adjustedNet+ledger.loot;
     if(![adjustedNet,estimatedNet].every(Number.isSafeInteger))throw new Error('Adjusted totals are too large.');
-    return {hpUsed,mpUsed,hpCost,mpCost,gross,net,exp,durationMs,rates,ledger,adjustedNet,estimatedNet,
+    return {hpUsed,mpUsed,hpCost,mpCost,gross,net,exp,durationMs,rates,ledger,adjustedNet,estimatedNet,supplyCost,uses:uses?.details,
       hpPerMinute:hpUsed*60000/durationMs,mpPerMinute:mpUsed*60000/durationMs,
-      supplyCostPerHour:(hpCost+mpCost)*3600000/durationMs,
-      supplyShare:gross>0?(hpCost+mpCost)*100/gross:null,
+      supplyCostPerHour:supplyCost*3600000/durationMs,
+      supplyShare:gross>0?supplyCost*100/gross:null,
       hpRunwayMs:values.hp===0?0:hpUsed>0?values.hp*durationMs/hpUsed:null,
       mpRunwayMs:values.mp===0?0:mpUsed>0?values.mp*durationMs/mpUsed:null};
   }
@@ -148,7 +175,8 @@
       for(const key of ['exp','hp','mp','hpAdded','mpAdded'])end[key]=['hp','mp'].includes(key)&&e[key]===null?null:integer(e[key]??(['hpAdded','mpAdded'].includes(key)?0:undefined),'Progress '+key);
       if(!start.level||end.level<start.level)throw new Error('Invalid progress level.');position(end.level,end.exp);
       let supplyCost=0;for(const key of ['hp','mp']){const available=start[key]+end[key+'Added'];if(!Number.isSafeInteger(available))throw new Error('Progress supplies are too large.');if(end[key]===null)continue;const used=available-end[key];if(used<0)throw new Error('Progress supplies need confirmed additions.');if(!Number.isSafeInteger(used))throw new Error('Progress supplies are too large.');supplyCost+=used*start[key+'Cost'];}if(!Number.isSafeInteger(supplyCost))throw new Error('Progress cost is too large.');
-      if(end.mesos!==null&&end.hp!==null&&end.mp!==null)calculate(start,end,elapsedMs);
+      if(start.uses!==undefined){end.uses=cleanUseEnd(start,e.uses,{partial:true});useTotals(start,end,elapsedMs,{partial:true});}
+      if(end.mesos!==null&&end.hp!==null&&end.mp!==null&&(!end.uses||end.uses.every(r=>r.quantity!==null)))calculate(start,end,elapsedMs);
       return {elapsedMs,end,source:'automatic',...(point.at?{at:integer(point.at,'Progress capture time')}: {})};
     });
   }
@@ -157,12 +185,14 @@
     const startedAt=integer(raw.startedAt,'Start time'),stoppedAt=integer(raw.stoppedAt,'Stop time'),pausedMs=integer(raw.pausedMs??0,'Paused time');
     if(startedAt<=0||stoppedAt<=startedAt||pausedMs>=stoppedAt-startedAt)throw new Error('Invalid session timing.');
     const start={};for(const k of ['exp','mesos','hp','mp','hpCost','mpCost'])start[k]=integer(raw.start?.[k],'Starting '+k);
+    if(raw.start.uses!==undefined)start.uses=cleanUses(raw.start.uses);
     start.level=raw.start.level!==undefined&&raw.start.level!==null&&raw.start.level!==''?levelNumber(raw.start.level):null;
     for(const type of ['hp','mp'])start[type+'Potion']=String(raw.start[type+'Potion']||'custom').slice(0,40);
     function cleanEnd(e){
       if(!e||typeof e!=='object')throw new Error('Missing ending values.');
       const out={};for(const k of ['exp','mesos','hp','mp'])out[k]=integer(e[k],'Ending '+k);
       for(const k of ['hpAdded','mpAdded','extraExp'])out[k]=integer(e[k]??0,k);
+      if(start.uses!==undefined)out.uses=cleanUseEnd(start,e.uses);
       out.level=start.level?levelNumber(e.level):null;ledgerTotals(e.ledger||[]);
       out.ledger=(e.ledger||[]).map(item=>({kind:item.kind,value:ledgerValue(item),label:String(item.label||'Untitled').slice(0,100),...(item.source==='etc'?{source:'etc',itemId:String(item.itemId),quantity:integer(item.quantity,'ETC quantity'),unitPrice:integer(item.unitPrice,'ETC vendor price')}: {})}));return out;
     }
@@ -177,6 +207,6 @@
     for(const record of clean)records.set(record.id,record);
     return [...records.values()].sort((a,b)=>b.stoppedAt-a.stoppedAt);
   }
-  root.MapleMath = {catalog,integer,calculate,expTable,cumulative,levelNumber,position,activeElapsed,ledgerValue,ledgerTotals,profitRates,forecast,intervals,groupMaps,normalizeProgress,normalizeSession,mergeHistory};
+  root.MapleMath = {cleanUses,cleanUseEnd,useTotals,catalog,integer,calculate,expTable,cumulative,levelNumber,position,activeElapsed,ledgerValue,ledgerTotals,profitRates,forecast,intervals,groupMaps,normalizeProgress,normalizeSession,mergeHistory};
   if (typeof module !== 'undefined') module.exports = root.MapleMath;
 })(typeof window !== 'undefined' ? window : globalThis);

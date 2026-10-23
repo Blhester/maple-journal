@@ -1,7 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),harness=require('./test-screenshot-transfer.cjs'),{decode}=require('./lib/png-rgba.cjs');
 const screenshot=decode(fs.readFileSync('dist/assets/ocr-example.png'));
-function fixture({deferDecode=false,deferText=false,tight=false,oldExp=false,unreadableHp=false,levelText='58'}={}){
+function fixture({deferDecode=false,deferText=false,tight=false,oldExp=false,unreadableHp=false,levelText='58',generic=false}={}){
   const urls=new Map(),trace={requests:[],canvases:[],fontWorkers:0,terminated:0,textWorkers:0,textTerminated:0},pending={};let id=0,recognitions=0;
   const storage=new Map();if(tight||oldExp){const regions=structuredClone(require('./dist/ocr-core.js').defaults);if(tight)for(const [key,x]of [['hp',1419],['mp',1469]])regions[key]={x:x/1919,y:960/1079,w:30/1919,h:17/1079};if(oldExp)regions.exp={x:1047/1919,y:1037/1079,w:66/1919,h:17/1079};storage.set('maple-journal-ocr-regions-v1',JSON.stringify(regions));}
   const h=harness(storage,{screenCapture:{supported:()=>true,createSession:()=>({active:()=>true,stop(){},capture:async options=>{trace.requests.push(options);return new Blob(['pixels']);}})},setupRuntime:(context,Element)=>{
@@ -11,6 +11,7 @@ function fixture({deferDecode=false,deferText=false,tight=false,oldExp=false,unr
       Worker:class{constructor(url){this.url=url;trace.fontWorkers++;}terminate(){if(!this.ended){this.ended=true;trace.terminated++;}}async postMessage(data){const source=await urls.get(this.url).text(),scope={self:{postMessage:message=>{if(!this.ended)this.onmessage({data:message});}}};vm.runInNewContext(source,scope);scope.self.onmessage({data});}},
       Tesseract:{createWorker:async()=>{trace.textWorkers++;return {setParameters:async()=>{},recognize:async()=>{if(deferText)return new Promise(resolve=>{pending.text=resolve;});return {data:{text:++recognitions<=3?levelText:'0',confidence:90}};},terminate:async()=>{trace.textTerminated++;}};}}
     });
+    if(generic){context.window=context;context.document.body=new Element('body');context.setTimeout=setTimeout;context.MapleUseData=require('./dist/data/use-items.json');vm.runInNewContext(fs.readFileSync('dist/use-slots.js','utf8'),context);}
     context.document.baseURI='https://test.invalid/';context.location.protocol='https:';
     context.document.createElement=tag=>{
       const element=new Element(tag);if(tag!=='canvas')return element;
@@ -31,6 +32,7 @@ const flush=async predicate=>{for(let i=0;i<100&&!predicate();i++)await new Prom
   const {h,trace,urls}=fixture(),result=await h.screenshot.sampleProgress({signal:new AbortController().signal,allowPrompt:false});
   assert.deepEqual(Object.fromEntries(Object.entries(result.results).map(([k,r])=>[k,r.value])),{level:'58',exp:'268621',mesos:'0',hp:'441',mp:'761'});assert.equal(result.results.exp.percent,'24.70');assert.equal(result.results.exp.levelUsed,58);assert.equal(result.results.exp.estimated,true);
   assert.equal(trace.requests.length,1);assert.equal(trace.requests[0].allowPrompt,false);assert.equal(trace.fontWorkers,3);assert.equal(trace.terminated,3);assert.equal(trace.textWorkers,1);assert.equal(trace.textTerminated,1);assert.equal(urls.size,0);
+  const generic=fixture({generic:true}),genericRead=await generic.h.screenshot.sampleProgress();assert.equal(genericRead.results.uses.length,2);assert.equal(genericRead.results.uses[0].quantity,'441');assert.equal(genericRead.results.uses[1].quantity,'761');assert.equal(generic.urls.size,0);assert.equal(generic.trace.fontWorkers,generic.trace.terminated);
   const tight=fixture({tight:true}),tightResult=await tight.h.screenshot.sampleProgress({allowPrompt:false});assert.equal(tightResult.results.hp.value,'441');assert.equal(tightResult.results.mp.value,'761');assert.equal(tight.urls.size,0,'Padded automatic reads release all pixel URLs too');
   const migrated=fixture({oldExp:true}),migratedRead=await migrated.h.screenshot.sampleProgress();assert.equal(migratedRead.results.exp.value,'268621');assert.equal(JSON.parse(migrated.h.storage.get('maple-journal-ocr-regions-v2')).exp.w,134/1919);
   const noLevel=fixture({levelText:''});noLevel.h.node('start-level').value='58';const unknown=await noLevel.h.screenshot.sampleProgress();assert.equal(unknown.results.exp.percent,'24.70');assert.equal(unknown.results.exp.value,null,'Automatic captures cannot infer the current level from the starting form');

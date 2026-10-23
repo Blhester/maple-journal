@@ -54,3 +54,6 @@ Verification details and device/file-picker limits: VERIFICATION.txt.
 [x] Enlarge form and OCR text, consolidate live stats/graphs, expose HP/MP drain/runway, and calibrate/migrate level OCR defaults against 60/68/86/80 fixtures.
 
 [x] Remove post-start potion selector lock, add current-session supply/price corrections and verify dropdown interaction, recalculated rates, persistence and unchanged numeric readings.
+
+[done] Generic Use slots and local icon similarity suggestions, shortcut grid detection, quantity OCR per slot, all-item cost calculation and migration of active two-supply sessions.
+[follow-up] Validate additional real-game buff-item/HUD screenshots; the current detector is best effort and always allows manual regions/item search.

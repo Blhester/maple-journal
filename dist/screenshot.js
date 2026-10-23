@@ -17,7 +17,7 @@
   }
   const text=(tag,value,className)=>{const e=document.createElement(tag);e.textContent=value;if(className)e.className=className;return e;};
   function error(id,message){$(id).textContent=message||'';$(id).hidden=!message;}
-  const activeFields=()=>C.fields.filter(field=>context.stage==='setup'||!['map','class'].includes(field.id));
+  const activeFields=()=>C.fields.filter(field=>(!window.MapleUseSlots?.ready()||!['hp','mp'].includes(field.id))&&(context.stage==='setup'||!['map','class'].includes(field.id)));
   function svg(tag,attrs){const e=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [key,value]of Object.entries(attrs))e.setAttribute(key,value);return e;}
   function drawGuide(){
     for(const [index,field]of C.fields.entries()){
@@ -109,9 +109,9 @@
     // A cancelled/failed decode must never re-read the previous screenshot.
     if(shouldRead&&!controller.signal.aborted&&$('screenshot-dialog').open)await read();
   }
-  function readDigits(id,choice){
-    const exp=choice==='exp-font',r=C.digitRegion(sourceRegion(id),image.naturalWidth,image.naturalHeight,id==='exp'&&exp?'exp-percent':choice),scale=Math.min(1,(exp?512:96)/r.w,(exp?64:32)/r.h),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(r.w*scale));canvas.height=Math.max(1,Math.round(r.h*scale));
-    const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,r.x,r.y,r.w,r.h,0,0,canvas.width,canvas.height);const pixels=ctx.getImageData(0,0,canvas.width,canvas.height);canvas.width=canvas.height=1;
+  function readDigits(id,choice,box=null,source=image){
+    const exp=choice==='exp-font',r=box||C.digitRegion(sourceRegion(id),image.naturalWidth,image.naturalHeight,id==='exp'&&exp?'exp-percent':choice),scale=Math.min(1,(exp?512:96)/r.w,(exp?64:32)/r.h),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(r.w*scale));canvas.height=Math.max(1,Math.round(r.h*scale));
+    const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(source,r.x,r.y,r.w,r.h,0,0,canvas.width,canvas.height);const pixels=ctx.getImageData(0,0,canvas.width,canvas.height);canvas.width=canvas.height=1;
     return new Promise((resolve,reject)=>{
       const url=URL.createObjectURL(new Blob([(exp?MapleExpReader:MapleQuantityReader).workerSource()],{type:'text/javascript'}));let reader;
       const cleanup=()=>{reader?.terminate();URL.revokeObjectURL(url);if(digitCancel===cancel)digitCancel=null;};
@@ -119,7 +119,17 @@
       try{reader=new Worker(url);reader.onmessage=event=>{cleanup();if(event.data.error)reject(new Error(event.data.error));else resolve(event.data.result);};reader.onerror=()=>{cleanup();reject(new Error('The local number reader could not run.'));};reader.postMessage({data:pixels.data,width:pixels.width,height:pixels.height,format:id==='exp'?'percent':'amount'},[pixels.data.buffer]);}catch(e){cleanup();reject(e);}
     });
   }
-  function clearImage(){if(objectUrl)URL.revokeObjectURL(objectUrl);objectUrl=null;image=null;drag=null;$('ocr-image').removeAttribute('src');for(const id of ['ocr-crop','ocr-processed']){$(id).width=1;$(id).height=1;}$('ocr-region-overlay').replaceChildren();$('ocr-workspace').hidden=true;}
+  async function readUseQuantity(source,r,settings,countRegion){
+    if(!r)return {value:null};const width=source.naturalWidth,height=source.naturalHeight,x=Math.max(0,Math.floor(r.x*width)),y=Math.max(0,Math.floor((r.y+r.h*.48)*height)),w=Math.min(width-x,Math.ceil(r.w*width)),h=Math.min(height-y,Math.ceil(r.h*height*.46)),box=countRegion?C.digitRegion({x:Math.round(countRegion.x*width),y:Math.round(countRegion.y*height),w:Math.round(countRegion.w*width),h:Math.round(countRegion.h*height)},width,height,'quantity-font'):C.slotCountRegion(r,width,height),tuning=C.tuning('hp',settings||{});
+    if(tuning.reader!=='general')return readDigits('hp',tuning.reader,box,source);
+    const token=run,ownWorker=!worker;let surface;
+    try{
+      if(!worker){await loadLibrary();if(token!==run)throw Error('Reading cancelled.');worker=await Tesseract.createWorker('eng',1,workerOptions(()=>{}));}
+      surface=document.createElement('canvas');surface.width=box.w*tuning.scale+24;surface.height=box.h*tuning.scale+24;const ctx=surface.getContext('2d',{willReadFrequently:true});ctx.fillStyle='#fff';ctx.fillRect(0,0,surface.width,surface.height);ctx.drawImage(source,box.x,box.y,box.w,box.h,12,12,box.w*tuning.scale,box.h*tuning.scale);const p=ctx.getImageData(0,0,surface.width,surface.height);p.data.set(C.processPixels(p.data,tuning));ctx.putImageData(p,0,0);const reads=[];
+      for(const mode of ['8','7','13']){if(token!==run)throw Error('Reading cancelled.');await worker.setParameters({tessedit_pageseg_mode:mode,tessedit_char_whitelist:'0123456789',user_defined_dpi:'300'});const {data}=await worker.recognize(surface);reads.push({text:data.text,confidence:data.confidence});}return C.select('hp',reads);
+    }finally{if(surface)surface.width=surface.height=1;if(ownWorker&&worker){await worker.terminate();worker=null;for(const url of workerUrls)URL.revokeObjectURL(url);workerUrls=[];}}
+  }
+  function clearImage(){window.MapleUseSlots?.clearReview();if(objectUrl)URL.revokeObjectURL(objectUrl);objectUrl=null;image=null;drag=null;$('ocr-image').removeAttribute('src');for(const id of ['ocr-crop','ocr-processed']){$(id).width=1;$(id).height=1;}$('ocr-region-overlay').replaceChildren();$('ocr-workspace').hidden=true;}
   async function loadImage(file,{name=file?.name||'Capture guide example',signal}={}){
     if(!signal)stop();error('ocr-error','');error('ocr-capture-error','');
     const token=run;let nextUrl=null;
@@ -191,15 +201,17 @@
         const level=results.level?.value??(!background?(selectedOnly&&$('ocr-use-level')?.checked?$('ocr-value-level').value:options.getContext().level):null);
         results[field.id]=field.id==='exp'?C.convertPercent(C.selectPercent(reads),level):field.id==='map'?MapleMapMatcher.select(reads):C.select(field.id,reads);
       }
+    if(!selectedOnly&&window.MapleUseSlots?.ready()){const rows=await MapleUseSlots.read(image,readUseQuantity,{match:!background});if(token!==run)return;results.uses=rows;}
     return results;
   }
   async function read(selectedOnly=false){
-    if(!image||busy)return;const token=++run,fields=activeFields().filter(field=>!selectedOnly||field.id===$('ocr-region-field').value);error('ocr-error','');error('ocr-review-error','');if(!selectedOnly)invalidateReview();setBusy(true);$('ocr-progress').value=0;$('ocr-progress-text').textContent='Loading local text recognition…';$('ocr-field-status').textContent='';
+    if(!image||busy||window.MapleUseSlots?.reading())return;const token=++run,fields=activeFields().filter(field=>!selectedOnly||field.id===$('ocr-region-field').value);error('ocr-error','');error('ocr-review-error','');if(!selectedOnly)invalidateReview();setBusy(true);$('ocr-progress').value=0;$('ocr-progress-text').textContent='Loading local text recognition…';$('ocr-field-status').textContent='';
     try{
       const results=await recognize(fields,token,{selectedOnly});
       if(token!==run)return;showReview(results,selectedOnly);$('ocr-progress-text').textContent='Reading complete. Review every value before applying.';if(selectedOnly)$('ocr-field-status').textContent=fields[0].label+' updated below. Other reviewed values were kept.';
     }catch(e){if(token===run){restoreReview();error('ocr-error','Screenshot reading could not finish. '+e.message+' You can continue with manual entry.');}}
     finally{if(token===run){if(worker)await worker.terminate();worker=null;releaseReadCanvases();for(const url of workerUrls)URL.revokeObjectURL(url);workerUrls=[];setBusy(false);}}
+    if(token===run&&!selectedOnly&&context.stage==='setup'&&$('screenshot-dialog').open&&window.MapleUseSlots?.ready())await MapleUseSlots.detect();
   }
   function syncExpEstimate(){
     const input=$('ocr-value-exp');if(!input?.dataset.percent)return;
@@ -240,7 +252,7 @@
       const details=document.createElement('details');details.className='ocr-raw';details.append(text('summary','Recognized text'),text('p',result.raw||'No text recognized'));row.append(details);if(previous){MaplePotionPicker.dispose(previous);previous.replaceWith(row);}else container.append(row);
     }
     $('ocr-review-form').hidden=false;$('ocr-empty-review').hidden=true;
-    syncExpEstimate();
+    syncExpEstimate();if(results.uses&&window.MapleUseSlots)MapleUseSlots.mountReview(image,results.uses);
     for(const field of ['hp','mp']){const select=$('ocr-potion-'+field);if(select)MaplePotionPicker.enhance(select,field);}
     MaplePotionPicker.syncAll();MaplePotionPicker.setBusy(container,busy);
   }
@@ -248,12 +260,12 @@
     calibration=calibration===true;context={...options.getContext(),calibration};if(!['setup','ending'].includes(context.stage)&&!(calibration&&context.stage==='running'))return;
     $('ocr-apply').hidden=calibration;
     stop();clearImage();error('ocr-capture-error','');$('ocr-file').value='';$('ocr-file-name').textContent='PNG, JPG, or WebP · up to 15 MB';$('ocr-capture-status').textContent='';$('ocr-review-form').hidden=true;$('ocr-guide').open=true;
-    $('ocr-context').textContent=calibration?'Adjust regions and readers using an Entire screen snapshot. Remember regions & image settings, then close and enable Auto screenshots. Numeric readings stay in this calibration preview. Changing a supply item corrects its price for the current recording.':context.stage==='setup'?'Fill your starting values from a screenshot taken before training.':'Fill ending values from your final screenshot. Map and class stay as recorded at the start. Changing a supply item corrects its price for the current recording.';
+    $('ocr-context').textContent=calibration?'Adjust regions and readers using an Entire screen snapshot. Remember regions & image settings, then close and enable Auto screenshots. Numeric readings stay in this calibration preview. Use Remember shortcut regions below to update automatic capture positions. Correct item identities and prices under Use items & costs on the tracker.':context.stage==='setup'?'Fill your starting values from a screenshot taken before training.':'Fill ending values from your final screenshot. Map and class stay as recorded at the start. Use Remember shortcut regions below to update automatic capture positions. Correct item identities and prices under Use items & costs on the tracker.';
     $('ocr-region-field').replaceChildren(...activeFields().map(field=>new Option(field.label,field.id)));$('ocr-region-field').value='exp';error('ocr-error','');error('ocr-review-error','');$('screenshot-dialog').showModal();
     paintCaptureConnection();if(captureSession.active())$('ocr-capture-status').textContent='Your previous monitor is still connected. Click Capture snapshot to use it again.';
   }
   function init(config){
-    options=config;captureSession=MapleScreenCapture.createSession({onChange:paintCaptureConnection});drawGuide();paintCaptureConnection();
+    options=config;window.MapleUseSlots?.bindReview(readUseQuantity,()=>busy);captureSession=MapleScreenCapture.createSession({onChange:paintCaptureConnection});drawGuide();paintCaptureConnection();
     $('ocr-capture-help').textContent=MapleScreenCapture.supported()?'Choose Entire screen (Screen 1 or Screen 2 in Firefox), then Capture snapshot reuses it while this page stays open. Some browsers cannot verify the source type: select a whole screen rather than a window. Use Stop sharing when finished. No audio or recording.':'Screen capture may be unavailable in this browser. Open the site in a desktop browser over HTTPS, or upload a screenshot.';
     $('ocr-capture-change').addEventListener('click',()=>void captureScreen({changeSource:true}));
     for(const id of ['ocr-capture-stop','capture-stop-sharing'])$(id).addEventListener('click',stopSharing);
@@ -275,14 +287,15 @@
     overlay.addEventListener('pointermove',event=>{if(!drag)return;const end=point(event),next={x:Math.min(drag.x,end.x),y:Math.min(drag.y,end.y),w:Math.abs(end.x-drag.x),h:Math.abs(end.y-drag.y)};if(next.w*image.naturalWidth<3||next.h*image.naturalHeight<3)return;regions[$('ocr-region-field').value]=C.region(next);paintRegion();});
     overlay.addEventListener('pointerup',()=>{if(drag){drag=null;invalidateReview($('ocr-region-field').value);}});overlay.addEventListener('pointercancel',()=>{drag=null;});
     $('ocr-review-form').addEventListener('submit',event=>{
-      event.preventDefault();if(busy)return;
+      event.preventDefault();if(busy||window.MapleUseSlots?.reading())return;
       try{
         if(context.calibration)throw new Error('This is a calibration preview. Remember regions & image settings, close it, and enable Auto screenshots.');
         const current=options.getContext();if(current.stage!==context.stage)throw new Error('The session changed. Close this window and import the screenshot again.');
         syncExpEstimate();
         const values={};for(const field of activeFields()){if(!$('ocr-use-'+field.id).checked)continue;const value=$('ocr-value-'+field.id).value.trim();const parsed=field.id==='map'?MapleMapMatcher.resolve(value)?.label||null:C.parse(field.id,value);if(parsed===null)throw new Error(field.id==='map'?'Choose a map from the MeowDB list, or uncheck Training map.':'Enter a valid '+field.label.toLowerCase()+', or uncheck it.');values[field.id]=parsed;if(['hp','mp'].includes(field.id))values[field.id+'Potion']=$('ocr-potion-'+field.id).value;}
+        if(window.MapleUseSlots?.ready())values.uses=MapleUseSlots.reviewed();
         if(!Object.keys(values).length)throw new Error('Check at least one field to apply.');
-        options.apply(values);$('screenshot-dialog').close();
+        window.MapleUseSlots?.validate(values.uses);options.apply(values);$('screenshot-dialog').close();
       }catch(e){error('ocr-review-error',e.message);}
     });
   }
@@ -301,14 +314,14 @@
       if(token!==run)throw new DOMException('Reading cancelled.','AbortError');
       image=img;const width=img.naturalWidth,height=img.naturalHeight;
       const box=sourceRegion('mesos'),probe=document.createElement('canvas');probe.width=box.w;probe.height=box.h;const ctx=probe.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,box.x,box.y,box.w,box.h,0,0,box.w,box.h);const inventoryVisible=C.inventoryVisible(ctx.getImageData(0,0,box.w,box.h).data);probe.width=probe.height=1;
-      const results=await Promise.race([recognize(C.fields.filter(field=>field.numeric&&(inventoryVisible||field.id!=='mesos')),token,{background:true}),aborted]);
+      const results=await Promise.race([recognize(C.fields.filter(field=>field.numeric&&(!window.MapleUseSlots?.ready()||!['hp','mp'].includes(field.id))&&(inventoryVisible||field.id!=='mesos')),token,{background:true}),aborted]);
       if(!inventoryVisible)results.mesos={value:null,confidence:0,reason:'Inventory balance box is not visible.'};
       if(token!==run||signal?.aborted)throw new DOMException('Reading cancelled.','AbortError');
-      return {results,at,width,height,inventoryVisible,layout:JSON.stringify({regions,tunings})};
+      return {results,at,width,height,inventoryVisible,layout:JSON.stringify({regions,tunings,uses:window.MapleUseSlots?.slots().map(r=>({id:r.id,region:r.region}))})};
     }finally{
       signal?.removeEventListener('abort',cancel);if(img)img.src='';if(url)URL.revokeObjectURL(url);
       if(token===run){if(worker)await worker.terminate();worker=null;releaseReadCanvases();for(const item of workerUrls)URL.revokeObjectURL(item);workerUrls=[];captureController=null;clearImage();setBusy(false);}
     }
   }
-  window.MapleScreenshot={init,openCalibration:()=>open(true),sampleProgress,stopSharing,sharingActive:()=>captureSession.active()};
+  window.MapleScreenshot={slotRegion:type=>structuredClone(regions[type]),slotSettings:type=>C.tuning(type,tunings[type]),init,openCalibration:()=>open(true),sampleProgress,stopSharing,sharingActive:()=>captureSession.active()};
 })();

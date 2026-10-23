@@ -8,7 +8,7 @@ The header slider remembers light/dark mode, including sun/moon icons.
 
 TRACK A RUN
 1. Optionally enter map, class/job, and level. Starting EXP is within-level EXP when a level is provided.
-2. Enter starting EXP, mesos, supplies, quantities, and editable unit prices. Start the timer. The initial HP/MP defaults are Meat (80 mesos) and Lemon (150 mesos). New sessions remember the last selected HP/MP items and unit prices in this browser, including after refresh; session quantities and balances reset. Saved choices take precedence over these initial defaults.
+2. Enter starting EXP, mesos, supplies, quantities, and editable unit prices. Start the timer. Use slots start with Meat (80 mesos) and Lemon (150 mesos); add/remove slots for other consumables, including buff items (up to 12 unique items). New sessions remember the selected items, shortcut regions, readers and unit prices in this browser, including after refresh; session quantities and balances reset. Saved choices take precedence over these initial defaults.
 3. Pause/resume for breaks. Optional checkpoints record snapshots for the final pace review.
 4. Done stops active time, including when paused. Enter ending values and ending level if supplied at the start.
 5. Adjust cumulative supply additions. Without level metadata, the manual extra-EXP field supports legacy sessions.
@@ -16,10 +16,11 @@ TRACK A RUN
 7. The run saves to history automatically. Editing ending values updates the same record.
 
 INSIGHTS
-Rates per hour, 10 minutes, and minute; automatic EXP across levels; target-level ETA; 30/60-minute projections; HP/MP usage per minute; supply cost/hour and remaining training time; 10-active-minute checkpoint reminder; interval pace chart; saved session review; class/starting-level filters; time-weighted map averages; EXP-versus-profit chart; JSON backup/restore; CSV export.
+Rates per hour, 10 minutes, and minute; automatic EXP across levels; target-level ETA; 30/60-minute projections; Per-item usage per minute; supply cost/hour and remaining training time; 10-active-minute checkpoint reminder; interval pace chart; saved session review; class/starting-level filters; time-weighted map averages; EXP-versus-profit chart; JSON backup/restore; CSV export.
 
 FORMULAS
-Original net = ending mesos - starting mesos - HP used * HP cost - MP used * MP cost.
+Original net = ending mesos - starting mesos - sum(used quantity * unit cost for every tracked Use item).
+Legacy two-supply recordings retain the original HP/MP formula.
 Adjusted cash net = original net + income not in balance - expenses not in balance.
 Estimated total net = adjusted cash net + estimated unsold loot.
 Used = starting + cumulative additions - ending quantity.
@@ -146,3 +147,11 @@ Optional real OCR regression: with tesseract.js and @napi-rs/canvas available to
 Correcting supply choices after starting
 The Supplies & prices section remains available during training and final review. Change the HP/MP item or unit price there to correct the entire current recording's supply costs. Counts, capture times and elapsed time are preserved; corrected choices and prices are remembered for the next session. This corrects item assignment for the recording rather than splitting a run among multiple item types.
 Potion dropdowns in calibration and ending screenshot review are now editable too. After setup, choosing a different item there immediately corrects the current recording's item and catalog price; it does not apply OCR quantities or other numeric proposals. Re-selecting the same item retains a custom price. Setup screenshot proposals still wait for Apply. Previous saved session history is not modified.
+
+GENERIC USE SLOTS & ICON MATCHING (October 23, 2026)
+The checked-in local Use catalog contains 407 MeowDB items with PNGs and image templates. MeowDB currently lists 55 verified purchase prices in open launch shops for the catalog; unknown purchase costs stay blank for the user to enter. Vendor sell-back prices are separate metadata and never substituted as consumption costs. Prices are whole mesos per item; recharge/ammunition pricing is not automatically inferred.
+Screenshot reading searches the lower HUD for a regular shortcut grid and stages confident icon matches. Existing slots also show their top three image suggestions. Suggestions never change the recording before Apply reviewed values. Similar sprites/aliases can remain ambiguous; use search or manual selection. Auto-detection is best effort, not a guarantee across every HUD/resolution. Detection has real screenshot fixtures for Meat/Lemon and rendered catalog fixtures for the five buff potion colors.
+Choose shortcut region and drag around an entire hotkey cell, wherever it is on the lower HUD. The counter is read from the lower part of that cell. Each slot retains a Classic quantity/EXP font reader or General OCR and its image settings. Remember shortcut regions also saves those reader settings without applying numeric preview values, useful during calibration. Read again refreshes the selected counter. Uncheck Include this count to keep the form's prior quantity. Manually entered costs and counts remain available for hard reads or items absent from the screen.
+Automatic snapshots read configured counters only (not the whole icon catalog every 30 seconds). Every item participates in the temporal consumption filter. An unknown tracked quantity makes net mesos and supply cost N/A while EXP continues. A later usable sample confirms progress. Real restocks must be entered cumulatively in a manual checkpoint. Rates still use active time and the first-minute zero rule.
+Track each inventory item once: multiple hotkeys for the same item expose the same inventory total, not separate stacks. The starting list stays fixed during a run; item/price corrections remain editable, and new items are added for the next run. Final results and history show each item's usage and cost; JSON preserves the full list and recorded quantities. Overlay snapshots still exclude item identities, counts and raw balances.
+Refresh manually: node refresh-use-items.cjs (paced API/image requests; stops on HTTP errors). Rebuild templates/offline metadata without network: node build-use-icons.cjs. Node-only regression tests need no dependency installation.

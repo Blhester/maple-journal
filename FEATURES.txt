@@ -77,3 +77,5 @@ Screen capture automatically recognizes the captured image and populates editabl
 Readable form/OCR text; compact live view with stats above graphs; independent HP/MP usage per minute and time remaining; gentler level OCR default verified on real level-60 pixels and 6/8/0 digit combinations.
 
 Supply corrections: editable potion dropdowns in calibration/ending screenshot review plus Supplies & prices controls during training/final review. Reprice the current recording, preserve quantities/timestamps, retain custom prices and remember corrected items next time.
+
+Generic Use slots: up to 12 unique consumables with searchable local icons, automatic shortcut-grid/icon suggestions, selectable counter regions/readers, per-item costs, restocks, drain/runway, JSON/history support and legacy compatibility. 407 local MeowDB Use entries; unknown purchase prices require review.

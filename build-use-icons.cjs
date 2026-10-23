@@ -1,0 +1,5 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),{decode}=require('./lib/png-rgba.cjs'),matcher=require('./dist/icon-matcher.js');
+function build(){const catalog=JSON.parse(fs.readFileSync(path.join(__dirname,'dist/data/use-items.json'),'utf8')),seen=new Set();const icons=catalog.items.map(item=>{if(seen.has(item.id)||item.icon!=='assets/use/'+item.iconKey+'.png')throw Error('Invalid Use catalog');seen.add(item.id);const image=decode(fs.readFileSync(path.join(__dirname,'dist',item.icon)));return {id:item.id,iconKey:item.iconKey,...matcher.template(image.data,image.width,image.height)};});for(const reference of JSON.parse(fs.readFileSync(path.join(__dirname,'dist/data/use-icon-references.json'),'utf8'))){icons.push(reference);}
+fs.writeFileSync(path.join(__dirname,'dist/use-icons.js'),'window.MapleUseIcons='+JSON.stringify(icons)+';\n');fs.writeFileSync(path.join(__dirname,'dist/use-data.js'),'window.MapleUseData='+JSON.stringify(catalog).replaceAll('<','\\u003c')+';\n');return catalog;}
+module.exports={build};if(require.main===module)console.log('Embedded '+build().items.length+' local use icon templates.');

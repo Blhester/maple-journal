@@ -1,0 +1,4078 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-23T14:14:26.060Z",
+  "source": "https://meowdb.com/msclassic/item-db/use",
+  "priceNote": "purchasePrice is the lowest listed open Launch shop price, not NPC sell-back value. Null requires a user-entered replacement cost. Availability may vary. Verify your price.",
+  "items": [
+    {
+      "id": "1",
+      "name": "One-Handed Axe Attack Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2043103.png",
+      "iconKey": "2043103",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/1"
+    },
+    {
+      "id": "2",
+      "name": "One-Handed Axe Attack Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2043102.png",
+      "iconKey": "2043102",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2"
+    },
+    {
+      "id": "3",
+      "name": "One-Handed Axe Attack Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2043101.png",
+      "iconKey": "2043101",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/3"
+    },
+    {
+      "id": "4",
+      "name": "One-Handed Axe Attack Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2043100.png",
+      "iconKey": "2043100",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/4"
+    },
+    {
+      "id": "5",
+      "name": "One-Handed Blunt Weapon Attack Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2043203.png",
+      "iconKey": "2043203",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/5"
+    },
+    {
+      "id": "6",
+      "name": "One-Handed Blunt Weapon Attack Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2043202.png",
+      "iconKey": "2043202",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/6"
+    },
+    {
+      "id": "7",
+      "name": "One-Handed Blunt Weapon Attack Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2043201.png",
+      "iconKey": "2043201",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/7"
+    },
+    {
+      "id": "8",
+      "name": "One-Handed Blunt Weapon Attack Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2043200.png",
+      "iconKey": "2043200",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/8"
+    },
+    {
+      "id": "9",
+      "name": "One-Handed Sword Attack Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2043003.png",
+      "iconKey": "2043003",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/9"
+    },
+    {
+      "id": "10",
+      "name": "One-Handed Sword Attack Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2043002.png",
+      "iconKey": "2043002",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/10"
+    },
+    {
+      "id": "11",
+      "name": "One-Handed Sword Attack Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2043001.png",
+      "iconKey": "2043001",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/11"
+    },
+    {
+      "id": "12",
+      "name": "One-Handed Sword Attack Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2043000.png",
+      "iconKey": "2043000",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/12"
+    },
+    {
+      "id": "13",
+      "name": "Two-handed Axe Attack Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2044103.png",
+      "iconKey": "2044103",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/13"
+    },
+    {
+      "id": "14",
+      "name": "Two-handed Axe Attack Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2044102.png",
+      "iconKey": "2044102",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/14"
+    },
+    {
+      "id": "15",
+      "name": "Two-handed Axe Attack Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2044101.png",
+      "iconKey": "2044101",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/15"
+    },
+    {
+      "id": "16",
+      "name": "Two-handed Axe Attack Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2044100.png",
+      "iconKey": "2044100",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/16"
+    },
+    {
+      "id": "17",
+      "name": "Two-handed Blunt Weapon Attack Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2044203.png",
+      "iconKey": "2044203",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/17"
+    },
+    {
+      "id": "18",
+      "name": "Two-handed Blunt Weapon Attack Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2044202.png",
+      "iconKey": "2044202",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/18"
+    },
+    {
+      "id": "19",
+      "name": "Two-handed Blunt Weapon Attack Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2044201.png",
+      "iconKey": "2044201",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/19"
+    },
+    {
+      "id": "20",
+      "name": "Two-handed Blunt Weapon Attack Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2044200.png",
+      "iconKey": "2044200",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/20"
+    },
+    {
+      "id": "21",
+      "name": "Two-handed Sword Attack Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2044003.png",
+      "iconKey": "2044003",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/21"
+    },
+    {
+      "id": "22",
+      "name": "Two-handed Sword Attack Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2044002.png",
+      "iconKey": "2044002",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/22"
+    },
+    {
+      "id": "23",
+      "name": "Two-handed Sword Attack Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2044001.png",
+      "iconKey": "2044001",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/23"
+    },
+    {
+      "id": "24",
+      "name": "Two-handed Sword Attack Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2044000.png",
+      "iconKey": "2044000",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/24"
+    },
+    {
+      "id": "25",
+      "name": "Bottomwear DEF Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040603.png",
+      "iconKey": "2040603",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/25"
+    },
+    {
+      "id": "26",
+      "name": "Bottomwear HP Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040607.png",
+      "iconKey": "2040607",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/26"
+    },
+    {
+      "id": "27",
+      "name": "Bottomwear MP Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040611.png",
+      "iconKey": "2040611",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/27"
+    },
+    {
+      "id": "28",
+      "name": "Bottomwear DEF Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040602.png",
+      "iconKey": "2040602",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/28"
+    },
+    {
+      "id": "29",
+      "name": "Bottomwear HP Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040606.png",
+      "iconKey": "2040606",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/29"
+    },
+    {
+      "id": "30",
+      "name": "Bottomwear MP Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040610.png",
+      "iconKey": "2040610",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/30"
+    },
+    {
+      "id": "31",
+      "name": "Bottomwear DEF Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040601.png",
+      "iconKey": "2040601",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/31"
+    },
+    {
+      "id": "32",
+      "name": "Bottomwear HP Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040605.png",
+      "iconKey": "2040605",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/32"
+    },
+    {
+      "id": "33",
+      "name": "Bottomwear MP Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040609.png",
+      "iconKey": "2040609",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/33"
+    },
+    {
+      "id": "34",
+      "name": "Bottomwear DEF Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040600.png",
+      "iconKey": "2040600",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/34"
+    },
+    {
+      "id": "35",
+      "name": "Bottomwear HP Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040604.png",
+      "iconKey": "2040604",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/35"
+    },
+    {
+      "id": "36",
+      "name": "Bottomwear MP Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040608.png",
+      "iconKey": "2040608",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/36"
+    },
+    {
+      "id": "37",
+      "name": "Bow Attack Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2044503.png",
+      "iconKey": "2044503",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/37"
+    },
+    {
+      "id": "38",
+      "name": "Bow Attack Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2044502.png",
+      "iconKey": "2044502",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/38"
+    },
+    {
+      "id": "39",
+      "name": "Bow Attack Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2044501.png",
+      "iconKey": "2044501",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/39"
+    },
+    {
+      "id": "40",
+      "name": "Bow Attack Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2044500.png",
+      "iconKey": "2044500",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/40"
+    },
+    {
+      "id": "41",
+      "name": "Cape Accuracy Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2041027.png",
+      "iconKey": "2041027",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/41"
+    },
+    {
+      "id": "42",
+      "name": "Cape DEX Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2041015.png",
+      "iconKey": "2041015",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/42"
+    },
+    {
+      "id": "43",
+      "name": "Cape INT Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2041019.png",
+      "iconKey": "2041019",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/43"
+    },
+    {
+      "id": "44",
+      "name": "Cape LUK Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2041023.png",
+      "iconKey": "2041023",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/44"
+    },
+    {
+      "id": "45",
+      "name": "Cape Magic Def. Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2041007.png",
+      "iconKey": "2041007",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/45"
+    },
+    {
+      "id": "46",
+      "name": "Cape STR Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2041011.png",
+      "iconKey": "2041011",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/46"
+    },
+    {
+      "id": "47",
+      "name": "Cape Weapon Def. Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2041003.png",
+      "iconKey": "2041003",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/47"
+    },
+    {
+      "id": "48",
+      "name": "Cape Accuracy Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2041026.png",
+      "iconKey": "2041026",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/48"
+    },
+    {
+      "id": "49",
+      "name": "Cape DEX Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2041014.png",
+      "iconKey": "2041014",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/49"
+    },
+    {
+      "id": "50",
+      "name": "Cape INT Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2041018.png",
+      "iconKey": "2041018",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/50"
+    },
+    {
+      "id": "51",
+      "name": "Cape LUK Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2041022.png",
+      "iconKey": "2041022",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/51"
+    },
+    {
+      "id": "52",
+      "name": "Cape Magic Def. Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2041006.png",
+      "iconKey": "2041006",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/52"
+    },
+    {
+      "id": "53",
+      "name": "Cape STR Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2041010.png",
+      "iconKey": "2041010",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/53"
+    },
+    {
+      "id": "55",
+      "name": "Cape Accuracy Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2041025.png",
+      "iconKey": "2041025",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/55"
+    },
+    {
+      "id": "56",
+      "name": "Cape DEX Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2041013.png",
+      "iconKey": "2041013",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/56"
+    },
+    {
+      "id": "57",
+      "name": "Cape INT Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2041017.png",
+      "iconKey": "2041017",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/57"
+    },
+    {
+      "id": "58",
+      "name": "Cape LUK Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2041021.png",
+      "iconKey": "2041021",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/58"
+    },
+    {
+      "id": "59",
+      "name": "Cape Magic Def. Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2041005.png",
+      "iconKey": "2041005",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/59"
+    },
+    {
+      "id": "60",
+      "name": "Cape STR Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2041009.png",
+      "iconKey": "2041009",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/60"
+    },
+    {
+      "id": "61",
+      "name": "Cape Weapon Def. Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2041001.png",
+      "iconKey": "2041001",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/61"
+    },
+    {
+      "id": "62",
+      "name": "Cape Accuracy Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2041024.png",
+      "iconKey": "2041024",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/62"
+    },
+    {
+      "id": "63",
+      "name": "Cape DEX Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2041012.png",
+      "iconKey": "2041012",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/63"
+    },
+    {
+      "id": "64",
+      "name": "Cape INT Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2041016.png",
+      "iconKey": "2041016",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/64"
+    },
+    {
+      "id": "65",
+      "name": "Cape LUK Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2041020.png",
+      "iconKey": "2041020",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/65"
+    },
+    {
+      "id": "66",
+      "name": "Cape Magic Def. Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2041004.png",
+      "iconKey": "2041004",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/66"
+    },
+    {
+      "id": "67",
+      "name": "Cape STR Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2041008.png",
+      "iconKey": "2041008",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/67"
+    },
+    {
+      "id": "68",
+      "name": "Cape Weapon Def. Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2041000.png",
+      "iconKey": "2041000",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/68"
+    },
+    {
+      "id": "69",
+      "name": "Claw Attack Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2044703.png",
+      "iconKey": "2044703",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/69"
+    },
+    {
+      "id": "70",
+      "name": "Claw Attack Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2044702.png",
+      "iconKey": "2044702",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/70"
+    },
+    {
+      "id": "71",
+      "name": "Claw Attack Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2044701.png",
+      "iconKey": "2044701",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/71"
+    },
+    {
+      "id": "72",
+      "name": "Claw Attack Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2044700.png",
+      "iconKey": "2044700",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/72"
+    },
+    {
+      "id": "73",
+      "name": "Crossbow Attack Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2044603.png",
+      "iconKey": "2044603",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/73"
+    },
+    {
+      "id": "74",
+      "name": "Crossbow Attack Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2044602.png",
+      "iconKey": "2044602",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/74"
+    },
+    {
+      "id": "75",
+      "name": "Crossbow Attack Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2044601.png",
+      "iconKey": "2044601",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/75"
+    },
+    {
+      "id": "76",
+      "name": "Crossbow Attack Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2044600.png",
+      "iconKey": "2044600",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/76"
+    },
+    {
+      "id": "77",
+      "name": "Dagger Attack Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2043303.png",
+      "iconKey": "2043303",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/77"
+    },
+    {
+      "id": "78",
+      "name": "Dagger Attack Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2043302.png",
+      "iconKey": "2043302",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/78"
+    },
+    {
+      "id": "79",
+      "name": "Dagger Attack Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2043301.png",
+      "iconKey": "2043301",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/79"
+    },
+    {
+      "id": "80",
+      "name": "Dagger Attack Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2043300.png",
+      "iconKey": "2043300",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/80"
+    },
+    {
+      "id": "81",
+      "name": "Earring Evasion Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040323.png",
+      "iconKey": "2040323",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/81"
+    },
+    {
+      "id": "82",
+      "name": "Earring Crit. Damage Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040319.png",
+      "iconKey": "2040319",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/82"
+    },
+    {
+      "id": "83",
+      "name": "Earring DEX Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040307.png",
+      "iconKey": "2040307",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/83"
+    },
+    {
+      "id": "84",
+      "name": "Earring INT Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040311.png",
+      "iconKey": "2040311",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/84"
+    },
+    {
+      "id": "85",
+      "name": "Earring LUK Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040315.png",
+      "iconKey": "2040315",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/85"
+    },
+    {
+      "id": "86",
+      "name": "Earring STR Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040303.png",
+      "iconKey": "2040303",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/86"
+    },
+    {
+      "id": "87",
+      "name": "Earring Evasion Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040322.png",
+      "iconKey": "2040322",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/87"
+    },
+    {
+      "id": "88",
+      "name": "Earring Crit. Damage Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040318.png",
+      "iconKey": "2040318",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/88"
+    },
+    {
+      "id": "89",
+      "name": "Earring DEX Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040306.png",
+      "iconKey": "2040306",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/89"
+    },
+    {
+      "id": "90",
+      "name": "Earring INT Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040310.png",
+      "iconKey": "2040310",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/90"
+    },
+    {
+      "id": "91",
+      "name": "Earring LUK Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040314.png",
+      "iconKey": "2040314",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/91"
+    },
+    {
+      "id": "92",
+      "name": "Earring STR Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040302.png",
+      "iconKey": "2040302",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/92"
+    },
+    {
+      "id": "93",
+      "name": "Earring Evasion Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040321.png",
+      "iconKey": "2040321",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/93"
+    },
+    {
+      "id": "94",
+      "name": "Earring Crit. Damage Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040317.png",
+      "iconKey": "2040317",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/94"
+    },
+    {
+      "id": "95",
+      "name": "Earring DEX Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040305.png",
+      "iconKey": "2040305",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/95"
+    },
+    {
+      "id": "96",
+      "name": "Earring INT Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040309.png",
+      "iconKey": "2040309",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/96"
+    },
+    {
+      "id": "97",
+      "name": "Earring LUK Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040313.png",
+      "iconKey": "2040313",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/97"
+    },
+    {
+      "id": "98",
+      "name": "Earring STR Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040301.png",
+      "iconKey": "2040301",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/98"
+    },
+    {
+      "id": "99",
+      "name": "Earring Evasion Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040320.png",
+      "iconKey": "2040320",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/99"
+    },
+    {
+      "id": "100",
+      "name": "Earring Crit. Damage Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040316.png",
+      "iconKey": "2040316",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/100"
+    },
+    {
+      "id": "101",
+      "name": "Earring DEX Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040304.png",
+      "iconKey": "2040304",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/101"
+    },
+    {
+      "id": "102",
+      "name": "Earring INT Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040308.png",
+      "iconKey": "2040308",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/102"
+    },
+    {
+      "id": "103",
+      "name": "Earring LUK Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040312.png",
+      "iconKey": "2040312",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/103"
+    },
+    {
+      "id": "104",
+      "name": "Earring STR Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040300.png",
+      "iconKey": "2040300",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/104"
+    },
+    {
+      "id": "105",
+      "name": "Gloves Accuracy Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040811.png",
+      "iconKey": "2040811",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/105"
+    },
+    {
+      "id": "106",
+      "name": "Gloves Attack Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040803.png",
+      "iconKey": "2040803",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/106"
+    },
+    {
+      "id": "107",
+      "name": "Gloves Crit. Rate Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040815.png",
+      "iconKey": "2040815",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/107"
+    },
+    {
+      "id": "108",
+      "name": "Gloves Magic Attack Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040807.png",
+      "iconKey": "2040807",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/108"
+    },
+    {
+      "id": "109",
+      "name": "Gloves Accuracy Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040810.png",
+      "iconKey": "2040810",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/109"
+    },
+    {
+      "id": "110",
+      "name": "Gloves Attack Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040802.png",
+      "iconKey": "2040802",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/110"
+    },
+    {
+      "id": "111",
+      "name": "Gloves Crit. Rate Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040814.png",
+      "iconKey": "2040814",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/111"
+    },
+    {
+      "id": "112",
+      "name": "Gloves Magic Attack Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040806.png",
+      "iconKey": "2040806",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/112"
+    },
+    {
+      "id": "113",
+      "name": "Gloves Accuracy Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040809.png",
+      "iconKey": "2040809",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/113"
+    },
+    {
+      "id": "114",
+      "name": "Gloves Attack Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040801.png",
+      "iconKey": "2040801",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/114"
+    },
+    {
+      "id": "115",
+      "name": "Gloves Crit. Rate Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040813.png",
+      "iconKey": "2040813",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/115"
+    },
+    {
+      "id": "116",
+      "name": "Gloves Magic Attack Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040805.png",
+      "iconKey": "2040805",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/116"
+    },
+    {
+      "id": "117",
+      "name": "Gloves Accuracy Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040808.png",
+      "iconKey": "2040808",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/117"
+    },
+    {
+      "id": "118",
+      "name": "Gloves Attack Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040800.png",
+      "iconKey": "2040800",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/118"
+    },
+    {
+      "id": "119",
+      "name": "Gloves Crit. Rate Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040812.png",
+      "iconKey": "2040812",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/119"
+    },
+    {
+      "id": "120",
+      "name": "Gloves Magic Attack Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040804.png",
+      "iconKey": "2040804",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/120"
+    },
+    {
+      "id": "121",
+      "name": "Hat Accuracy Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040003.png",
+      "iconKey": "2040003",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/121"
+    },
+    {
+      "id": "122",
+      "name": "Hat HP Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040007.png",
+      "iconKey": "2040007",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/122"
+    },
+    {
+      "id": "123",
+      "name": "Hat MP Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040011.png",
+      "iconKey": "2040011",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/123"
+    },
+    {
+      "id": "124",
+      "name": "Hat Accuracy Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040002.png",
+      "iconKey": "2040002",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/124"
+    },
+    {
+      "id": "125",
+      "name": "Hat HP Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040006.png",
+      "iconKey": "2040006",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/125"
+    },
+    {
+      "id": "126",
+      "name": "Hat MP Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040010.png",
+      "iconKey": "2040010",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/126"
+    },
+    {
+      "id": "127",
+      "name": "Hat Accuracy Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040001.png",
+      "iconKey": "2040001",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/127"
+    },
+    {
+      "id": "128",
+      "name": "Hat HP Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040005.png",
+      "iconKey": "2040005",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/128"
+    },
+    {
+      "id": "130",
+      "name": "Hat Accuracy Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040000.png",
+      "iconKey": "2040000",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/130"
+    },
+    {
+      "id": "131",
+      "name": "Hat HP Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040004.png",
+      "iconKey": "2040004",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/131"
+    },
+    {
+      "id": "132",
+      "name": "Hat MP Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040008.png",
+      "iconKey": "2040008",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/132"
+    },
+    {
+      "id": "133",
+      "name": "Overall Armor DEF Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040503.png",
+      "iconKey": "2040503",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/133"
+    },
+    {
+      "id": "134",
+      "name": "Overall Armor DEX Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040511.png",
+      "iconKey": "2040511",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/134"
+    },
+    {
+      "id": "135",
+      "name": "Overall Armor INT Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040515.png",
+      "iconKey": "2040515",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/135"
+    },
+    {
+      "id": "136",
+      "name": "Overall Armor LUK Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040519.png",
+      "iconKey": "2040519",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/136"
+    },
+    {
+      "id": "137",
+      "name": "Overall Armor STR Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040507.png",
+      "iconKey": "2040507",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/137"
+    },
+    {
+      "id": "138",
+      "name": "Overall Armor DEF Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040502.png",
+      "iconKey": "2040502",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/138"
+    },
+    {
+      "id": "139",
+      "name": "Overall Armor DEX Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040510.png",
+      "iconKey": "2040510",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/139"
+    },
+    {
+      "id": "140",
+      "name": "Overall Armor INT Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040514.png",
+      "iconKey": "2040514",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/140"
+    },
+    {
+      "id": "141",
+      "name": "Overall Armor LUK Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040518.png",
+      "iconKey": "2040518",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/141"
+    },
+    {
+      "id": "142",
+      "name": "Overall Armor STR Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040506.png",
+      "iconKey": "2040506",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/142"
+    },
+    {
+      "id": "143",
+      "name": "Overall Armor DEF Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040501.png",
+      "iconKey": "2040501",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/143"
+    },
+    {
+      "id": "144",
+      "name": "Overall Armor DEX Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040509.png",
+      "iconKey": "2040509",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/144"
+    },
+    {
+      "id": "145",
+      "name": "Overall Armor INT Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040513.png",
+      "iconKey": "2040513",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/145"
+    },
+    {
+      "id": "146",
+      "name": "Overall Armor LUK Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040517.png",
+      "iconKey": "2040517",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/146"
+    },
+    {
+      "id": "147",
+      "name": "Overall Armor STR Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040505.png",
+      "iconKey": "2040505",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/147"
+    },
+    {
+      "id": "148",
+      "name": "Overall Armor DEF Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040500.png",
+      "iconKey": "2040500",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/148"
+    },
+    {
+      "id": "149",
+      "name": "Overall Armor DEX Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040508.png",
+      "iconKey": "2040508",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/149"
+    },
+    {
+      "id": "150",
+      "name": "Overall Armor INT Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040512.png",
+      "iconKey": "2040512",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/150"
+    },
+    {
+      "id": "151",
+      "name": "Overall Armor LUK Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040516.png",
+      "iconKey": "2040516",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/151"
+    },
+    {
+      "id": "152",
+      "name": "Overall Armor STR Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040504.png",
+      "iconKey": "2040504",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/152"
+    },
+    {
+      "id": "153",
+      "name": "Pet Equip Jump Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2048007.png",
+      "iconKey": "2048007",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/153"
+    },
+    {
+      "id": "154",
+      "name": "Pet Equip Speed Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2048003.png",
+      "iconKey": "2048003",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/154"
+    },
+    {
+      "id": "155",
+      "name": "Pet Equip Jump Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2048006.png",
+      "iconKey": "2048006",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/155"
+    },
+    {
+      "id": "156",
+      "name": "Pet Equip Speed Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2048002.png",
+      "iconKey": "2048002",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/156"
+    },
+    {
+      "id": "157",
+      "name": "Pet Equip Jump Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2048005.png",
+      "iconKey": "2048005",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/157"
+    },
+    {
+      "id": "158",
+      "name": "Pet Equip Speed Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2048001.png",
+      "iconKey": "2048001",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/158"
+    },
+    {
+      "id": "159",
+      "name": "Pet Equip Jump Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2048004.png",
+      "iconKey": "2048004",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/159"
+    },
+    {
+      "id": "160",
+      "name": "Pet Equip Speed Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2048000.png",
+      "iconKey": "2048000",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/160"
+    },
+    {
+      "id": "161",
+      "name": "Polearm Attack Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2044403.png",
+      "iconKey": "2044403",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/161"
+    },
+    {
+      "id": "162",
+      "name": "Polearm Attack Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2044402.png",
+      "iconKey": "2044402",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/162"
+    },
+    {
+      "id": "163",
+      "name": "Polearm Attack Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2044401.png",
+      "iconKey": "2044401",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/163"
+    },
+    {
+      "id": "164",
+      "name": "Polearm Attack Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2044400.png",
+      "iconKey": "2044400",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/164"
+    },
+    {
+      "id": "165",
+      "name": "Shield Accuracy Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040907.png",
+      "iconKey": "2040907",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/165"
+    },
+    {
+      "id": "166",
+      "name": "Shield DEF Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040903.png",
+      "iconKey": "2040903",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/166"
+    },
+    {
+      "id": "167",
+      "name": "Shield Accuracy Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040906.png",
+      "iconKey": "2040906",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/167"
+    },
+    {
+      "id": "168",
+      "name": "Shield DEF Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040902.png",
+      "iconKey": "2040902",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/168"
+    },
+    {
+      "id": "169",
+      "name": "Shield Accuracy Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040905.png",
+      "iconKey": "2040905",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/169"
+    },
+    {
+      "id": "170",
+      "name": "Shield DEF Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040901.png",
+      "iconKey": "2040901",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/170"
+    },
+    {
+      "id": "171",
+      "name": "Shield Accuracy Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040904.png",
+      "iconKey": "2040904",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/171"
+    },
+    {
+      "id": "172",
+      "name": "Shield DEF Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040900.png",
+      "iconKey": "2040900",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/172"
+    },
+    {
+      "id": "173",
+      "name": "Shoes Evasion Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040711.png",
+      "iconKey": "2040711",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/173"
+    },
+    {
+      "id": "174",
+      "name": "Shoes Jump Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040703.png",
+      "iconKey": "2040703",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/174"
+    },
+    {
+      "id": "175",
+      "name": "Shoes Speed Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040707.png",
+      "iconKey": "2040707",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/175"
+    },
+    {
+      "id": "176",
+      "name": "Shoes Evasion Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040710.png",
+      "iconKey": "2040710",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/176"
+    },
+    {
+      "id": "177",
+      "name": "Shoes Jump Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040702.png",
+      "iconKey": "2040702",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/177"
+    },
+    {
+      "id": "178",
+      "name": "Shoes Speed Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040706.png",
+      "iconKey": "2040706",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/178"
+    },
+    {
+      "id": "179",
+      "name": "Shoes Evasion Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040709.png",
+      "iconKey": "2040709",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/179"
+    },
+    {
+      "id": "180",
+      "name": "Shoes Jump Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040701.png",
+      "iconKey": "2040701",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/180"
+    },
+    {
+      "id": "181",
+      "name": "Shoes Speed Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040705.png",
+      "iconKey": "2040705",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/181"
+    },
+    {
+      "id": "182",
+      "name": "Shoes Evasion Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040708.png",
+      "iconKey": "2040708",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/182"
+    },
+    {
+      "id": "183",
+      "name": "Shoes Jump Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040700.png",
+      "iconKey": "2040700",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/183"
+    },
+    {
+      "id": "184",
+      "name": "Shoes Speed Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040704.png",
+      "iconKey": "2040704",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/184"
+    },
+    {
+      "id": "185",
+      "name": "Spear Attack Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2044303.png",
+      "iconKey": "2044303",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/185"
+    },
+    {
+      "id": "186",
+      "name": "Spear Attack Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2044302.png",
+      "iconKey": "2044302",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/186"
+    },
+    {
+      "id": "187",
+      "name": "Spear Attack Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2044301.png",
+      "iconKey": "2044301",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/187"
+    },
+    {
+      "id": "188",
+      "name": "Spear Attack Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2044300.png",
+      "iconKey": "2044300",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/188"
+    },
+    {
+      "id": "189",
+      "name": "Staff Magic Attack Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2043803.png",
+      "iconKey": "2043803",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/189"
+    },
+    {
+      "id": "190",
+      "name": "Staff Magic Attack Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2043802.png",
+      "iconKey": "2043802",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/190"
+    },
+    {
+      "id": "191",
+      "name": "Staff Magic Attack Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2043801.png",
+      "iconKey": "2043801",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/191"
+    },
+    {
+      "id": "192",
+      "name": "Staff Magic Attack Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2043800.png",
+      "iconKey": "2043800",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/192"
+    },
+    {
+      "id": "193",
+      "name": "Topwear DEF Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040403.png",
+      "iconKey": "2040403",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/193"
+    },
+    {
+      "id": "194",
+      "name": "Topwear HP Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040407.png",
+      "iconKey": "2040407",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/194"
+    },
+    {
+      "id": "195",
+      "name": "Topwear MP Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2040411.png",
+      "iconKey": "2040411",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/195"
+    },
+    {
+      "id": "196",
+      "name": "Topwear DEF Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040402.png",
+      "iconKey": "2040402",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/196"
+    },
+    {
+      "id": "197",
+      "name": "Topwear HP Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040406.png",
+      "iconKey": "2040406",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/197"
+    },
+    {
+      "id": "198",
+      "name": "Topwear MP Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2040410.png",
+      "iconKey": "2040410",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/198"
+    },
+    {
+      "id": "199",
+      "name": "Topwear DEF Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040401.png",
+      "iconKey": "2040401",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/199"
+    },
+    {
+      "id": "200",
+      "name": "Topwear HP Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040405.png",
+      "iconKey": "2040405",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/200"
+    },
+    {
+      "id": "201",
+      "name": "Topwear MP Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2040409.png",
+      "iconKey": "2040409",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/201"
+    },
+    {
+      "id": "202",
+      "name": "Topwear DEF Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040400.png",
+      "iconKey": "2040400",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/202"
+    },
+    {
+      "id": "203",
+      "name": "Topwear HP Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040404.png",
+      "iconKey": "2040404",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/203"
+    },
+    {
+      "id": "204",
+      "name": "Topwear MP Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2040408.png",
+      "iconKey": "2040408",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/204"
+    },
+    {
+      "id": "205",
+      "name": "Wand Magic Attack Scroll: Chaos",
+      "category": "Scroll",
+      "icon": "assets/use/2043703.png",
+      "iconKey": "2043703",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/205"
+    },
+    {
+      "id": "206",
+      "name": "Wand Magic Attack Scroll: Greater",
+      "category": "Scroll",
+      "icon": "assets/use/2043702.png",
+      "iconKey": "2043702",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/206"
+    },
+    {
+      "id": "207",
+      "name": "Wand Magic Attack Scroll: Intermediate",
+      "category": "Scroll",
+      "icon": "assets/use/2043701.png",
+      "iconKey": "2043701",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/207"
+    },
+    {
+      "id": "208",
+      "name": "Wand Magic Attack Scroll: Lesser",
+      "category": "Scroll",
+      "icon": "assets/use/2043700.png",
+      "iconKey": "2043700",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/208"
+    },
+    {
+      "id": "209",
+      "name": "Arrows for Bows",
+      "category": "Arrow",
+      "icon": "assets/use/2060000.png",
+      "iconKey": "2060000",
+      "purchasePrice": 1,
+      "vendorPrice": 0,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/209"
+    },
+    {
+      "id": "210",
+      "name": "Bronze Arrows for Bows",
+      "category": "Arrow",
+      "icon": "assets/use/2060001.png",
+      "iconKey": "2060001",
+      "purchasePrice": 2,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/210"
+    },
+    {
+      "id": "211",
+      "name": "Iron Arrows for Bows",
+      "category": "Arrow",
+      "icon": "assets/use/2060002.png",
+      "iconKey": "2060002",
+      "purchasePrice": null,
+      "vendorPrice": 2,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/211"
+    },
+    {
+      "id": "212",
+      "name": "Adamantium Arrows for Bows",
+      "category": "Arrow",
+      "icon": "assets/use/2060003.png",
+      "iconKey": "2060003",
+      "purchasePrice": null,
+      "vendorPrice": 3,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/212"
+    },
+    {
+      "id": "213",
+      "name": "Arrows for Crossbows",
+      "category": "Arrow",
+      "icon": "assets/use/2061000.png",
+      "iconKey": "2061000",
+      "purchasePrice": 1,
+      "vendorPrice": 0,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/213"
+    },
+    {
+      "id": "214",
+      "name": "Bronze Arrows for Crossbows",
+      "category": "Arrow",
+      "icon": "assets/use/2061001.png",
+      "iconKey": "2061001",
+      "purchasePrice": 2,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/214"
+    },
+    {
+      "id": "215",
+      "name": "Iron Arrows for Crossbows",
+      "category": "Arrow",
+      "icon": "assets/use/2061002.png",
+      "iconKey": "2061002",
+      "purchasePrice": null,
+      "vendorPrice": 2,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/215"
+    },
+    {
+      "id": "216",
+      "name": "Mithril Arrows for Crossbows",
+      "category": "Arrow",
+      "icon": "assets/use/2061003.png",
+      "iconKey": "2061003",
+      "purchasePrice": null,
+      "vendorPrice": 3,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/216"
+    },
+    {
+      "id": "217",
+      "name": "Companion's Magic Box",
+      "category": "Box",
+      "icon": "assets/use/2430000.png",
+      "iconKey": "2430000",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/217"
+    },
+    {
+      "id": "218",
+      "name": "Natalie's Fashion Box (M)",
+      "category": "Box",
+      "icon": "assets/use/2430001.png",
+      "iconKey": "2430001",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/218"
+    },
+    {
+      "id": "219",
+      "name": "Natalie's Fashion Box (F)",
+      "category": "Box",
+      "icon": "assets/use/2430002.png",
+      "iconKey": "2430002",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/219"
+    },
+    {
+      "id": "220",
+      "name": "Gift for the New Journey",
+      "category": "Box",
+      "icon": "assets/use/2430003.png",
+      "iconKey": "2430003",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/220"
+    },
+    {
+      "id": "221",
+      "name": "Leaf Points (1,000) Exchange Coupon",
+      "category": "Box",
+      "icon": "assets/use/2430004.png",
+      "iconKey": "2430004",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/221"
+    },
+    {
+      "id": "222",
+      "name": "Warrior Potion",
+      "category": "Buff",
+      "icon": "assets/use/2002000.png",
+      "iconKey": "2002000",
+      "purchasePrice": 500,
+      "vendorPrice": 250,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/222"
+    },
+    {
+      "id": "223",
+      "name": "Magic Potion",
+      "category": "Buff",
+      "icon": "assets/use/2002001.png",
+      "iconKey": "2002001",
+      "purchasePrice": 500,
+      "vendorPrice": 250,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/223"
+    },
+    {
+      "id": "224",
+      "name": "Sniper Potion",
+      "category": "Buff",
+      "icon": "assets/use/2002002.png",
+      "iconKey": "2002002",
+      "purchasePrice": 500,
+      "vendorPrice": 250,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/224"
+    },
+    {
+      "id": "225",
+      "name": "Dexterity Potion",
+      "category": "Buff",
+      "icon": "assets/use/2002003.png",
+      "iconKey": "2002003",
+      "purchasePrice": 500,
+      "vendorPrice": 250,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/225"
+    },
+    {
+      "id": "226",
+      "name": "Speed Potion",
+      "category": "Buff",
+      "icon": "assets/use/2002004.png",
+      "iconKey": "2002004",
+      "purchasePrice": 500,
+      "vendorPrice": 250,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/226"
+    },
+    {
+      "id": "227",
+      "name": "Weaponcrafting Kit",
+      "category": "Buff",
+      "icon": "assets/use/2002005.png",
+      "iconKey": "2002005",
+      "purchasePrice": null,
+      "vendorPrice": 100,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/227"
+    },
+    {
+      "id": "228",
+      "name": "Woodcrafting Kit",
+      "category": "Buff",
+      "icon": "assets/use/2002006.png",
+      "iconKey": "2002006",
+      "purchasePrice": null,
+      "vendorPrice": 100,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/228"
+    },
+    {
+      "id": "229",
+      "name": "Smithing Kit",
+      "category": "Buff",
+      "icon": "assets/use/2002007.png",
+      "iconKey": "2002007",
+      "purchasePrice": null,
+      "vendorPrice": 100,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/229"
+    },
+    {
+      "id": "230",
+      "name": "Leatherworking Kit",
+      "category": "Buff",
+      "icon": "assets/use/2002008.png",
+      "iconKey": "2002008",
+      "purchasePrice": null,
+      "vendorPrice": 100,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/230"
+    },
+    {
+      "id": "231",
+      "name": "Tailoring Kit",
+      "category": "Buff",
+      "icon": "assets/use/2002009.png",
+      "iconKey": "2002009",
+      "purchasePrice": null,
+      "vendorPrice": 100,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/231"
+    },
+    {
+      "id": "232",
+      "name": "Arcforging Kit",
+      "category": "Buff",
+      "icon": "assets/use/2002010.png",
+      "iconKey": "2002010",
+      "purchasePrice": null,
+      "vendorPrice": 100,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/232"
+    },
+    {
+      "id": "233",
+      "name": "1.5x EXP Coupon (15 min)",
+      "category": "EXP Coupon",
+      "icon": "assets/use/2450000.png",
+      "iconKey": "2450000",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/233"
+    },
+    {
+      "id": "234",
+      "name": "2x EXP Coupon (15 min)",
+      "category": "EXP Coupon",
+      "icon": "assets/use/2450001.png",
+      "iconKey": "2450001",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/234"
+    },
+    {
+      "id": "235",
+      "name": "Roger's Apple",
+      "category": "Food",
+      "icon": "assets/use/2010000.png",
+      "iconKey": "2010000",
+      "purchasePrice": null,
+      "vendorPrice": 0,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/235"
+    },
+    {
+      "id": "236",
+      "name": "Apple",
+      "category": "Food",
+      "icon": "assets/use/2010001.png",
+      "iconKey": "2010001",
+      "purchasePrice": 20,
+      "vendorPrice": 2,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/236"
+    },
+    {
+      "id": "237",
+      "name": "Egg",
+      "category": "Food",
+      "icon": "assets/use/2010002.png",
+      "iconKey": "2010002",
+      "purchasePrice": 30,
+      "vendorPrice": 3,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/237"
+    },
+    {
+      "id": "238",
+      "name": "Meat",
+      "category": "Food",
+      "icon": "assets/use/2010003.png",
+      "iconKey": "2010003",
+      "purchasePrice": 80,
+      "vendorPrice": 8,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/238"
+    },
+    {
+      "id": "239",
+      "name": "Orange",
+      "category": "Food",
+      "icon": "assets/use/2010004.png",
+      "iconKey": "2010004",
+      "purchasePrice": 50,
+      "vendorPrice": 5,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/239"
+    },
+    {
+      "id": "240",
+      "name": "Lemon",
+      "category": "Food",
+      "icon": "assets/use/2010005.png",
+      "iconKey": "2010005",
+      "purchasePrice": 150,
+      "vendorPrice": 15,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/240"
+    },
+    {
+      "id": "241",
+      "name": "Watermelon",
+      "category": "Food",
+      "icon": "assets/use/2010006.png",
+      "iconKey": "2010006",
+      "purchasePrice": 1920,
+      "vendorPrice": 192,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/241"
+    },
+    {
+      "id": "242",
+      "name": "Green Apple",
+      "category": "Food",
+      "icon": "assets/use/2010007.png",
+      "iconKey": "2010007",
+      "purchasePrice": null,
+      "vendorPrice": 3,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/242"
+    },
+    {
+      "id": "243",
+      "name": "Drake's Blood",
+      "category": "Food",
+      "icon": "assets/use/2012000.png",
+      "iconKey": "2012000",
+      "purchasePrice": null,
+      "vendorPrice": 300,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/243"
+    },
+    {
+      "id": "244",
+      "name": "Fairy's Honey",
+      "category": "Food",
+      "icon": "assets/use/2012001.png",
+      "iconKey": "2012001",
+      "purchasePrice": null,
+      "vendorPrice": 250,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/244"
+    },
+    {
+      "id": "245",
+      "name": "Sap of Ancient Tree",
+      "category": "Food",
+      "icon": "assets/use/2012002.png",
+      "iconKey": "2012002",
+      "purchasePrice": null,
+      "vendorPrice": 300,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/245"
+    },
+    {
+      "id": "246",
+      "name": "Drake's Meat",
+      "category": "Food",
+      "icon": "assets/use/2012003.png",
+      "iconKey": "2012003",
+      "purchasePrice": null,
+      "vendorPrice": 250,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/246"
+    },
+    {
+      "id": "247",
+      "name": "Salad",
+      "category": "Food",
+      "icon": "assets/use/2020000.png",
+      "iconKey": "2020000",
+      "purchasePrice": 220,
+      "vendorPrice": 22,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/247"
+    },
+    {
+      "id": "248",
+      "name": "Fried Chicken",
+      "category": "Food",
+      "icon": "assets/use/2020001.png",
+      "iconKey": "2020001",
+      "purchasePrice": 60,
+      "vendorPrice": 6,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/248"
+    },
+    {
+      "id": "249",
+      "name": "Cake",
+      "category": "Food",
+      "icon": "assets/use/2020002.png",
+      "iconKey": "2020002",
+      "purchasePrice": 150,
+      "vendorPrice": 15,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/249"
+    },
+    {
+      "id": "250",
+      "name": "Pizza",
+      "category": "Food",
+      "icon": "assets/use/2020003.png",
+      "iconKey": "2020003",
+      "purchasePrice": 252,
+      "vendorPrice": 25,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/250"
+    },
+    {
+      "id": "251",
+      "name": "Hamburger",
+      "category": "Food",
+      "icon": "assets/use/2020004.png",
+      "iconKey": "2020004",
+      "purchasePrice": 350,
+      "vendorPrice": 35,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/251"
+    },
+    {
+      "id": "252",
+      "name": "Hot Dog",
+      "category": "Food",
+      "icon": "assets/use/2020005.png",
+      "iconKey": "2020005",
+      "purchasePrice": 180,
+      "vendorPrice": 18,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/252"
+    },
+    {
+      "id": "253",
+      "name": "Hot Dog Supreme",
+      "category": "Food",
+      "icon": "assets/use/2020006.png",
+      "iconKey": "2020006",
+      "purchasePrice": 480,
+      "vendorPrice": 48,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/253"
+    },
+    {
+      "id": "254",
+      "name": "Dried Squid",
+      "category": "Food",
+      "icon": "assets/use/2020007.png",
+      "iconKey": "2020007",
+      "purchasePrice": 180,
+      "vendorPrice": 18,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/254"
+    },
+    {
+      "id": "255",
+      "name": "Fat Sausage",
+      "category": "Food",
+      "icon": "assets/use/2020008.png",
+      "iconKey": "2020008",
+      "purchasePrice": 800,
+      "vendorPrice": 80,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/255"
+    },
+    {
+      "id": "256",
+      "name": "Orange Juice",
+      "category": "Food",
+      "icon": "assets/use/2020009.png",
+      "iconKey": "2020009",
+      "purchasePrice": 540,
+      "vendorPrice": 54,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/256"
+    },
+    {
+      "id": "257",
+      "name": "Grape Juice",
+      "category": "Food",
+      "icon": "assets/use/2020010.png",
+      "iconKey": "2020010",
+      "purchasePrice": 1260,
+      "vendorPrice": 126,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/257"
+    },
+    {
+      "id": "258",
+      "name": "W Ramen",
+      "category": "Food",
+      "icon": "assets/use/2020011.png",
+      "iconKey": "2020011",
+      "purchasePrice": null,
+      "vendorPrice": 200,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/258"
+    },
+    {
+      "id": "259",
+      "name": "Ice Cream Pop",
+      "category": "Food",
+      "icon": "assets/use/2020012.png",
+      "iconKey": "2020012",
+      "purchasePrice": 1500,
+      "vendorPrice": 150,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/259"
+    },
+    {
+      "id": "260",
+      "name": "Red Bean Sundae",
+      "category": "Food",
+      "icon": "assets/use/2020013.png",
+      "iconKey": "2020013",
+      "purchasePrice": 2250,
+      "vendorPrice": 225,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/260"
+    },
+    {
+      "id": "261",
+      "name": "Pure Water",
+      "category": "Food",
+      "icon": "assets/use/2022000.png",
+      "iconKey": "2022000",
+      "purchasePrice": 1120,
+      "vendorPrice": 112,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/261"
+    },
+    {
+      "id": "263",
+      "name": "Cider",
+      "category": "Food",
+      "icon": "assets/use/2022002.png",
+      "iconKey": "2022002",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/263"
+    },
+    {
+      "id": "264",
+      "name": "Unagi",
+      "category": "Food",
+      "icon": "assets/use/2022003.png",
+      "iconKey": "2022003",
+      "purchasePrice": 1000,
+      "vendorPrice": 100,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/264"
+    },
+    {
+      "id": "265",
+      "name": "Mysterious Meso Pouch",
+      "category": "Meso Pouch",
+      "icon": "assets/use/2028000.png",
+      "iconKey": "2028000",
+      "purchasePrice": null,
+      "vendorPrice": null,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/265"
+    },
+    {
+      "id": "266",
+      "name": "10,000 Meso Pouch",
+      "category": "Meso Pouch",
+      "icon": "assets/use/2028001.png",
+      "iconKey": "2028001",
+      "purchasePrice": null,
+      "vendorPrice": null,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/266"
+    },
+    {
+      "id": "267",
+      "name": "50,000 Meso Pouch",
+      "category": "Meso Pouch",
+      "icon": "assets/use/2028002.png",
+      "iconKey": "2028002",
+      "purchasePrice": null,
+      "vendorPrice": null,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/267"
+    },
+    {
+      "id": "268",
+      "name": "Lie Detector Test",
+      "category": "Misc",
+      "icon": "assets/use/2190000.png",
+      "iconKey": "2190000",
+      "purchasePrice": null,
+      "vendorPrice": 5000,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/268"
+    },
+    {
+      "id": "269",
+      "name": "Pet Food",
+      "category": "Pet Food",
+      "icon": "assets/use/2120000.png",
+      "iconKey": "2120000",
+      "purchasePrice": 30,
+      "vendorPrice": 15,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/269"
+    },
+    {
+      "id": "270",
+      "name": "Red Potion",
+      "category": "Potion",
+      "icon": "assets/use/2000000.png",
+      "iconKey": "2000000",
+      "purchasePrice": 50,
+      "vendorPrice": 5,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/270"
+    },
+    {
+      "id": "271",
+      "name": "Orange Potion",
+      "category": "Potion",
+      "icon": "assets/use/2000001.png",
+      "iconKey": "2000001",
+      "purchasePrice": 150,
+      "vendorPrice": 15,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/271"
+    },
+    {
+      "id": "272",
+      "name": "White Potion",
+      "category": "Potion",
+      "icon": "assets/use/2000002.png",
+      "iconKey": "2000002",
+      "purchasePrice": 350,
+      "vendorPrice": 35,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/272"
+    },
+    {
+      "id": "273",
+      "name": "Blue Potion",
+      "category": "Potion",
+      "icon": "assets/use/2000003.png",
+      "iconKey": "2000003",
+      "purchasePrice": 220,
+      "vendorPrice": 22,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/273"
+    },
+    {
+      "id": "274",
+      "name": "Elixir",
+      "category": "Potion",
+      "icon": "assets/use/2000004.png",
+      "iconKey": "2000004",
+      "purchasePrice": 3000,
+      "vendorPrice": 500,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/274"
+    },
+    {
+      "id": "275",
+      "name": "Power Elixir",
+      "category": "Potion",
+      "icon": "assets/use/2000005.png",
+      "iconKey": "2000005",
+      "purchasePrice": null,
+      "vendorPrice": 2500,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/275"
+    },
+    {
+      "id": "276",
+      "name": "Mana Elixir",
+      "category": "Potion",
+      "icon": "assets/use/2000006.png",
+      "iconKey": "2000006",
+      "purchasePrice": null,
+      "vendorPrice": 1000,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/276"
+    },
+    {
+      "id": "277",
+      "name": "Rainbow-colored Snail Shell",
+      "category": "Quest Item",
+      "icon": "assets/use/2210000.png",
+      "iconKey": "2210000",
+      "purchasePrice": null,
+      "vendorPrice": 100,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/277"
+    },
+    {
+      "id": "278",
+      "name": "The Songs of Solomon",
+      "category": "Quest Item",
+      "icon": "assets/use/2375000.png",
+      "iconKey": "2375000",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/278"
+    },
+    {
+      "id": "279",
+      "name": "Return Scroll - Nearest Town",
+      "category": "Return Scroll",
+      "icon": "assets/use/2030000.png",
+      "iconKey": "2030000",
+      "purchasePrice": 400,
+      "vendorPrice": 200,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/279"
+    },
+    {
+      "id": "280",
+      "name": "Return Scroll to Lith Harbor",
+      "category": "Return Scroll",
+      "icon": "assets/use/2030001.png",
+      "iconKey": "2030001",
+      "purchasePrice": 500,
+      "vendorPrice": 250,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/280"
+    },
+    {
+      "id": "281",
+      "name": "Return Scroll to Ellinia",
+      "category": "Return Scroll",
+      "icon": "assets/use/2030002.png",
+      "iconKey": "2030002",
+      "purchasePrice": 500,
+      "vendorPrice": 250,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/281"
+    },
+    {
+      "id": "282",
+      "name": "Return Scroll to Perion",
+      "category": "Return Scroll",
+      "icon": "assets/use/2030003.png",
+      "iconKey": "2030003",
+      "purchasePrice": 500,
+      "vendorPrice": 250,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/282"
+    },
+    {
+      "id": "283",
+      "name": "Return Scroll to Henesys",
+      "category": "Return Scroll",
+      "icon": "assets/use/2030004.png",
+      "iconKey": "2030004",
+      "purchasePrice": 500,
+      "vendorPrice": 250,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/283"
+    },
+    {
+      "id": "284",
+      "name": "Return Scroll to Kerning City",
+      "category": "Return Scroll",
+      "icon": "assets/use/2030005.png",
+      "iconKey": "2030005",
+      "purchasePrice": 500,
+      "vendorPrice": 250,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/284"
+    },
+    {
+      "id": "285",
+      "name": "Return Scroll to Sleepywood",
+      "category": "Return Scroll",
+      "icon": "assets/use/2030006.png",
+      "iconKey": "2030006",
+      "purchasePrice": 600,
+      "vendorPrice": 300,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/285"
+    },
+    {
+      "id": "286",
+      "name": "Return Scroll to Forgotten Hollow",
+      "category": "Return Scroll",
+      "icon": "assets/use/2030007.png",
+      "iconKey": "2030007",
+      "purchasePrice": null,
+      "vendorPrice": 400,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/286"
+    },
+    {
+      "id": "287",
+      "name": "Black Sack",
+      "category": "Summoning Sack",
+      "icon": "assets/use/2100000.png",
+      "iconKey": "2100000",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/287"
+    },
+    {
+      "id": "288",
+      "name": "GM Black Sack: Mano Level 20",
+      "category": "Summoning Sack",
+      "icon": "assets/use/2100001.png",
+      "iconKey": "2100001",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/288"
+    },
+    {
+      "id": "289",
+      "name": "GM Black Sack: King Slime Level 32",
+      "category": "Summoning Sack",
+      "icon": "assets/use/2100002.png",
+      "iconKey": "2100002",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/289"
+    },
+    {
+      "id": "290",
+      "name": "GM Black Sack: Mushmom Level 40",
+      "category": "Summoning Sack",
+      "icon": "assets/use/2100003.png",
+      "iconKey": "2100003",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/290"
+    },
+    {
+      "id": "291",
+      "name": "GM Black Sack: Zombie Mushmom Level 50",
+      "category": "Summoning Sack",
+      "icon": "assets/use/2100004.png",
+      "iconKey": "2100004",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/291"
+    },
+    {
+      "id": "292",
+      "name": "GM Black Sack: Rotten Mushmom Level 60",
+      "category": "Summoning Sack",
+      "icon": "assets/use/2100005.png",
+      "iconKey": "2100005",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/292"
+    },
+    {
+      "id": "293",
+      "name": "GM Black Sack: Jr. Balrog Level 80",
+      "category": "Summoning Sack",
+      "icon": "assets/use/2100006.png",
+      "iconKey": "2100006",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/293"
+    },
+    {
+      "id": "294",
+      "name": "Subi Throwing Stars",
+      "category": "Throwing Star",
+      "icon": "assets/use/2070000.png",
+      "iconKey": "2070000",
+      "purchasePrice": 500,
+      "vendorPrice": 250,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/294"
+    },
+    {
+      "id": "295",
+      "name": "Wolbi Throwing Stars",
+      "category": "Throwing Star",
+      "icon": "assets/use/2070001.png",
+      "iconKey": "2070001",
+      "purchasePrice": 1000,
+      "vendorPrice": 500,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/295"
+    },
+    {
+      "id": "296",
+      "name": "Mokbi Throwing Stars",
+      "category": "Throwing Star",
+      "icon": "assets/use/2070002.png",
+      "iconKey": "2070002",
+      "purchasePrice": null,
+      "vendorPrice": 1000,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/296"
+    },
+    {
+      "id": "297",
+      "name": "Kumbi Throwing Stars",
+      "category": "Throwing Star",
+      "icon": "assets/use/2070003.png",
+      "iconKey": "2070003",
+      "purchasePrice": null,
+      "vendorPrice": 1500,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/297"
+    },
+    {
+      "id": "298",
+      "name": "Tobi Throwing Stars",
+      "category": "Throwing Star",
+      "icon": "assets/use/2070004.png",
+      "iconKey": "2070004",
+      "purchasePrice": null,
+      "vendorPrice": 2500,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/298"
+    },
+    {
+      "id": "299",
+      "name": "Steely Throwing Knives",
+      "category": "Throwing Star",
+      "icon": "assets/use/2070005.png",
+      "iconKey": "2070005",
+      "purchasePrice": null,
+      "vendorPrice": 10000,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/299"
+    },
+    {
+      "id": "300",
+      "name": "Ilbi Throwing Stars",
+      "category": "Throwing Star",
+      "icon": "assets/use/2070006.png",
+      "iconKey": "2070006",
+      "purchasePrice": null,
+      "vendorPrice": 20000,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/300"
+    },
+    {
+      "id": "301",
+      "name": "Hwabi Throwing Stars",
+      "category": "Throwing Star",
+      "icon": "assets/use/2070007.png",
+      "iconKey": "2070007",
+      "purchasePrice": null,
+      "vendorPrice": 25000,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/301"
+    },
+    {
+      "id": "302",
+      "name": "Snowball",
+      "category": "Throwing Star",
+      "icon": "assets/use/2070008.png",
+      "iconKey": "2070008",
+      "purchasePrice": null,
+      "vendorPrice": 500,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/302"
+    },
+    {
+      "id": "303",
+      "name": "Wooden Top",
+      "category": "Throwing Star",
+      "icon": "assets/use/2070009.png",
+      "iconKey": "2070009",
+      "purchasePrice": null,
+      "vendorPrice": 500,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/303"
+    },
+    {
+      "id": "304",
+      "name": "Icicle",
+      "category": "Throwing Star",
+      "icon": "assets/use/2070010.png",
+      "iconKey": "2070010",
+      "purchasePrice": null,
+      "vendorPrice": 500,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/304"
+    },
+    {
+      "id": "1667",
+      "name": "GM's Blessing of Wind",
+      "category": "Buff",
+      "icon": "assets/use/2023000.png",
+      "iconKey": "2023000",
+      "purchasePrice": null,
+      "vendorPrice": null,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/1667"
+    },
+    {
+      "id": "1668",
+      "name": "GM's Blessing of the Keen Eye",
+      "category": "Buff",
+      "icon": "assets/use/2023001.png",
+      "iconKey": "2023001",
+      "purchasePrice": null,
+      "vendorPrice": null,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/1668"
+    },
+    {
+      "id": "2554",
+      "name": "Supreme Sniper Potion",
+      "category": "Use",
+      "icon": "assets/use/2002011.png",
+      "iconKey": "2002011",
+      "purchasePrice": 600,
+      "vendorPrice": 300,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2554"
+    },
+    {
+      "id": "2555",
+      "name": "Supreme Dexterity Potion",
+      "category": "Use",
+      "icon": "assets/use/2002012.png",
+      "iconKey": "2002012",
+      "purchasePrice": 600,
+      "vendorPrice": 300,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2555"
+    },
+    {
+      "id": "2556",
+      "name": "Sharpness Potion",
+      "category": "Use",
+      "icon": "assets/use/2002013.png",
+      "iconKey": "2002013",
+      "purchasePrice": 750,
+      "vendorPrice": 375,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2556"
+    },
+    {
+      "id": "2557",
+      "name": "Destructive Potion",
+      "category": "Use",
+      "icon": "assets/use/2002014.png",
+      "iconKey": "2002014",
+      "purchasePrice": 750,
+      "vendorPrice": 375,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2557"
+    },
+    {
+      "id": "2560",
+      "name": "Sunrise Dew",
+      "category": "Use",
+      "icon": "assets/use/2020016.png",
+      "iconKey": "2020016",
+      "purchasePrice": null,
+      "vendorPrice": 300,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2560"
+    },
+    {
+      "id": "2562",
+      "name": "Mrs. Ming Ming's Stew",
+      "category": "Use",
+      "icon": "assets/use/2020018.png",
+      "iconKey": "2020018",
+      "purchasePrice": 480,
+      "vendorPrice": 48,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2562"
+    },
+    {
+      "id": "2563",
+      "name": "Andre's Seafood Soup",
+      "category": "Use",
+      "icon": "assets/use/2020019.png",
+      "iconKey": "2020019",
+      "purchasePrice": 480,
+      "vendorPrice": 48,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2563"
+    },
+    {
+      "id": "2566",
+      "name": "Summoning New-Type Balrog",
+      "category": "Use",
+      "icon": "assets/use/2100007.png",
+      "iconKey": "2100007",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2566"
+    },
+    {
+      "id": "2567",
+      "name": "Red Snail Invasion",
+      "category": "Use",
+      "icon": "assets/use/2210001.png",
+      "iconKey": "2210001",
+      "purchasePrice": null,
+      "vendorPrice": null,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2567"
+    },
+    {
+      "id": "2568",
+      "name": "Orange Mushroom Invasion",
+      "category": "Use",
+      "icon": "assets/use/2210002.png",
+      "iconKey": "2210002",
+      "purchasePrice": null,
+      "vendorPrice": null,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2568"
+    },
+    {
+      "id": "2569",
+      "name": "Ribbon Pig Invasion",
+      "category": "Use",
+      "icon": "assets/use/2210003.png",
+      "iconKey": "2210003",
+      "purchasePrice": null,
+      "vendorPrice": null,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2569"
+    },
+    {
+      "id": "2570",
+      "name": "Red Snail Daydream",
+      "category": "Use",
+      "icon": "assets/use/2210004.png",
+      "iconKey": "2210004",
+      "purchasePrice": null,
+      "vendorPrice": null,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2570"
+    },
+    {
+      "id": "2571",
+      "name": "Orange Mushroom Daydream",
+      "category": "Use",
+      "icon": "assets/use/2210005.png",
+      "iconKey": "2210005",
+      "purchasePrice": 500,
+      "vendorPrice": null,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2571"
+    },
+    {
+      "id": "2572",
+      "name": "Ribbon Pig Daydream",
+      "category": "Use",
+      "icon": "assets/use/2210006.png",
+      "iconKey": "2210006",
+      "purchasePrice": 500,
+      "vendorPrice": null,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2572"
+    },
+    {
+      "id": "2573",
+      "name": "Leaf Points (5,000) Exchange Coupon",
+      "category": "Use",
+      "icon": "assets/use/2430005.png",
+      "iconKey": "2430005",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2573"
+    },
+    {
+      "id": "2574",
+      "name": "Leaf Points (10,000) Exchange Coupon",
+      "category": "Use",
+      "icon": "assets/use/2430006.png",
+      "iconKey": "2430006",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2574"
+    },
+    {
+      "id": "2575",
+      "name": "Leaf Points (50,000) Exchange Coupon",
+      "category": "Use",
+      "icon": "assets/use/2430007.png",
+      "iconKey": "2430007",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2575"
+    },
+    {
+      "id": "2576",
+      "name": "Leaf Points (100,000) Exchange Coupon",
+      "category": "Use",
+      "icon": "assets/use/2430008.png",
+      "iconKey": "2430008",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2576"
+    },
+    {
+      "id": "2577",
+      "name": "MapleStory Fest 2026 Gift Box (Bronze)",
+      "category": "Use",
+      "icon": "assets/use/2430009.png",
+      "iconKey": "2430009",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2577"
+    },
+    {
+      "id": "2578",
+      "name": "MapleStory Fest 2026 Gift Box (Silver)",
+      "category": "Use",
+      "icon": "assets/use/2430010.png",
+      "iconKey": "2430010",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2578"
+    },
+    {
+      "id": "2830",
+      "name": "Red Potion (Alt)",
+      "category": "Potion",
+      "icon": "assets/use/2000007.png",
+      "iconKey": "2000007",
+      "purchasePrice": null,
+      "vendorPrice": 5,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2830"
+    },
+    {
+      "id": "2831",
+      "name": "Blue Potion (Alt)",
+      "category": "Potion",
+      "icon": "assets/use/2000008.png",
+      "iconKey": "2000008",
+      "purchasePrice": null,
+      "vendorPrice": 22,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2831"
+    },
+    {
+      "id": "2832",
+      "name": "Red Malady's Candy",
+      "category": "Food",
+      "icon": "assets/use/2020020.png",
+      "iconKey": "2020020",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2832"
+    },
+    {
+      "id": "2833",
+      "name": "Blue Malady's Candy",
+      "category": "Food",
+      "icon": "assets/use/2020021.png",
+      "iconKey": "2020021",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2833"
+    },
+    {
+      "id": "2834",
+      "name": "Green Malady's Candy",
+      "category": "Food",
+      "icon": "assets/use/2020022.png",
+      "iconKey": "2020022",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2834"
+    },
+    {
+      "id": "2835",
+      "name": "Cake (Alt)",
+      "category": "Food",
+      "icon": "assets/use/2020023.png",
+      "iconKey": "2020023",
+      "purchasePrice": null,
+      "vendorPrice": 15,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2835"
+    },
+    {
+      "id": "2836",
+      "name": "Inkwell's Blessing",
+      "category": "Buff",
+      "icon": "assets/use/2023002.png",
+      "iconKey": "2023002",
+      "purchasePrice": null,
+      "vendorPrice": null,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2836"
+    },
+    {
+      "id": "2837",
+      "name": "Return Scroll to My Home",
+      "category": "Return Scroll",
+      "icon": "assets/use/2030010.png",
+      "iconKey": "2030010",
+      "purchasePrice": 300,
+      "vendorPrice": 150,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2837"
+    },
+    {
+      "id": "2838",
+      "name": "Return Scroll - Nearest Town (Alt)",
+      "category": "Return Scroll",
+      "icon": "assets/use/2030011.png",
+      "iconKey": "2030011",
+      "purchasePrice": null,
+      "vendorPrice": 200,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2838"
+    },
+    {
+      "id": "2839",
+      "name": "Pet Food (Alt)",
+      "category": "Pet Food",
+      "icon": "assets/use/2120001.png",
+      "iconKey": "2120001",
+      "purchasePrice": null,
+      "vendorPrice": 15,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2839"
+    },
+    {
+      "id": "2840",
+      "name": "Jr. Balrog Invasion",
+      "category": "Use",
+      "icon": "assets/use/2210007.png",
+      "iconKey": "2210007",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2840"
+    },
+    {
+      "id": "2841",
+      "name": "MapleStory Fest 2026 Gift Box (Gold)",
+      "category": "Box",
+      "icon": "assets/use/2430011.png",
+      "iconKey": "2430011",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2841"
+    },
+    {
+      "id": "2842",
+      "name": "MapleStory Fest 2026 Label Ring Exchange Coupon",
+      "category": "Box",
+      "icon": "assets/use/2430012.png",
+      "iconKey": "2430012",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2842"
+    },
+    {
+      "id": "2843",
+      "name": "MapleStory Fest 2026 Chat Ring Exchange Coupon",
+      "category": "Box",
+      "icon": "assets/use/2430013.png",
+      "iconKey": "2430013",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2843"
+    },
+    {
+      "id": "2844",
+      "name": "MapleStory Fest 2026 Special Hat Exchange Box (Bronze)",
+      "category": "Box",
+      "icon": "assets/use/2430014.png",
+      "iconKey": "2430014",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2844"
+    },
+    {
+      "id": "2845",
+      "name": "MapleStory Fest 2026 Special Hat Exchange Box (Silver)",
+      "category": "Box",
+      "icon": "assets/use/2430015.png",
+      "iconKey": "2430015",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2845"
+    },
+    {
+      "id": "2846",
+      "name": "MapleStory Fest 2026 Special Hat Exchange Box (Gold)",
+      "category": "Box",
+      "icon": "assets/use/2430016.png",
+      "iconKey": "2430016",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2846"
+    },
+    {
+      "id": "2847",
+      "name": "Snail Package",
+      "category": "Box",
+      "icon": "assets/use/2430017.png",
+      "iconKey": "2430017",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2847"
+    },
+    {
+      "id": "2848",
+      "name": "Orange Mushroom Package",
+      "category": "Box",
+      "icon": "assets/use/2430018.png",
+      "iconKey": "2430018",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2848"
+    },
+    {
+      "id": "2849",
+      "name": "Zakum Package",
+      "category": "Box",
+      "icon": "assets/use/2430019.png",
+      "iconKey": "2430019",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2849"
+    },
+    {
+      "id": "2850",
+      "name": "Snail to Orange Mushroom Upgrade Package",
+      "category": "Box",
+      "icon": "assets/use/2430020.png",
+      "iconKey": "2430020",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2850"
+    },
+    {
+      "id": "2851",
+      "name": "Orange Mushroom to Zakum Upgrade Package",
+      "category": "Box",
+      "icon": "assets/use/2430021.png",
+      "iconKey": "2430021",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2851"
+    },
+    {
+      "id": "2852",
+      "name": "Snail to Zakum Upgrade Package",
+      "category": "Box",
+      "icon": "assets/use/2430022.png",
+      "iconKey": "2430022",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2852"
+    },
+    {
+      "id": "2853",
+      "name": "Well-Loved Avatar Set",
+      "category": "Box",
+      "icon": "assets/use/2430023.png",
+      "iconKey": "2430023",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2853"
+    },
+    {
+      "id": "2854",
+      "name": "Founder's Thief Avatar Set",
+      "category": "Box",
+      "icon": "assets/use/2430024.png",
+      "iconKey": "2430024",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2854"
+    },
+    {
+      "id": "2855",
+      "name": "Manji Avatar Set",
+      "category": "Box",
+      "icon": "assets/use/2430025.png",
+      "iconKey": "2430025",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2855"
+    },
+    {
+      "id": "2856",
+      "name": "Founder's Label Ring Exchange Coupon",
+      "category": "Box",
+      "icon": "assets/use/2430026.png",
+      "iconKey": "2430026",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2856"
+    },
+    {
+      "id": "2857",
+      "name": "Founder's Chat Ring Exchange Coupon",
+      "category": "Box",
+      "icon": "assets/use/2430027.png",
+      "iconKey": "2430027",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2857"
+    },
+    {
+      "id": "2858",
+      "name": "Frieren Outfit Set",
+      "category": "Box",
+      "icon": "assets/use/2430028.png",
+      "iconKey": "2430028",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2858"
+    },
+    {
+      "id": "2859",
+      "name": "Frieren Clothes Selector Coupon",
+      "category": "Box",
+      "icon": "assets/use/2430029.png",
+      "iconKey": "2430029",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2859"
+    },
+    {
+      "id": "2860",
+      "name": "Frieren Outfit Set (Ringlets)",
+      "category": "Box",
+      "icon": "assets/use/2430030.png",
+      "iconKey": "2430030",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2860"
+    },
+    {
+      "id": "2861",
+      "name": "Frieren Outfit Set (Sleep)",
+      "category": "Box",
+      "icon": "assets/use/2430031.png",
+      "iconKey": "2430031",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2861"
+    },
+    {
+      "id": "2862",
+      "name": "Fern Outfit Set",
+      "category": "Box",
+      "icon": "assets/use/2430032.png",
+      "iconKey": "2430032",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2862"
+    },
+    {
+      "id": "2863",
+      "name": "Fern's Clothes Selector Coupon",
+      "category": "Box",
+      "icon": "assets/use/2430033.png",
+      "iconKey": "2430033",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2863"
+    },
+    {
+      "id": "2864",
+      "name": "Stark Outfit Set",
+      "category": "Box",
+      "icon": "assets/use/2430034.png",
+      "iconKey": "2430034",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2864"
+    },
+    {
+      "id": "2865",
+      "name": "Stark's Clothes Selector Coupon",
+      "category": "Box",
+      "icon": "assets/use/2430035.png",
+      "iconKey": "2430035",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2865"
+    },
+    {
+      "id": "2866",
+      "name": "Stark's Shoes Selector Coupon",
+      "category": "Box",
+      "icon": "assets/use/2430036.png",
+      "iconKey": "2430036",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2866"
+    },
+    {
+      "id": "2867",
+      "name": "Stark's Gloves Selector Coupon",
+      "category": "Box",
+      "icon": "assets/use/2430037.png",
+      "iconKey": "2430037",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2867"
+    },
+    {
+      "id": "2868",
+      "name": "Himmel Outfit Set",
+      "category": "Box",
+      "icon": "assets/use/2430038.png",
+      "iconKey": "2430038",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2868"
+    },
+    {
+      "id": "2869",
+      "name": "Übel Outfit Set",
+      "category": "Box",
+      "icon": "assets/use/2430039.png",
+      "iconKey": "2430039",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2869"
+    },
+    {
+      "id": "2870",
+      "name": "Aura Outfit Set",
+      "category": "Box",
+      "icon": "assets/use/2430040.png",
+      "iconKey": "2430040",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2870"
+    },
+    {
+      "id": "2871",
+      "name": "Linie Outfit Set",
+      "category": "Box",
+      "icon": "assets/use/2430041.png",
+      "iconKey": "2430041",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2871"
+    },
+    {
+      "id": "2872",
+      "name": "Lügner Outfit Set",
+      "category": "Box",
+      "icon": "assets/use/2430042.png",
+      "iconKey": "2430042",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2872"
+    },
+    {
+      "id": "2873",
+      "name": "Atmospheric Effect Box",
+      "category": "Box",
+      "icon": "assets/use/2430043.png",
+      "iconKey": "2430043",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2873"
+    },
+    {
+      "id": "2874",
+      "name": "Aurora Stamp",
+      "category": "Use",
+      "icon": "assets/use/2430044.png",
+      "iconKey": "2430044",
+      "purchasePrice": null,
+      "vendorPrice": null,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2874"
+    },
+    {
+      "id": "2875",
+      "name": "Mystery Palette Exchange Coupon",
+      "category": "Box",
+      "icon": "assets/use/2430045.png",
+      "iconKey": "2430045",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2875"
+    },
+    {
+      "id": "2876",
+      "name": "Palette Cleanser Exchange Coupon",
+      "category": "Box",
+      "icon": "assets/use/2430046.png",
+      "iconKey": "2430046",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2876"
+    },
+    {
+      "id": "2877",
+      "name": "Adventurer's Journal",
+      "category": "Use",
+      "icon": "assets/use/2430047.png",
+      "iconKey": "2430047",
+      "purchasePrice": null,
+      "vendorPrice": null,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2877"
+    },
+    {
+      "id": "2878",
+      "name": "Adventurer's Journal - Page 2",
+      "category": "Use",
+      "icon": "assets/use/2430048.png",
+      "iconKey": "2430048",
+      "purchasePrice": null,
+      "vendorPrice": null,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2878"
+    },
+    {
+      "id": "2879",
+      "name": "Adventurer's Journal - Page 3",
+      "category": "Use",
+      "icon": "assets/use/2430049.png",
+      "iconKey": "2430049",
+      "purchasePrice": null,
+      "vendorPrice": null,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2879"
+    },
+    {
+      "id": "2880",
+      "name": "Adventurer's Journal - Page 4",
+      "category": "Use",
+      "icon": "assets/use/2430050.png",
+      "iconKey": "2430050",
+      "purchasePrice": null,
+      "vendorPrice": null,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2880"
+    },
+    {
+      "id": "2881",
+      "name": "Adventurer's Journal - Page 5",
+      "category": "Use",
+      "icon": "assets/use/2430051.png",
+      "iconKey": "2430051",
+      "purchasePrice": null,
+      "vendorPrice": null,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2881"
+    },
+    {
+      "id": "2882",
+      "name": "Adventurer's Journal - Page 6",
+      "category": "Use",
+      "icon": "assets/use/2430052.png",
+      "iconKey": "2430052",
+      "purchasePrice": null,
+      "vendorPrice": null,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2882"
+    },
+    {
+      "id": "2883",
+      "name": "Compensation Box",
+      "category": "Box",
+      "icon": "assets/use/2430053.png",
+      "iconKey": "2430053",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2883"
+    },
+    {
+      "id": "2884",
+      "name": "Compensation Box (Alt)",
+      "category": "Box",
+      "icon": "assets/use/2430054.png",
+      "iconKey": "2430054",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2884"
+    },
+    {
+      "id": "2885",
+      "name": "Compensation Box (Alt 2)",
+      "category": "Box",
+      "icon": "assets/use/2430055.png",
+      "iconKey": "2430055",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2885"
+    },
+    {
+      "id": "2886",
+      "name": "Compensation Box (Alt 3)",
+      "category": "Box",
+      "icon": "assets/use/2430056.png",
+      "iconKey": "2430056",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2886"
+    },
+    {
+      "id": "2887",
+      "name": "Compensation Box (Alt 4)",
+      "category": "Box",
+      "icon": "assets/use/2430057.png",
+      "iconKey": "2430057",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2887"
+    },
+    {
+      "id": "2888",
+      "name": "Gift Box",
+      "category": "Box",
+      "icon": "assets/use/2430058.png",
+      "iconKey": "2430058",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2888"
+    },
+    {
+      "id": "2889",
+      "name": "3x EXP Coupon (15 min)",
+      "category": "EXP Coupon",
+      "icon": "assets/use/2450002.png",
+      "iconKey": "2450002",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2889"
+    },
+    {
+      "id": "2890",
+      "name": "Frieren Hair Coupon",
+      "category": "Use",
+      "icon": "assets/use/2542000.png",
+      "iconKey": "2542000",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2890"
+    },
+    {
+      "id": "2891",
+      "name": "Frieren Hair (Ringlets) Coupon",
+      "category": "Use",
+      "icon": "assets/use/2542001.png",
+      "iconKey": "2542001",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2891"
+    },
+    {
+      "id": "2892",
+      "name": "Frieren Hair (Sleep) Coupon",
+      "category": "Use",
+      "icon": "assets/use/2542002.png",
+      "iconKey": "2542002",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2892"
+    },
+    {
+      "id": "2893",
+      "name": "Fern Hair Coupon",
+      "category": "Use",
+      "icon": "assets/use/2542003.png",
+      "iconKey": "2542003",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2893"
+    },
+    {
+      "id": "2894",
+      "name": "Stark Hair Coupon",
+      "category": "Use",
+      "icon": "assets/use/2542004.png",
+      "iconKey": "2542004",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2894"
+    },
+    {
+      "id": "2895",
+      "name": "Himmel Hair Coupon",
+      "category": "Use",
+      "icon": "assets/use/2542005.png",
+      "iconKey": "2542005",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2895"
+    },
+    {
+      "id": "2896",
+      "name": "Übel Hair Coupon",
+      "category": "Use",
+      "icon": "assets/use/2542006.png",
+      "iconKey": "2542006",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2896"
+    },
+    {
+      "id": "2897",
+      "name": "Frieren Face Coupon",
+      "category": "Use",
+      "icon": "assets/use/2897000.png",
+      "iconKey": "2897000",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2897"
+    },
+    {
+      "id": "2898",
+      "name": "Fern Face Coupon",
+      "category": "Use",
+      "icon": "assets/use/2897001.png",
+      "iconKey": "2897001",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2898"
+    },
+    {
+      "id": "2899",
+      "name": "Stark Face Coupon",
+      "category": "Use",
+      "icon": "assets/use/2897002.png",
+      "iconKey": "2897002",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2899"
+    },
+    {
+      "id": "2900",
+      "name": "Himmel Face Coupon",
+      "category": "Use",
+      "icon": "assets/use/2897003.png",
+      "iconKey": "2897003",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2900"
+    },
+    {
+      "id": "2901",
+      "name": "Übel Face Coupon",
+      "category": "Use",
+      "icon": "assets/use/2897004.png",
+      "iconKey": "2897004",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2901"
+    },
+    {
+      "id": "2902",
+      "name": "Aura Face Coupon",
+      "category": "Use",
+      "icon": "assets/use/2897005.png",
+      "iconKey": "2897005",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2902"
+    },
+    {
+      "id": "2903",
+      "name": "Linie Face Coupon",
+      "category": "Use",
+      "icon": "assets/use/2897006.png",
+      "iconKey": "2897006",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2903"
+    },
+    {
+      "id": "2904",
+      "name": "Lügner Face Coupon",
+      "category": "Use",
+      "icon": "assets/use/2897007.png",
+      "iconKey": "2897007",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/2904"
+    },
+    {
+      "id": "5427",
+      "name": "Lie Detector Test (Alt)",
+      "category": "Misc",
+      "icon": "assets/use/2190001.png",
+      "iconKey": "2190001",
+      "purchasePrice": null,
+      "vendorPrice": 0,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/5427"
+    },
+    {
+      "id": "5428",
+      "name": "Lemon (Alt)",
+      "category": "Food",
+      "icon": "assets/use/2010008.png",
+      "iconKey": "2010008",
+      "purchasePrice": null,
+      "vendorPrice": 15,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/5428"
+    },
+    {
+      "id": "5429",
+      "name": "Lie Detector Test (Alt 2)",
+      "category": "Use",
+      "icon": "assets/use/2190002.png",
+      "iconKey": "2190002",
+      "purchasePrice": 1000,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/5429"
+    },
+    {
+      "id": "5430",
+      "name": "Thief's Note",
+      "category": "Use",
+      "icon": "assets/use/2430059.png",
+      "iconKey": "2430059",
+      "purchasePrice": null,
+      "vendorPrice": null,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/5430"
+    },
+    {
+      "id": "5431",
+      "name": "MapleStory Community VIP Exchange Gift Box",
+      "category": "Box",
+      "icon": "assets/use/2430060.png",
+      "iconKey": "2430060",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/5431"
+    },
+    {
+      "id": "5432",
+      "name": "MapleStory Fest 2026 Surprise Gift Box",
+      "category": "Box",
+      "icon": "assets/use/2430061.png",
+      "iconKey": "2430061",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/5432"
+    },
+    {
+      "id": "5433",
+      "name": "Avatar Gift Box",
+      "category": "Box",
+      "icon": "assets/use/2430062.png",
+      "iconKey": "2430062",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/5433"
+    },
+    {
+      "id": "5434",
+      "name": "MapleStory Community VIP Label Ring Exchange Coupon",
+      "category": "Box",
+      "icon": "assets/use/2430063.png",
+      "iconKey": "2430063",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/5434"
+    },
+    {
+      "id": "5435",
+      "name": "MapleStory Community VIP Chat Ring Exchange Coupon",
+      "category": "Box",
+      "icon": "assets/use/2430064.png",
+      "iconKey": "2430064",
+      "purchasePrice": null,
+      "vendorPrice": 1,
+      "sourceUrl": "https://meowdb.com/msclassic/item-db/5435"
+    }
+  ]
+}
