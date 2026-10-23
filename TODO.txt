@@ -57,3 +57,5 @@ Verification details and device/file-picker limits: VERIFICATION.txt.
 
 [done] Generic Use slots and local icon similarity suggestions, shortcut grid detection, quantity OCR per slot, all-item cost calculation and migration of active two-supply sessions.
 [follow-up] Validate additional real-game buff-item/HUD screenshots; the current detector is best effort and always allows manual regions/item search.
+
+[done] Change main EXP/net mesos graphs to confirmed interval rates, retaining cumulative headline/final calculations.

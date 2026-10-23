@@ -79,3 +79,5 @@ Readable form/OCR text; compact live view with stats above graphs; independent H
 Supply corrections: editable potion dropdowns in calibration/ending screenshot review plus Supplies & prices controls during training/final review. Reprice the current recording, preserve quantities/timestamps, retain custom prices and remember corrected items next time.
 
 Generic Use slots: up to 12 unique consumables with searchable local icons, automatic shortcut-grid/icon suggestions, selectable counter regions/readers, per-item costs, restocks, drain/runway, JSON/history support and legacy compatibility. 407 local MeowDB Use entries; unknown purchase prices require review.
+
+Main live graphs show confirmed snapshot-to-snapshot hourly rates, independent of the session-average headline cards. EXP and financial endpoints advance independently through unreadable balances/counts; gaps stay explicit and tooltips show active interval bounds.

@@ -1,12 +1,29 @@
 (function(root,factory){const api=factory(typeof module==='object'?require('./core.js'):root.MapleMath,typeof module==='object'?require('./auto-progress.js'):root.MapleAutoProgress);root.MapleLiveModel=api;if(typeof module==='object')module.exports=api;})(typeof window==='object'?window:globalThis,function(M,A){
   'use strict';
   function points(state){const unique=new Map();for(const p of [...(state.checkpoints||[]),...(state.autoPoints||[])])if(!p.preview)unique.set(p.elapsedMs,p);return [...unique.values()].sort((a,b)=>a.elapsedMs-b.elapsedMs);}
+  function intervalRows(start,confirmed){
+    const rows=[{to:0,expHour:0,netHour:0}];
+    let expAnchor={value:0,ms:0},netAnchor={value:0,ms:0};
+    for(const point of confirmed){
+      const s=A.stats(start,point),to=point.elapsedMs;
+      if(to<=expAnchor.ms)continue;
+      const rate=(gain,from)=>s.rateReady?gain*3600000/(to-from):0;
+      rows.push({to,expFrom:expAnchor.ms,netFrom:netAnchor.ms,
+        expHour:rate(s.exp-expAnchor.value,expAnchor.ms),
+        netHour:s.net===null?null:rate(s.net-netAnchor.value,netAnchor.ms)});
+      expAnchor={value:s.exp,ms:to};
+      // Missing financial readings leave a graph gap. The next readable one
+      // measures the actual active interval since the last valid net reading.
+      if(s.net!==null)netAnchor={value:s.net,ms:to};
+    }
+    return rows;
+  }
   function project(state,{preview=null,lastSample=null,now=Date.now()}={}){
     const confirmed=points(state),all=[...confirmed];if(preview&&preview.elapsedMs>(all.at(-1)?.elapsedMs||0))all.push(preview);
     const point=all.at(-1),stats=point?A.stats(state.start,point):null;
     const rows=[{to:0,expHour:0,netHour:0},...all.map(p=>{const s=A.stats(state.start,p);return {to:p.elapsedMs,expHour:s.expHour,netHour:s.netHour,preview:!!p.preview};})];
     if(lastSample&&!lastSample.mesosReadable&&lastSample.elapsedMs>(rows.at(-1)?.to||0))rows.push({to:lastSample.elapsedMs,expHour:null,netHour:null});
-    return {point,stats,rows,confirmed,activeMs:state.start?M.activeElapsed(state,now):0};
+    return {point,stats,rows,intervalRows:intervalRows(state.start,confirmed),confirmed,activeMs:state.start?M.activeElapsed(state,now):0};
   }
   // Explicit allowlist: neither the running session nor its raw values leave
   // this boundary. Calling without preview gives confirmed-only stream data.
@@ -47,5 +64,5 @@
     const series=rows.filter(row=>row.to>0).slice(-240).map(row=>({ms:row.to,exp:row.expHour,mesos:row.netHour}));
     return {version:1,session:String(state.id),phase,activeMs:view.activeMs,sampleAt,captureAt:lastSample?.usable?lastSample.at:p?.at??state.startedAt,rateReady,expHour,netHour,expTotal,netTotal,series:[{ms:0,exp:0,mesos:0},...series]};
   }
-  return {points,project,snapshot,baseline};
+  return {points,intervalRows,project,snapshot,baseline};
 });

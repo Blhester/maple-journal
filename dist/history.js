@@ -20,16 +20,16 @@
   }
   function emptyChart(container,message){container.replaceChildren(text('p',message,'chart-empty'));}
   function lineChart(container,rows,metric,{live=false}={}){
-    const points=rows.map(r=>({x:r.to/60000,y:Number.isFinite(r[metric])?r[metric]:null,preview:!!r.preview})),values=points.filter(p=>p.y!==null);
+    const points=rows.map(r=>({x:r.to/60000,y:Number.isFinite(r[metric])?r[metric]:null,preview:!!r.preview,from:r[metric==='expHour'?'expFrom':'netFrom']??r.from})),values=points.filter(p=>p.y!==null);
     if(!values.length){emptyChart(container,live?(metric==='expHour'?'Your first usable capture starts the EXP graph.':'Mesos N/A. Keep your inventory balance visible for a readable capture.'):'Your pace chart appears after the first checkpoint or completed run.');return;}
     const ys=values.map(p=>p.y),min=Math.min(0,...ys),max=Math.max(0,...ys),pad=Math.max(1,(max-min)*.12);
-    const {svg,X,Y}=baseChart(container,(live?'Session average ':'Interval ')+(metric==='expHour'?'EXP':'net mesos')+' per hour','Active minutes',metric==='expHour'?'EXP / hour':'Net mesos / hour',0,Math.max(...points.map(p=>p.x)),min-pad,max+pad,{live});
+    const {svg,X,Y}=baseChart(container,'Interval '+(metric==='expHour'?'EXP':'net mesos')+' per hour','Active minutes',metric==='expHour'?'EXP / hour':'Net mesos / hour',0,Math.max(...points.map(p=>p.x)),min-pad,max+pad,{live});
     let segment=[];function draw(){if(segment.length>1)svg.append(svgElement('polyline',{points:segment.map(p=>X(p.x)+','+Y(p.y)).join(' '),class:'trend-line',fill:'none'}));segment=[];}
     for(const [i,p]of points.entries()){
       if(p.y===null){draw();continue;}
       if(p.preview){draw();const previous=points[i-1];if(previous?.y!==null&&previous)svg.append(svgElement('line',{x1:X(previous.x),y1:Y(previous.y),x2:X(p.x),y2:Y(p.y),class:'trend-line live-preview-line'}));}
       else segment.push(p);
-      const dot=svgElement('circle',{cx:X(p.x),cy:Y(p.y),r:5,class:'trend-dot'+(p.preview?' live-preview-dot':'')});dot.append(svgElement('title',{},fmt(p.y)+' per hour at '+fmt(p.x)+' active minutes'+(p.preview?' · pending validation':'')));svg.append(dot);
+      const dot=svgElement('circle',{cx:X(p.x),cy:Y(p.y),r:5,class:'trend-dot'+(p.preview?' live-preview-dot':'')});dot.append(svgElement('title',{},fmt(p.y)+' per hour'+(Number.isFinite(p.from)?' · '+fmt(p.from/60000)+'–'+fmt(p.x)+' active minutes':' at '+fmt(p.x)+' active minutes')+(p.preview?' · pending validation':'')));svg.append(dot);
     }draw();
   }
   function filtered(){
