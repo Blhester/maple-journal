@@ -1,0 +1,7 @@
+'use strict';
+const assert=require('node:assert/strict'),C=require('./dist/ocr-core.js'),harness=require('./test-screenshot-transfer.cjs');
+const expected={x:.848,y:.549,w:.1027,h:.0148},old={x:1608/1919,y:597/1079,w:197/1919,h:16/1079};
+assert.deepEqual(C.defaults.mesos,expected);assert.deepEqual(C.migrateMesosRegion(old),expected);assert.deepEqual(C.migrateMesosRegion(Object.fromEntries(Object.entries(old).map(([k,v])=>[k,Math.round(v*10000)/10000]))),expected);
+for(const key of ['maple-journal-ocr-regions-v1','maple-journal-ocr-regions-v2']){const saved={...structuredClone(C.defaults),mesos:old,hp:{x:.1,y:.2,w:.1,h:.1}},tuning=JSON.stringify({mesos:{reader:'general',mode:'dark',contrast:1.2}}),storage=new Map([[key,JSON.stringify(saved)],['maple-journal-ocr-tuning-v1',tuning]]),h=harness(storage);assert.deepEqual(h.screenshot.slotRegion('mesos'),expected);assert.deepEqual(JSON.parse(storage.get('maple-journal-ocr-regions-v2')).mesos,expected);assert.deepEqual(h.screenshot.slotRegion('hp'),saved.hp);assert.equal(storage.get('maple-journal-ocr-tuning-v1'),tuning);}
+const custom={x:.75,y:.5,w:.1,h:.02},storage=new Map([['maple-journal-ocr-regions-v2',JSON.stringify({...C.defaults,mesos:custom})]]),h=harness(storage);assert.deepEqual(h.screenshot.slotRegion('mesos'),custom);assert.deepEqual(harness().screenshot.slotRegion('mesos'),expected);
+console.log('Passed: exact requested mesos default, fresh browser, former-default migration in v1/v2 storage, rounded old controls, custom crop preservation, and unchanged other crops/color settings.');

@@ -82,6 +82,7 @@ for(const item of catalogEtc.items){assert(Number.isSafeInteger(item.vendorPrice
 console.log('Passed: ETC quantity valuation, sale status, profit rates, zero prices, invalid inputs, snapshot preservation, JSON restore/upsert, and local catalog assets.');
 
 require('./test-ocr.cjs');
+require('./test-mesos-region.cjs');
 require('./test-potions.cjs');
 require('./test-use-slots.cjs');
 require('./test-use-transfer.cjs');

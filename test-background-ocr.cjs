@@ -17,7 +17,7 @@ function fixture({deferDecode=false,deferText=false,tight=false,oldExp=false,unr
       const element=new Element(tag);if(tag!=='canvas')return element;
       trace.canvases.push(element);let sourceX=null,sourceY=null;
       element.getContext=()=>({drawImage:(_image,x,y)=>{sourceX=x;sourceY=y;},fillRect(){},putImageData(){},getImageData:(_x,_y,width,height)=>{
-        if(sourceX===1608&&width===197&&height===16)return {width,height,data:new Uint8ClampedArray(width*height*4).fill(255)};
+        if(sourceX===Math.round(require('./dist/ocr-core.js').defaults.mesos.x*1919)&&width===197&&height===16)return {width,height,data:new Uint8ClampedArray(width*height*4).fill(255)};
         if(unreadableHp&&sourceX>=1410&&sourceX<1460)return {width,height,data:new Uint8ClampedArray(width*height*4)};
         if(sourceX>=1410&&sourceX<1480){const data=new Uint8ClampedArray(width*height*4);for(let row=0;row<height;row++)data.set(screenshot.data.subarray(((sourceY+row)*screenshot.width+sourceX)*4,((sourceY+row)*screenshot.width+sourceX+width)*4),row*width*4);return {width,height,data};}
         if(sourceX>=1040&&sourceX<1115){const data=new Uint8ClampedArray(width*height*4);for(let row=0;row<height;row++)data.set(screenshot.data.subarray(((sourceY+row)*screenshot.width+sourceX)*4,((sourceY+row)*screenshot.width+sourceX+width)*4),row*width*4);return {width,height,data};}

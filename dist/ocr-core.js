@@ -5,6 +5,14 @@
   // Normalized regions from the capture guide. Users can redraw each region for their HUD.
   const pixels={map:[67,36,235,49],class:[511,1031,182,27],level:[457,1044,41,22],exp:[1047,1037,134,17],mesos:[1608,597,197,16],hp:[1417,958,47,18],mp:[1467,958,47,18]};
   const defaults=Object.fromEntries(Object.entries(pixels).map(([id,[x,y,w,h]])=>[id,{x:x/1919,y:y/1079,w:w/1919,h:h/1079}]));
+  const legacyMesosRegion={...defaults.mesos};
+  defaults.mesos={x:.848,y:.549,w:.1027,h:.0148};
+  function migrateMesosRegion(value){
+    const r=region(value);
+    // Replace only the former default, including values rounded by the region
+    // controls. Keep custom HUD layouts and all reader/color settings intact.
+    return ['x','y','w','h'].every(k=>Math.abs(r[k]-legacyMesosRegion[k])<.000051)?{...defaults.mesos}:r;
+  }
   function region(value){
     if(!value||!['x','y','w','h'].every(key=>Number.isFinite(value[key])))throw new Error('Invalid read region.');
     const {x,y,w,h}=value;
@@ -136,6 +144,6 @@
     return pale/(data.length/4)>=.6;
   }
   const scaleFor=(width,height,preferred)=>Math.min(preferred,Math.sqrt(2000000/(width*height)),6000/width,6000/height);
-  root.MapleOcrCore={slotCountRegion,fields,defaults,region,digitRegion,parse,select,parsePercent,selectPercent,percentExp,convertPercent,migrateExpRegion,migrateLevelTuning,readerFor,tuning,processPixels,inventoryVisible,scaleFor};
+  root.MapleOcrCore={migrateMesosRegion,slotCountRegion,fields,defaults,region,digitRegion,parse,select,parsePercent,selectPercent,percentExp,convertPercent,migrateExpRegion,migrateLevelTuning,readerFor,tuning,processPixels,inventoryVisible,scaleFor};
   if(typeof module!=='undefined')module.exports=root.MapleOcrCore;
 })(typeof window!=='undefined'?window:globalThis);
