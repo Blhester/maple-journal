@@ -124,3 +124,9 @@ tbody td{font-size:16px}.totals span{font-size:12px}.insight-grid strong{font-si
 #screenshot-dialog:has(#ocr-review-form[hidden]) #ocr-apply{display:none}
 #use-review .use-region-canvas{display:block}
 #use-review .use-slot-card{background:var(--use-panel,#fffef9)}
+
+#use-review .use-slot-grid{grid-template-columns:1fr} #use-review{margin:16px 0} #use-region-tools{margin-top:14px}
+
+.use-detected-summary{display:flex;align-items:center;gap:10px;cursor:pointer}.use-detected-summary strong{flex:1}.use-detected-summary span{white-space:nowrap;font-variant-numeric:tabular-nums}.use-detected-summary::after{content:"⌄"}.use-slot-card[open]>.use-detected-summary{margin-bottom:16px}
+
+#use-review .use-slot-grid{gap:10px}#use-review .use-slot-card:not([open]){padding:10px 14px}

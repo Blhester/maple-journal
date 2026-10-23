@@ -85,6 +85,7 @@ require('./test-ocr.cjs');
 require('./test-potions.cjs');
 require('./test-use-slots.cjs');
 require('./test-use-transfer.cjs');
+require('node:child_process').execFileSync(process.execPath,['test-use-detection.cjs'],{stdio:'inherit'});
 
 require('./test-quantity.cjs');
 require('./test-exp-reader.cjs');

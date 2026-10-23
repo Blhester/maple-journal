@@ -201,7 +201,7 @@
         const level=results.level?.value??(!background?(selectedOnly&&$('ocr-use-level')?.checked?$('ocr-value-level').value:options.getContext().level):null);
         results[field.id]=field.id==='exp'?C.convertPercent(C.selectPercent(reads),level):field.id==='map'?MapleMapMatcher.select(reads):C.select(field.id,reads);
       }
-    if(!selectedOnly&&window.MapleUseSlots?.ready()){const rows=await MapleUseSlots.read(image,readUseQuantity,{match:!background});if(token!==run)return;results.uses=rows;}
+    if(!selectedOnly&&window.MapleUseSlots?.ready()){const rows=await MapleUseSlots.read(image,readUseQuantity,{match:!background,isCurrent:()=>token===run,onStatus:value=>{$('ocr-progress-text').textContent=value;}});if(token!==run)return;results.uses=rows;}
     return results;
   }
   async function read(selectedOnly=false){
@@ -211,7 +211,6 @@
       if(token!==run)return;showReview(results,selectedOnly);$('ocr-progress-text').textContent='Reading complete. Review every value before applying.';if(selectedOnly)$('ocr-field-status').textContent=fields[0].label+' updated below. Other reviewed values were kept.';
     }catch(e){if(token===run){restoreReview();error('ocr-error','Screenshot reading could not finish. '+e.message+' You can continue with manual entry.');}}
     finally{if(token===run){if(worker)await worker.terminate();worker=null;releaseReadCanvases();for(const url of workerUrls)URL.revokeObjectURL(url);workerUrls=[];setBusy(false);}}
-    if(token===run&&!selectedOnly&&context.stage==='setup'&&$('screenshot-dialog').open&&window.MapleUseSlots?.ready())await MapleUseSlots.detect();
   }
   function syncExpEstimate(){
     const input=$('ocr-value-exp');if(!input?.dataset.percent)return;
