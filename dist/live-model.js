@@ -1,16 +1,43 @@
 (function(root,factory){const api=factory(typeof module==='object'?require('./core.js'):root.MapleMath,typeof module==='object'?require('./auto-progress.js'):root.MapleAutoProgress);root.MapleLiveModel=api;if(typeof module==='object')module.exports=api;})(typeof window==='object'?window:globalThis,function(M,A){
   'use strict';
   function points(state){const unique=new Map();for(const p of [...(state.checkpoints||[]),...(state.autoPoints||[])])if(!p.preview)unique.set(p.elapsedMs,p);return [...unique.values()].sort((a,b)=>a.elapsedMs-b.elapsedMs);}
-  function intervalRows(start,confirmed){
+  // Forecast only the live display. Raw checkpoints and the confirmed stream
+  // feed retain their nulls; forecasts never become the next rate anchor.
+  function financialProjection(start){
+    const anchors=new Map();
+    function component(key,label,value,ms,learn,missing,limit=Infinity){
+      const prior=anchors.get(key)||{value:0,ms:0,rate:null};
+      if(value!==null&&Number.isFinite(value)){
+        if(learn){const span=ms-prior.ms,rate=ms>=60000&&span>=1000?(value-prior.value)/span:prior.rate;anchors.set(key,{value,ms,rate:key==='mesos'?rate:rate===null?null:Math.max(0,rate)});}
+        return value;
+      }
+      missing.push({key,label,mode:prior.rate===null?'held':'rate',ageMs:ms-prior.ms});
+      return Math.min(limit,Math.max(key==='mesos'?-start.mesos:0,prior.value+(prior.rate??0)*Math.max(0,ms-prior.ms)));
+    }
+    return function(point,observed,{learn=true}={}){
+      const ms=point.elapsedMs,missing=[],e=point.end;
+      const gain=component('mesos','meso balance',e.mesos===null?null:e.mesos-start.mesos,ms,learn,missing);
+      let cost=0;
+      if(start.uses!==undefined){for(const row of observed.uses){const available=start.uses.find(s=>s.id===row.id).quantity+row.added,used=component('use:'+row.id,row.name,row.used,ms,learn,missing,available);cost+=Math.min(available,Math.max(0,used))*row.cost;}}
+      else for(const key of ['hp','mp'])cost+=component(key,key.toUpperCase()+' supply',observed[key+'Used'],ms,learn,missing,start[key]+(e[key+'Added']||0))*start[key+'Cost'];
+      const etc=component('etc','ETC drops',observed.etcValue,ms,learn,missing),net=gain-cost+etc;
+      const amount=value=>Number.isFinite(value)&&Math.abs(value)<=Number.MAX_SAFE_INTEGER,safe=[gain,cost,etc,net].every(amount);
+      return {...observed,supplyCost:amount(cost)?cost:null,cashNet:amount(gain-cost)?gain-cost:null,etcValue:amount(etc)?etc:null,net:safe?net:null,netHour:safe?(observed.rateReady?net*3600000/ms:0):null,estimated:missing.length>0,estimatedComponents:missing};
+    };
+  }
+  function financeRows(start,confirmed){const project=financialProjection(start);return confirmed.map(point=>{const observed=A.stats(start,point);return {point,observed,live:project(point,observed)};});}
+  function intervalRows(start,confirmed,{estimate=false,financial=null}={}){
     const rows=[{to:0,expHour:0,netHour:0}];
-    let expAnchor={value:0,ms:0},netAnchor={value:0,ms:0};
-    for(const point of confirmed){
-      const s=A.stats(start,point),to=point.elapsedMs;
+    let expAnchor={value:0,ms:0},netAnchor={value:0,ms:0},plotAnchor={value:0,ms:0};
+    const projected=estimate?(financial||financeRows(start,confirmed)):null;
+    for(const [i,point]of confirmed.entries()){
+      const s=financial?.[i]?.observed||A.stats(start,point),to=point.elapsedMs,live=projected?.[i]?.live,estimated=!!live?.estimated,net=s.net??live?.net??null,from=estimated?plotAnchor:netAnchor;
       if(to<=expAnchor.ms)continue;
       const rate=(gain,from)=>s.rateReady?gain*3600000/(to-from):0;
-      rows.push({to,expFrom:expAnchor.ms,netFrom:netAnchor.ms,
+      rows.push({to,expFrom:expAnchor.ms,netFrom:from.ms,
         expHour:rate(s.exp-expAnchor.value,expAnchor.ms),
-        netHour:s.net===null?null:rate(s.net-netAnchor.value,netAnchor.ms)});
+        netHour:net===null?null:rate(net-from.value,from.ms),...(estimated?{netEstimated:true}: {})});
+      if(net!==null)plotAnchor={value:net,ms:to};
       expAnchor={value:s.exp,ms:to};
       // Missing financial readings leave a graph gap. The next readable one
       // measures the actual active interval since the last valid net reading.
@@ -20,10 +47,13 @@
   }
   function project(state,{preview=null,lastSample=null,now=Date.now()}={}){
     const confirmed=points(state),all=[...confirmed];if(preview&&preview.elapsedMs>(all.at(-1)?.elapsedMs||0))all.push(preview);
-    const point=all.at(-1),stats=point?A.stats(state.start,point):null;
-    const rows=[{to:0,expHour:0,netHour:0},...all.map(p=>{const s=A.stats(state.start,p);return {to:p.elapsedMs,expHour:s.expHour,netHour:s.netHour,preview:!!p.preview};})];
+    const point=all.at(-1);
+    const forecast=financialProjection(state.start),financial=confirmed.map(point=>{const observed=A.stats(state.start,point);return {point,observed,live:forecast(point,observed)};});
+    const stats=point?(point.preview?A.stats(state.start,point):financial.at(-1)?.observed):null;
+    const liveStats=point?(point.preview?forecast(point,stats,{learn:false}):financial.at(-1)?.live):null;
+    const rows=[{to:0,expHour:0,netHour:0},...all.map((p,i)=>{const s=financial[i]?.observed||stats;return {to:p.elapsedMs,expHour:s.expHour,netHour:s.netHour,preview:!!p.preview};})];
     if(lastSample&&!lastSample.mesosReadable&&lastSample.elapsedMs>(rows.at(-1)?.to||0))rows.push({to:lastSample.elapsedMs,expHour:null,netHour:null});
-    return {point,stats,rows,intervalRows:intervalRows(state.start,confirmed),confirmed,activeMs:state.start?M.activeElapsed(state,now):0};
+    return {point,stats,liveStats,rows,intervalRows:intervalRows(state.start,confirmed,{financial}),liveIntervalRows:intervalRows(state.start,confirmed,{estimate:true,financial}),confirmed,activeMs:state.start?M.activeElapsed(state,now):0};
   }
   // Explicit allowlist: neither the running session nor its raw values leave
   // this boundary. Calling without preview gives confirmed-only stream data.

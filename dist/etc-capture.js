@@ -57,6 +57,6 @@
   function starting(){const cfg=config();if(!cfg?.enabled)return undefined;if(!cfg.validated)throw Error('Read and apply an ETC screenshot to validate the starting inventory.');return M.cleanEtc(cfg);}
   function paintResult(result){const host=$('etc-track-result');host.replaceChildren();host.hidden=!result.etcDrops?.length;if(host.hidden)return;host.append(el('h3','Automatically tracked ETC drops'));for(const row of result.etcDrops){const line=el('p');line.append(icon(row.itemId),document.createTextNode(row.label+' · '+row.quantity+' drops × '+row.unitPrice+' = '+row.value.toLocaleString()+' mesos'));host.append(line);}}
   function ending(prefix='end'){const c=config(),draft=prefix==='cp'?state().etcCheckpoint:state().etcEnd;return c?.enabled?M.cleanEtcItems((draft||MapleLiveModel.points(state()).at(-1)?.end.etc||c.baseline).filter(r=>!c.excluded.includes(r.itemId))):undefined;}
-  function paint(stats){if(!options)return;$('live-etc-value').textContent=config()?.enabled?(stats?.etcValue===null?'N/A':Number(stats?.etcValue||0).toLocaleString()+' mesos'):'Off';}
+  function paint(stats){if(!options)return;$('live-etc-value').textContent=config()?.enabled?(stats?.etcValue===null?'N/A':(stats?.estimatedComponents?.some(r=>r.key==='etc')?'≈ ':'')+Number(stats?.etcValue||0).toLocaleString(undefined,{maximumFractionDigits:2})+' mesos'):'Off';}
   window.MapleEtcCapture={preferences,paintResult,init,read,mount,reviewed,apply,starting,ending,render,paint,enabled,region};
 })();

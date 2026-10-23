@@ -9,7 +9,7 @@
       if(start.uses!==undefined&&['hp','mp'].includes(key)){end[key]=0;continue;}
       const r=read.results[key],readable=readableResult(r);
       // An unreadable supply must not discard good EXP. Keep unknowns explicit;
-      // net profit is unavailable until both potion costs can be calculated.
+      // raw net stays unknown. The separate live projection can estimate the gap.
       if(['mesos','hp','mp'].includes(key)){try{end[key]=readable&&(key!=='mesos'||read.inventoryVisible!==false)?M.integer(r.value,key):null;}catch{end[key]=null;}continue;}
       if(!readable)throw new Error('Uncertain '+key+' reading; sample skipped.');
       end[key]=M.integer(r.value,key);
@@ -67,7 +67,7 @@
       pending=point;
       const preview={...point,end:{...point.end,mesos:point.end.mesos!==null&&point.end.mesos>=mesoBase.end.mesos?point.end.mesos:null},preview:true};
       const missing=start.uses!==undefined?point.end.uses.filter(r=>r.quantity===null).map(r=>start.uses.find(s=>s.id===r.id)?.name||r.id):['hp','mp'].filter(k=>point.end[k]===null);
-      return {preview,accepted,rejected,pending,held:0,message:(accepted.length?'Progress confirmed. Latest sample is waiting for the next reading.':'Sample waiting for the next reading. No value was guessed or filled in.')+(missing.length?' EXP continues; '+missing.map(k=>k.toUpperCase()).join('/')+' unreadable. Supply cost and net mesos are N/A.':'')};
+      return {preview,accepted,rejected,pending,held:0,message:(accepted.length?'Progress confirmed. Latest sample is waiting for the next reading.':'Sample waiting for the next reading. No value was guessed or filled in.')+(missing.length?' EXP continues; '+missing.map(k=>k.toUpperCase()).join('/')+' unreadable. Live financial estimates use the last validated rate or value; raw counts stay unknown.':'')};
     }
     function rebase(point){base=point;etcBase=Array.isArray(point.end.etc)?point.end.etc:start.etc?.baseline;supplyBase={hp:point.end.hp,mp:point.end.mp};pending=null;held=[];rates=[];lastTime=point.elapsedMs;mesoBase=point;mesoRates=[];for(const slot of start.uses||[])supplyBase['use:'+slot.id]=point.end.uses?.find(r=>r.id===slot.id)?.quantity??slot.quantity;}
     return {offer,rebase};
