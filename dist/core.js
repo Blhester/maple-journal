@@ -101,6 +101,20 @@
     const details=slots.map((slot,i)=>{const row=rows[i],used=row.quantity===null?null:slot.quantity+row.added-row.quantity,cost=used===null?null:used*slot.cost;if(cost!==null&&!Number.isSafeInteger(cost))throw new Error('Use costs are too large.');return {...slot,...row,used,totalCost:cost,perMinute:used===null?null:used*60000/ms,runwayMs:row.quantity===null?null:row.quantity===0?0:used>0?row.quantity*ms/used:null};});
     const cost=details.some(r=>r.totalCost===null)?null:details.reduce((n,r)=>n+r.totalCost,0);if(cost!==null&&!Number.isSafeInteger(cost))throw new Error('Use costs are too large.');return {details,cost};
   }
+  function cleanEtcItems(items){
+    if(!Array.isArray(items)||items.length>30)throw Error('ETC tracking supports 30 visible item types.');const ids=new Set();return items.map(r=>{const itemId=String(r.itemId);if(!/^\d{1,10}$/.test(itemId)||ids.has(itemId))throw Error('Invalid or duplicate ETC item.');ids.add(itemId);return {itemId,name:String(r.name||'ETC item').slice(0,100),quantity:integer(r.quantity,'ETC count'),unitPrice:integer(r.unitPrice,'ETC vendor price')};});
+  }
+  function cleanEtc(config){
+    if(!config?.enabled)return undefined;const r=config.region;if(!r||!['x','y','w','h'].every(k=>Number.isFinite(r[k]))||r.x<0||r.y<0||r.w<=0||r.h<=0||r.x+r.w>1||r.y+r.h>1)throw Error('Invalid ETC inventory region.');
+    if(!Array.isArray(config.excluded)||config.excluded.length>331||config.excluded.some(id=>!/^\d{1,10}$/.test(id)))throw Error('Invalid ETC exclusions.');
+    const ignoredCells=config.ignoredCells||[];if(!Array.isArray(ignoredCells)||ignoredCells.length>30||ignoredCells.some(i=>!Number.isInteger(i)||i<0||i>=30))throw Error('Invalid ETC ignored cells.');return {enabled:true,ignoredCells:[...new Set(ignoredCells)],region:{x:r.x,y:r.y,w:r.w,h:r.h},baseline:cleanEtcItems(config.baseline),excluded:[...new Set(config.excluded)]};
+  }
+  function etcLoot(start,end){
+    const config=cleanEtc(start.etc);if(!config)return [];
+    if(!end.etc)return null;const rows=cleanEtcItems(end.etc),old=new Map(config.baseline.map(r=>[r.itemId,r])),now=new Map(rows.map(r=>[r.itemId,r])),excluded=new Set(config.excluded);
+    for(const r of config.baseline)if(!excluded.has(r.itemId)&&(!now.has(r.itemId)||now.get(r.itemId).quantity<r.quantity))return null;
+    return rows.filter(r=>!excluded.has(r.itemId)).map(r=>{const initial=old.get(r.itemId),quantity=r.quantity-(initial?.quantity||0),unitPrice=initial?.unitPrice??r.unitPrice;if(quantity<0)return null;const value=quantity*unitPrice;if(!Number.isSafeInteger(value))throw Error('ETC value is too large.');return {source:'etc',itemId:r.itemId,label:initial?.name||r.name,quantity,unitPrice,value,kind:'loot'};}).filter(r=>r&&r.quantity>0);
+  }
   function calculate(start, end, durationMs) {
     if (!Number.isFinite(durationMs) || durationMs <= 0) throw new Error('The session needs a positive elapsed time.');
     const values = {};
@@ -126,10 +140,10 @@
     const per = ms => ({exp: exp * ms / durationMs, mesos: net * ms / durationMs});
     const rates = {hour:per(3600000),ten:per(600000),minute:per(60000)};
     if (!Object.values(rates).every(r => Number.isFinite(r.exp) && Number.isFinite(r.mesos))) throw new Error('Rates could not be calculated. Check your elapsed time.');
-    const ledger=ledgerTotals(end.ledger||[]);
+    const drops=etcLoot(start,end);if(drops===null)throw Error('Review the ending ETC counts or turn off ETC tracking for this run.');const manual=end.ledger||[];if(drops.some(r=>manual.some(e=>e.source==='etc'&&String(e.itemId)===r.itemId)))throw Error('An automatically tracked ETC item is also in the manual loot list. Remove one to avoid double-counting.');const ledger=ledgerTotals([...manual,...drops]);
     const adjustedNet=net+ledger.income-ledger.expense,estimatedNet=adjustedNet+ledger.loot;
     if(![adjustedNet,estimatedNet].every(Number.isSafeInteger))throw new Error('Adjusted totals are too large.');
-    return {hpUsed,mpUsed,hpCost,mpCost,gross,net,exp,durationMs,rates,ledger,adjustedNet,estimatedNet,supplyCost,uses:uses?.details,
+    return {hpUsed,mpUsed,hpCost,mpCost,gross,net,exp,durationMs,rates,ledger,adjustedNet,estimatedNet,supplyCost,uses:uses?.details,etcDrops:drops,
       hpPerMinute:hpUsed*60000/durationMs,mpPerMinute:mpUsed*60000/durationMs,
       supplyCostPerHour:supplyCost*3600000/durationMs,
       supplyShare:gross>0?supplyCost*100/gross:null,
@@ -150,7 +164,7 @@
     let previous={exp:0,net:0,time:0};const rows=[];
     for(const point of points){
       if(!Number.isFinite(point.elapsedMs)||point.elapsedMs<=previous.time)throw new Error('Checkpoint times must increase.');
-      const total=calculate(start,point.end,point.elapsedMs),span=point.elapsedMs-previous.time;
+      const total=calculate(start,point.end,point.elapsedMs);if(start.etc?.enabled)total.net=total.estimatedNet;const span=point.elapsedMs-previous.time;
       rows.push({from:previous.time,to:point.elapsedMs,exp:total.exp-previous.exp,net:total.net-previous.net,expHour:(total.exp-previous.exp)*3600000/span,netHour:(total.net-previous.net)*3600000/span,final:!!point.final});
       previous={exp:total.exp,net:total.net,time:point.elapsedMs};
     }
@@ -171,12 +185,12 @@
     if(!Array.isArray(points)||points.length>5000)throw new Error('Invalid automatic progress list.');let previous=0;
     return points.map(point=>{
       const elapsedMs=integer(point.elapsedMs,'Progress time'),e=point.end;if(elapsedMs<=previous||elapsedMs>maxTime||!e)throw new Error('Invalid automatic progress timing.');previous=elapsedMs;
-      const end={mesos:e.mesos===null?null:integer(e.mesos,'Progress mesos'),level:levelNumber(e.level),extraExp:0,ledger:[]};
+      const end={...(start.etc?{etc:e.etc===null||e.etc===undefined?null:cleanEtcItems(e.etc)}:{}),mesos:e.mesos===null?null:integer(e.mesos,'Progress mesos'),level:levelNumber(e.level),extraExp:0,ledger:[]};
       for(const key of ['exp','hp','mp','hpAdded','mpAdded'])end[key]=['hp','mp'].includes(key)&&e[key]===null?null:integer(e[key]??(['hpAdded','mpAdded'].includes(key)?0:undefined),'Progress '+key);
       if(!start.level||end.level<start.level)throw new Error('Invalid progress level.');position(end.level,end.exp);
       let supplyCost=0;for(const key of ['hp','mp']){const available=start[key]+end[key+'Added'];if(!Number.isSafeInteger(available))throw new Error('Progress supplies are too large.');if(end[key]===null)continue;const used=available-end[key];if(used<0)throw new Error('Progress supplies need confirmed additions.');if(!Number.isSafeInteger(used))throw new Error('Progress supplies are too large.');supplyCost+=used*start[key+'Cost'];}if(!Number.isSafeInteger(supplyCost))throw new Error('Progress cost is too large.');
       if(start.uses!==undefined){end.uses=cleanUseEnd(start,e.uses,{partial:true});useTotals(start,end,elapsedMs,{partial:true});}
-      if(end.mesos!==null&&end.hp!==null&&end.mp!==null&&(!end.uses||end.uses.every(r=>r.quantity!==null)))calculate(start,end,elapsedMs);
+      if((!start.etc||etcLoot(start,end)!==null)&&end.mesos!==null&&end.hp!==null&&end.mp!==null&&(!end.uses||end.uses.every(r=>r.quantity!==null)))calculate(start,end,elapsedMs);
       return {elapsedMs,end,source:'automatic',...(point.at?{at:integer(point.at,'Progress capture time')}: {})};
     });
   }
@@ -185,14 +199,14 @@
     const startedAt=integer(raw.startedAt,'Start time'),stoppedAt=integer(raw.stoppedAt,'Stop time'),pausedMs=integer(raw.pausedMs??0,'Paused time');
     if(startedAt<=0||stoppedAt<=startedAt||pausedMs>=stoppedAt-startedAt)throw new Error('Invalid session timing.');
     const start={};for(const k of ['exp','mesos','hp','mp','hpCost','mpCost'])start[k]=integer(raw.start?.[k],'Starting '+k);
-    if(raw.start.uses!==undefined)start.uses=cleanUses(raw.start.uses);
+    if(raw.start.uses!==undefined)start.uses=cleanUses(raw.start.uses);if(raw.start.etc)start.etc=cleanEtc(raw.start.etc);
     start.level=raw.start.level!==undefined&&raw.start.level!==null&&raw.start.level!==''?levelNumber(raw.start.level):null;
     for(const type of ['hp','mp'])start[type+'Potion']=String(raw.start[type+'Potion']||'custom').slice(0,40);
     function cleanEnd(e){
       if(!e||typeof e!=='object')throw new Error('Missing ending values.');
       const out={};for(const k of ['exp','mesos','hp','mp'])out[k]=integer(e[k],'Ending '+k);
       for(const k of ['hpAdded','mpAdded','extraExp'])out[k]=integer(e[k]??0,k);
-      if(start.uses!==undefined)out.uses=cleanUseEnd(start,e.uses);
+      if(start.uses!==undefined)out.uses=cleanUseEnd(start,e.uses);if(start.etc)out.etc=e.etc===null||e.etc===undefined?null:cleanEtcItems(e.etc);
       out.level=start.level?levelNumber(e.level):null;ledgerTotals(e.ledger||[]);
       out.ledger=(e.ledger||[]).map(item=>({kind:item.kind,value:ledgerValue(item),label:String(item.label||'Untitled').slice(0,100),...(item.source==='etc'?{source:'etc',itemId:String(item.itemId),quantity:integer(item.quantity,'ETC quantity'),unitPrice:integer(item.unitPrice,'ETC vendor price')}: {})}));return out;
     }
@@ -207,6 +221,6 @@
     for(const record of clean)records.set(record.id,record);
     return [...records.values()].sort((a,b)=>b.stoppedAt-a.stoppedAt);
   }
-  root.MapleMath = {cleanUses,cleanUseEnd,useTotals,catalog,integer,calculate,expTable,cumulative,levelNumber,position,activeElapsed,ledgerValue,ledgerTotals,profitRates,forecast,intervals,groupMaps,normalizeProgress,normalizeSession,mergeHistory};
+  root.MapleMath = {cleanEtc,cleanEtcItems,etcLoot,cleanUses,cleanUseEnd,useTotals,catalog,integer,calculate,expTable,cumulative,levelNumber,position,activeElapsed,ledgerValue,ledgerTotals,profitRates,forecast,intervals,groupMaps,normalizeProgress,normalizeSession,mergeHistory};
   if (typeof module !== 'undefined') module.exports = root.MapleMath;
 })(typeof window !== 'undefined' ? window : globalThis);

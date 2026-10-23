@@ -129,7 +129,7 @@
       for(const mode of ['8','7','13']){if(token!==run)throw Error('Reading cancelled.');await worker.setParameters({tessedit_pageseg_mode:mode,tessedit_char_whitelist:'0123456789',user_defined_dpi:'300'});const {data}=await worker.recognize(surface);reads.push({text:data.text,confidence:data.confidence});}return C.select('hp',reads);
     }finally{if(surface)surface.width=surface.height=1;if(ownWorker&&worker){await worker.terminate();worker=null;for(const url of workerUrls)URL.revokeObjectURL(url);workerUrls=[];}}
   }
-  function clearImage(){window.MapleUseSlots?.clearReview();if(objectUrl)URL.revokeObjectURL(objectUrl);objectUrl=null;image=null;drag=null;$('ocr-image').removeAttribute('src');for(const id of ['ocr-crop','ocr-processed']){$(id).width=1;$(id).height=1;}$('ocr-region-overlay').replaceChildren();$('ocr-workspace').hidden=true;}
+  function clearImage(){window.MapleEtcCapture?.mount(null);window.MapleUseSlots?.clearReview();if(objectUrl)URL.revokeObjectURL(objectUrl);objectUrl=null;image=null;drag=null;$('ocr-image').removeAttribute('src');for(const id of ['ocr-crop','ocr-processed']){$(id).width=1;$(id).height=1;}$('ocr-region-overlay').replaceChildren();$('ocr-workspace').hidden=true;}
   async function loadImage(file,{name=file?.name||'Capture guide example',signal}={}){
     if(!signal)stop();error('ocr-error','');error('ocr-capture-error','');
     const token=run;let nextUrl=null;
@@ -202,6 +202,7 @@
         results[field.id]=field.id==='exp'?C.convertPercent(C.selectPercent(reads),level):field.id==='map'?MapleMapMatcher.select(reads):C.select(field.id,reads);
       }
     if(!selectedOnly&&window.MapleUseSlots?.ready()){const rows=await MapleUseSlots.read(image,readUseQuantity,{match:!background,isCurrent:()=>token===run,onStatus:value=>{$('ocr-progress-text').textContent=value;}});if(token!==run)return;results.uses=rows;}
+    if(!selectedOnly&&window.MapleEtcCapture){if(!background)$('ocr-progress-text').textContent='Reading visible ETC inventory · matching icons and stack counts…';results.etc=await MapleEtcCapture.read(image,readUseQuantity,{background,isCurrent:()=>token===run});if(token!==run)return;}
     return results;
   }
   async function read(selectedOnly=false){
@@ -251,7 +252,7 @@
       const details=document.createElement('details');details.className='ocr-raw';details.append(text('summary','Recognized text'),text('p',result.raw||'No text recognized'));row.append(details);if(previous){MaplePotionPicker.dispose(previous);previous.replaceWith(row);}else container.append(row);
     }
     $('ocr-review-form').hidden=false;$('ocr-empty-review').hidden=true;
-    syncExpEstimate();if(results.uses&&window.MapleUseSlots)MapleUseSlots.mountReview(image,results.uses);
+    syncExpEstimate();if(!partial)window.MapleEtcCapture?.mount(results.etc,image);if(results.uses&&window.MapleUseSlots)MapleUseSlots.mountReview(image,results.uses);
     for(const field of ['hp','mp']){const select=$('ocr-potion-'+field);if(select)MaplePotionPicker.enhance(select,field);}
     MaplePotionPicker.syncAll();MaplePotionPicker.setBusy(container,busy);
   }
@@ -292,7 +293,7 @@
         const current=options.getContext();if(current.stage!==context.stage)throw new Error('The session changed. Close this window and import the screenshot again.');
         syncExpEstimate();
         const values={};for(const field of activeFields()){if(!$('ocr-use-'+field.id).checked)continue;const value=$('ocr-value-'+field.id).value.trim();const parsed=field.id==='map'?MapleMapMatcher.resolve(value)?.label||null:C.parse(field.id,value);if(parsed===null)throw new Error(field.id==='map'?'Choose a map from the MeowDB list, or uncheck Training map.':'Enter a valid '+field.label.toLowerCase()+', or uncheck it.');values[field.id]=parsed;if(['hp','mp'].includes(field.id))values[field.id+'Potion']=$('ocr-potion-'+field.id).value;}
-        if(window.MapleUseSlots?.ready())values.uses=MapleUseSlots.reviewed();
+        if(window.MapleUseSlots?.ready())values.uses=MapleUseSlots.reviewed();if(window.MapleEtcCapture)values.etc=MapleEtcCapture.reviewed();
         if(!Object.keys(values).length)throw new Error('Check at least one field to apply.');
         window.MapleUseSlots?.validate(values.uses);options.apply(values);$('screenshot-dialog').close();
       }catch(e){error('ocr-review-error',e.message);}

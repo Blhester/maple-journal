@@ -37,13 +37,13 @@
       if(level&&exp!=='')M.position(level,exp);
       if(!setup&&incoming.level&&Number(incoming.level)<state.start.level)throw new Error('Ending level cannot be below starting level.');
       for(const [field,value]of Object.entries(incoming)){
-        if(['uses','hpPotion','mpPotion'].includes(field))continue;
+        if(['etc','uses','hpPotion','mpPotion'].includes(field))continue;
         const id=field==='map'?'session-map':field==='class'?'session-class':prefix+'-'+field;
         if(!setup&&['map','class'].includes(field))continue;
         if(['hp','mp'].includes(field)&&setup){const select=$(field+'-potion'),item=incoming[field+'Potion'];if(item&&select.value!==item){select.value=item;select.dispatchEvent(new Event('change',{bubbles:true}));}}
         $(id).value=value;$(id).dispatchEvent(new Event('input',{bubbles:true}));
       }
-      window.MapleUseSlots?.apply(incoming.uses);persist();render();$('screenshot-applied').textContent='Screenshot values applied. Check your supply items and total quantities before continuing.';
+      window.MapleUseSlots?.apply(incoming.uses);window.MapleEtcCapture?.apply(incoming.etc);persist();render();$('screenshot-applied').textContent='Screenshot values applied. Check your supply items and total quantities before continuing.';
     }
   });
   function syncSessionSupplies(){
@@ -78,7 +78,7 @@
   }
   function paintLive(){
     const running=state.stage==='running';$('live-dashboard').hidden=!running;if(!running)return;
-    const model=MapleLiveModel.project(state,{preview:autoPreview,lastSample:autoLastSample}),point=model.point,pending=!!point?.preview;window.MapleUseSlots?.paintLive(model.stats);
+    const model=MapleLiveModel.project(state,{preview:autoPreview,lastSample:autoLastSample}),point=model.point,pending=!!point?.preview;window.MapleUseSlots?.paintLive(model.stats);window.MapleEtcCapture?.paint(model.stats);
     $('live-quality').textContent=point?(pending?'Latest capture · pending':'Confirmed progress'):'Waiting for a capture';
     $('live-context').textContent=[state.meta?.map,state.meta?.class].filter(Boolean).join(' · ')||'Rates use active training time and your validated starting values.';
     for(const id of ['exp-hour','mesos-hour','level','hp','mp','supply-cost','eta'])$('live-'+id).textContent='N/A';
@@ -89,7 +89,7 @@
     const stats=model.stats,mesosAvailable=stats.net!==null&&autoLastSample?.mesosReadable!==false;
     if(!stats.rateReady)$('live-quality').textContent='Gathering first minute';
     $('live-exp-hour').textContent=format(stats.expHour);$('live-exp-gained').textContent=format(stats.exp)+' EXP gained';
-    if(mesosAvailable){$('live-mesos-hour').textContent=format(stats.netHour);$('live-net-total').textContent=format(stats.net)+' net mesos · after use-item costs';}
+    if(mesosAvailable){$('live-mesos-hour').textContent=format(stats.netHour);$('live-net-total').textContent=format(stats.net)+(state.start.etc?.enabled?' estimated net · includes '+format(stats.etcValue)+' unsold ETC ('+format(stats.cashNet)+' cash net)':' net mesos · after use-item costs');}
     else $('live-net-total').textContent='Net mesos N/A · balance or supply counts unreadable / awaiting validation';
     $('live-level').textContent=(point.end.level||'Level N/A')+' · '+format(point.end.exp)+' EXP';$('live-hp').textContent=(point.end.hp===null?'N/A':format(point.end.hp))+' '+(M.catalog.hp.find(item=>item.id===state.start.hpPotion)?.name||'items');$('live-mp').textContent=(point.end.mp===null?'N/A':format(point.end.mp))+' '+(M.catalog.mp.find(item=>item.id===state.start.mpPotion)?.name||'items');$('live-supply-cost').textContent=stats.supplyCost===null?'N/A':format(stats.supplyCost)+' mesos';$('live-eta').textContent=eta(stats.etaMs);for(const k of ['hp','mp']){const rate=stats[k+'PerMinute'],left=stats[k+'RunwayMs'];$('live-'+k+'-drain').textContent=point.end[k]===null?'Count unreadable':point.end[k]===0?'Empty':rate===null?'Gathering usage rate':rate===0?'No use recorded':format(rate)+'/min · '+eta(left)+' left';}
     $('live-snapshot-note').textContent=(pending?'Pending capture':'Confirmed snapshot')+' at '+duration(point.elapsedMs)+' active training. '+(!stats.rateReady?'Rates stay at 0 until a usable capture after one full active minute. Totals still show detected changes. ':pending?'Provisional rates update after each capture; this point is excluded from confirmed history until validated.':'Only confirmed values are counted.')+(!mesosAvailable?' EXP continues while net mesos is N/A; check balance and all tracked shortcut regions.':'');
@@ -114,6 +114,7 @@
     onStatus:status=>{if(status.message)autoMessage=status.message;paintAuto();},
     onSample:read=>{
       try{
+        if(state.start.etc?.enabled&&read.results.etc?.items){state.etcSeen=structuredClone(read.results.etc.items);window.MapleEtcCapture?.render();}
         const layout=read.width+'x'+read.height+':'+read.layout;
         if(autoLayout&&autoLayout!==layout){autoLog(null,'Skipped','Screen size or read settings changed. Recalibrate before restarting.');stopAuto('Capture layout changed. Check your regions and restart automatic mode.');persist();return;}autoLayout=layout;
         autoLastSample={at:read.at,elapsedMs:M.activeElapsed(state,read.at),mesosReadable:false,usable:false};
@@ -123,10 +124,10 @@
         for(const accepted of result.accepted){
           if((state.autoPoints?.length||0)>=4999||state.checkpoints.length>=4999){stopAuto('Checkpoint limit reached. Finish this session before starting another.');return;}
           state.autoPoints??=[];if(accepted.elapsedMs>(state.autoPoints.at(-1)?.elapsedMs||0))state.autoPoints.push(accepted);
-          if(accepted.end.mesos!==null&&accepted.end.hp!==null&&accepted.end.mp!==null&&(!accepted.end.uses||accepted.end.uses.every(r=>r.quantity!==null))&&accepted.elapsedMs>(state.checkpoints.at(-1)?.elapsedMs||0))state.checkpoints.push(accepted);
+          if(accepted.end.mesos!==null&&accepted.end.hp!==null&&accepted.end.mp!==null&&(!accepted.end.uses||accepted.end.uses.every(r=>r.quantity!==null))&&(!state.start.etc?.enabled||M.etcLoot(state.start,accepted.end)!==null)&&accepted.elapsedMs>(state.checkpoints.at(-1)?.elapsedMs||0))state.checkpoints.push(accepted);
           autoLog(accepted,'Confirmed',MapleAutoProgress.stats(state.start,accepted).net===null?'EXP confirmed. Net mesos N/A: balance or supply counts could not be confirmed.':'Saved as a full progress checkpoint.');
         }
-        autoMessage=result.message;persist();paintAuto();tick();
+        autoMessage=result.message;persist();paintAuto();window.MapleEtcCapture?.render();tick();
       }catch(error){autoPreview=null;if(autoLastSample)autoLastSample.mesosReadable=false;autoLog(null,'Skipped',error.message);autoMessage=error.message;persist();paintAuto();}
     }
   });
@@ -178,14 +179,14 @@
     for(const id of ['hp-efficiency','mp-efficiency','supply-cost','supply-share','hp-runway','mp-runway','target-eta','projection-exp-30','projection-mesos-30','projection-exp-60','projection-mesos-60'])$(id).textContent='—';
     $('results-description').textContent='Log a checkpoint or finish to see your pace and profit.';$('insight-source').textContent='Log a checkpoint or finish a session to unlock insights.';$('target-detail').textContent='Add starting and ending levels to estimate leveling time.';
     if(snap){
-      const r=M.calculate(state.start,snap.end,snap.time);window.MapleUseSlots?.paintStats(r.uses,'result-use-stats');latest={...snap,result:r};
+      const r=M.calculate(state.start,snap.end,snap.time);window.MapleUseSlots?.paintStats(r.uses,'result-use-stats');window.MapleEtcCapture?.paintResult(r);latest={...snap,result:r};
       paint('total-exp',r.exp);paint('total-net',r.net);paint('gross',r.gross);paint('net-breakdown',r.net);
       $('hp-used').textContent='· '+format(r.hpUsed)+' × '+format(state.start.hpCost);$('mp-used').textContent='· '+format(r.mpUsed)+' × '+format(state.start.mpCost);$('hp-spend').textContent='−'+format(r.hpCost);$('mp-spend').textContent='−'+format(r.mpCost);
       for(const p of ['hour','ten','minute']){paint('exp-'+p,r.rates[p].exp);paint('mesos-'+p,r.rates[p].mesos);}
       $('results-description').textContent=snap.label;$('insight-source').textContent=snap.label;
       $('hp-efficiency').textContent=format(r.hpPerMinute);$('mp-efficiency').textContent=format(r.mpPerMinute);$('supply-cost').textContent=format(r.supplyCostPerHour);$('supply-share').textContent=r.supplyShare===null?'N/A':format(r.supplyShare)+'%';
       $('hp-runway').textContent=r.hpRunwayMs===0?'Empty':r.hpRunwayMs===null?'No use recorded':eta(r.hpRunwayMs);$('mp-runway').textContent=r.mpRunwayMs===0?'Empty':r.mpRunwayMs===null?'No use recorded':eta(r.mpRunwayMs);
-      if(snap.end.ledger?.length){$('ledger-totals').hidden=false;$('ledger-cash').textContent='+'+format(r.ledger.income)+' / −'+format(r.ledger.expense);paint('adjusted-net',r.adjustedNet);paint('estimated-net',r.estimatedNet);paint('loot-total',r.ledger.loot);}
+      if(snap.end.ledger?.length||r.etcDrops?.length){$('ledger-totals').hidden=false;$('ledger-cash').textContent='+'+format(r.ledger.income)+' / −'+format(r.ledger.expense);paint('adjusted-net',r.adjustedNet);paint('estimated-net',r.estimatedNet);paint('loot-total',r.ledger.loot);}
       renderProfit();updateForecast();
     }
     renderTrend();
@@ -212,7 +213,7 @@
     for(let i=1;i<=3;i++)$('step-'+i).classList.toggle('active',i===(setup?1:running?2:3));
     $('timer-state').textContent=setup?'NOT STARTED':running?(paused?'PAUSED':'RECORDING'):complete?'COMPLETE':'STOPPED';$('timer-note').textContent=setup?'Your next adventure starts here.':running?(paused?'Take your time. Breaks do not count toward your pace.':'Every little bit of progress adds up.'):'Training time saved. Take your time with the numbers.';
     $('pause-button').textContent=paused?'▶ Resume':'Ⅱ Pause';$('running-message').textContent=paused?'A well-earned break.':'You’re on the clock.';$('cp-save').disabled=paused;$('end-level-wrap').hidden=!hasLevel;$('end-level').required=hasLevel;$('manual-exp-wrap').hidden=hasLevel;$('cp-level-wrap').hidden=!hasLevel;$('cp-level').required=hasLevel;$('cp-extra-wrap').hidden=hasLevel;
-    clearInterval(timerInterval);tick();if(running)timerInterval=setInterval(tick,250);renderLedger();renderResults();updateLevelHint();syncSessionSupplies();window.MapleUseSlots?.render();MaplePotionPicker.syncAll();paintAuto();
+    clearInterval(timerInterval);tick();if(running)timerInterval=setInterval(tick,250);renderLedger();renderResults();updateLevelHint();syncSessionSupplies();window.MapleUseSlots?.render();window.MapleEtcCapture?.render();MaplePotionPicker.syncAll();paintAuto();
   }
   function updateLevelHint(){$('auto-start').disabled=!$('start-level').value||!MapleScreenCapture.supported();try{const v=$('start-level').value;$('level-hint').textContent=v?(Number(v)===100?'Level 100 is the end of the supported EXP table.':format(M.expTable[M.levelNumber(v)])+' EXP needed for this level. Enter within-level EXP below.'):'Add a level to handle level-ups and estimate time to your next level.';}catch(e){$('level-hint').textContent=e.message;}}
   for(const type of ['hp','mp']){
@@ -227,6 +228,7 @@
     try{
       const start={};for(const k of ['exp','mesos','hp','mp'])start[k]=M.integer($('start-'+k).value,'Starting '+k);start.hpCost=M.integer($('hp-cost').value,'HP cost');start.mpCost=M.integer($('mp-cost').value,'MP cost');start.hpPotion=$('hp-potion').value;start.mpPotion=$('mp-potion').value;start.level=$('start-level').value?M.levelNumber($('start-level').value):null;if(start.level)M.position(start.level,start.exp);
       if(window.MapleUseSlots){start.uses=MapleUseSlots.starting();start.hp=start.mp=start.hpCost=start.mpCost=0;}
+      const etc=window.MapleEtcCapture?.starting();if(etc)start.etc=etc;
       const now=Date.now();state={stage:'running',id:'run-'+now+'-'+Math.random().toString(36).slice(2,8),start,startedAt:now,pausedMs:0,checkpoints:[],ledger:[],meta:{map:$('session-map').value.trim(),class:$('session-class').value.trim()}};$('end-level').value=start.level||'';$('cp-level').value=start.level||'';error('start-error','');persist();render();$('done-button').focus();if($('auto-start').checked&&start.level&&MapleScreenCapture.supported()){autoFilter=MapleAutoProgress.createFilter({start});autoLayout=null;autoRecorder.start();}
     }catch(e){error('start-error',e.message);}
   });
@@ -234,25 +236,26 @@
   $('done-button').addEventListener('click',()=>{
     if(state.stage!=='running')return;const wasAutomatic=autoRecorder.active();if(wasAutomatic)stopAuto('Automatic screenshots stopped. Review your ending values.');const now=Date.now();if(state.pausedAt){state.pausedMs=(state.pausedMs||0)+Math.max(0,now-state.pausedAt);state.pausedAt=null;}state.stoppedAt=Math.max(now,state.startedAt+(state.pausedMs||0)+1);state.stage='ending';const cp=progressPoints().at(-1);if(state.start.uses!==undefined){delete state.useEndDraft;if(cp?.end.uses)state.useEndDraft=structuredClone(cp.end.uses);}if(cp){if(cp.source==='automatic'){for(const k of ['exp','mesos','hp','mp'])$('end-'+k).value=cp.end[k]===null?'':cp.end[k];$('screenshot-applied').textContent='Ending fields start from the last confirmed checkpoint at '+duration(cp.elapsedMs)+'. Update and review your actual final values before calculating.';}$('hp-added').value=cp.end.hpAdded;$('mp-added').value=cp.end.mpAdded;$('end-level').value=cp.end.level||'';if(!state.start.level)$('extra-exp').value=cp.end.extraExp;}persist();render();$('end-exp').focus();
   });
-  function readEnd(prefix){const e={};for(const k of ['exp','mesos','hp','mp'])e[k]=M.integer($(prefix+'-'+k).value,'Ending '+k);const cp=prefix==='cp';e.hpAdded=M.integer($(cp?'cp-hp-added':'hp-added').value,'HP items added');e.mpAdded=M.integer($(cp?'cp-mp-added':'mp-added').value,'MP items added');e.level=state.start.level?M.levelNumber($(cp?'cp-level':'end-level').value):null;e.extraExp=state.start.level?0:M.integer($(cp?'cp-extra':'extra-exp').value,'Manual level-up EXP');e.ledger=cp?[]:structuredClone(state.ledger||[]);if(state.start.uses!==undefined){e.hp=e.mp=e.hpAdded=e.mpAdded=0;e.uses=MapleUseSlots.ending(prefix);}return e;}
+  function readEnd(prefix){const e={};for(const k of ['exp','mesos','hp','mp'])e[k]=M.integer($(prefix+'-'+k).value,'Ending '+k);const cp=prefix==='cp';e.hpAdded=M.integer($(cp?'cp-hp-added':'hp-added').value,'HP items added');e.mpAdded=M.integer($(cp?'cp-mp-added':'mp-added').value,'MP items added');e.level=state.start.level?M.levelNumber($(cp?'cp-level':'end-level').value):null;e.extraExp=state.start.level?0:M.integer($(cp?'cp-extra':'extra-exp').value,'Manual level-up EXP');e.ledger=cp?[]:structuredClone(state.ledger||[]);if(state.start.uses!==undefined){e.hp=e.mp=e.hpAdded=e.mpAdded=0;e.uses=MapleUseSlots.ending(prefix);}if(state.start.etc?.enabled)e.etc=MapleEtcCapture.ending(prefix);return e;}
   $('checkpoint-form').addEventListener('submit',event=>{
     event.preventDefault();if(state.stage!=='running'||state.pausedAt)return;
-    try{const time=elapsed(),end=readEnd('cp');if(time<=(state.checkpoints.at(-1)?.elapsedMs||0))throw new Error('Let some active training time pass before another checkpoint.');M.calculate(state.start,end,time);state.checkpoints.push({end,elapsedMs:time,at:Date.now()});autoPreview=null;autoLastSample=null;rebaseAuto();paintLive();error('cp-error','');$('cp-saved').textContent='Checkpoint saved at '+duration(time)+'.';persist();renderResults();tick();}catch(e){error('cp-error',e.message);}
+    try{const time=elapsed(),end=readEnd('cp');if(time<=(state.checkpoints.at(-1)?.elapsedMs||0))throw new Error('Let some active training time pass before another checkpoint.');M.calculate(state.start,end,time);state.checkpoints.push({end,elapsedMs:time,at:Date.now()});delete state.etcCheckpoint;delete state.etcCheckpointDirty;window.MapleEtcCapture?.render();autoPreview=null;autoLastSample=null;rebaseAuto();paintLive();error('cp-error','');$('cp-saved').textContent='Checkpoint saved at '+duration(time)+'.';persist();renderResults();tick();}catch(e){error('cp-error',e.message);}
   });
   $('ledger-add').addEventListener('click',()=>{
     try{const label=$('ledger-label').value.trim();if(!label)throw new Error('Give the entry a description.');const entry={label,value:M.integer($('ledger-value').value,'Ledger value'),kind:$('ledger-kind').value};M.ledgerTotals([...(state.ledger||[]),entry]);state.ledger??=[];state.ledger.push(entry);$('ledger-label').value='';$('ledger-value').value='';error('ledger-error','');persist();renderLedger();}catch(e){error('ledger-error',e.message);}
   });
   $('end-form').addEventListener('submit',event=>{
     event.preventDefault();if(state.stage!=='ending')return;
-    try{const end=readEnd('end');M.calculate(state.start,end,elapsed());state.checkpoints=state.checkpoints.filter(cp=>cp.elapsedMs<elapsed());M.intervals(state.start,state.checkpoints,end,elapsed());state.end=end;state.stage='complete';$('profit-metric').value=end.ledger.some(e=>e.kind==='loot')?'estimatedNet':end.ledger.length?'adjustedNet':'net';error('end-error','');persist();try{MapleHistory.save(state);}catch(e){error('history-error',e.message);}render();$('results-heading').setAttribute('tabindex','-1');$('results-heading').focus({preventScroll:true});}catch(e){error('end-error',e.message);}
+    try{const end=readEnd('end');M.calculate(state.start,end,elapsed());state.checkpoints=state.checkpoints.filter(cp=>cp.elapsedMs<elapsed());M.intervals(state.start,state.checkpoints,end,elapsed());state.end=end;state.stage='complete';$('profit-metric').value=(state.start.etc?.enabled||end.ledger.some(e=>e.kind==='loot'))?'estimatedNet':end.ledger.length?'adjustedNet':'net';error('end-error','');persist();try{MapleHistory.save(state);}catch(e){error('history-error',e.message);}render();$('results-heading').setAttribute('tabindex','-1');$('results-heading').focus({preventScroll:true});}catch(e){error('end-error',e.message);}
   });
   $('edit-button').addEventListener('click',()=>{state.stage='ending';state.ledger=structuredClone(state.end.ledger||[]);persist();render();$('end-exp').focus();});
   function reset(){
     if(autoRecorder.active())stopAuto();autoMessage='Off. Enable automatic screenshots when your next session starts.';
     // Keep the last supply choices (and custom prices) in the next saved draft.
+    const etcDraft=window.MapleEtcCapture?.preferences();
     const useDraft=window.MapleUseSlots?structuredClone(MapleUseSlots.slots()).map(r=>({...r,quantity:0})):undefined;
     const supplies=values(['hp-potion','hp-cost','mp-potion','mp-cost']);
-    $('screenshot-applied').textContent='';MapleEtc.reset();state={stage:'setup',checkpoints:[],ledger:[],...(useDraft?{useDraft}: {})};autoPreview=null;autoLastSample=null;$('start-form').reset();$('end-form').reset();$('checkpoint-form').reset();restoreFields(supplies);
+    $('screenshot-applied').textContent='';MapleEtc.reset();state={stage:'setup',checkpoints:[],ledger:[],...(useDraft?{useDraft}: {}),...(etcDraft?{etcDraft}: {})};autoPreview=null;autoLastSample=null;$('start-form').reset();$('end-form').reset();$('checkpoint-form').reset();restoreFields(supplies);
     for(const id of ['adjustments','ledger-details','checkpoint-details'])$(id).open=false;for(const id of ['end-error','start-error','cp-error','ledger-error'])error(id,'');$('cp-saved').textContent='';persist();render();$('start-exp').focus();
   }
   $('new-button').addEventListener('click',reset);$('discard-button').addEventListener('click',()=>{$('discard-confirm').hidden=false;$('keep-button').focus();});$('keep-button').addEventListener('click',()=>{$('discard-confirm').hidden=true;$('discard-button').focus();});$('confirm-discard').addEventListener('click',reset);
@@ -264,10 +267,11 @@
       if(saved.stage!=='setup'){
         for(const k of ['exp','mesos','hp','mp','hpCost','mpCost'])M.integer(saved.start[k],k);if(saved.start.uses!==undefined)M.cleanUses(saved.start.uses);if(!Number.isSafeInteger(saved.startedAt)||saved.startedAt<=0)throw new Error('Invalid start time');M.integer(saved.pausedMs,'Paused time');if(saved.pausedAt&&(!Number.isSafeInteger(saved.pausedAt)||saved.pausedAt<saved.startedAt))throw new Error('Invalid paused time');if(saved.stage!=='running'&&(!Number.isSafeInteger(saved.stoppedAt)||M.activeElapsed(saved)<=0))throw new Error('Invalid stop time');if(saved.pausedMs>(saved.stoppedAt??saved.pausedAt??Date.now())-saved.startedAt)throw new Error('Invalid pause duration');if((saved.checkpoints.at(-1)?.elapsedMs||0)>M.activeElapsed(saved))throw new Error('Checkpoint is beyond session time');if(saved.start.level)M.position(saved.start.level,saved.start.exp);saved.autoPoints=M.normalizeProgress(saved.start,saved.autoPoints||saved.checkpoints.filter(p=>p.source==='automatic'),M.activeElapsed(saved));M.intervals(saved.start,saved.checkpoints,saved.stage==='complete'?saved.end:null,saved.stage==='complete'?M.activeElapsed(saved):0);if(saved.stage==='complete')M.calculate(saved.start,saved.end,M.activeElapsed(saved));saved.id??='run-'+saved.startedAt;saved.meta??={map:saved.startFields?.['session-map']||'',class:saved.startFields?.['session-class']||''};
       }
-      state=saved;restoreFields(saved.startFields);restoreFields(saved.endFields);if(saved.start?.level){$('end-level').value=saved.endFields?.['end-level']||saved.end?.level||saved.start.level;$('cp-level').value=saved.checkpoints.at(-1)?.end.level||saved.start.level;}if(saved.stage==='complete')$('profit-metric').value=saved.end.ledger?.some(e=>e.kind==='loot')?'estimatedNet':saved.end.ledger?.length?'adjustedNet':'net';
+      state=saved;restoreFields(saved.startFields);restoreFields(saved.endFields);if(saved.start?.level){$('end-level').value=saved.endFields?.['end-level']||saved.end?.level||saved.start.level;$('cp-level').value=saved.checkpoints.at(-1)?.end.level||saved.start.level;}if(saved.stage==='complete')$('profit-metric').value=(saved.start.etc?.enabled||saved.end.ledger?.some(e=>e.kind==='loot'))?'estimatedNet':saved.end.ledger?.length?'adjustedNet':'net';
     }
   }catch(e){error('history-error','A saved session could not be fully restored: '+e.message+'. Your saved history is kept separately.');}
   window.MapleOverlayFeed={session:()=>({id:state.id,stage:state.stage}),baseline:()=>MapleLiveModel.baseline(state),snapshot:(options={})=>MapleLiveModel.snapshot(state,{...options,lastSample:autoLastSample,now:Date.now()})};
+  window.MapleEtcCapture?.init({getState:()=>state,changed:persist,refresh:()=>{autoPreview=null;autoLastSample=null;rebaseAuto();paintAuto();renderResults();}});
   if(window.MapleUseSlots){MapleUseSlots.init({getState:()=>state,changed:persist,refresh:()=>{paintAuto();renderResults();}});for(const id of ['start-hp','start-mp','end-hp','end-mp','cp-hp','cp-mp']){$(id).required=false;$(id).value='0';}}
   render();
 })();

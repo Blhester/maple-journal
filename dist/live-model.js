@@ -39,7 +39,7 @@
     let rows=view.rows,sampleAt=p?.at??state.startedAt;
     if(lastSample?.mesosReadable===false){netHour=null;netTotal=null;}
     if(phase==='complete'){
-      const r=M.calculate(state.start,state.end,M.activeElapsed(state));expHour=r.rates.hour.exp;netHour=r.rates.hour.mesos;expTotal=r.exp;netTotal=r.net;rateReady=true;sampleAt=state.stoppedAt;
+      const r=M.calculate(state.start,state.end,M.activeElapsed(state));expHour=r.rates.hour.exp;netHour=(state.start.etc?r.estimatedNet:r.net)*3600000/r.durationMs;expTotal=r.exp;netTotal=state.start.etc?r.estimatedNet:r.net;rateReady=true;sampleAt=state.stoppedAt;
       rows=rows.filter(row=>row.to<r.durationMs).concat({to:r.durationMs,expHour,netHour});
     }
     if(since?.session===String(state.id)&&Number.isFinite(since.ms)&&since.ms>=0&&Number.isFinite(since.exp)&&(since.net===null||Number.isFinite(since.net))){
