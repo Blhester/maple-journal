@@ -228,8 +228,11 @@
   $('start-form').addEventListener('submit',event=>{
     event.preventDefault();if(state.stage!=='setup')return;
     try{
-      const start={};for(const k of ['exp','mesos','hp','mp'])start[k]=M.integer($('start-'+k).value,'Starting '+k);start.hpCost=M.integer($('hp-cost').value,'HP cost');start.mpCost=M.integer($('mp-cost').value,'MP cost');start.hpPotion=$('hp-potion').value;start.mpPotion=$('mp-potion').value;start.level=$('start-level').value?M.levelNumber($('start-level').value):null;if(start.level)M.position(start.level,start.exp);
+      const start={};for(const k of ['exp','mesos'])start[k]=M.integer($('start-'+k).value,'Starting '+k);start.hpPotion=$('hp-potion').value;start.mpPotion=$('mp-potion').value;start.level=$('start-level').value?M.levelNumber($('start-level').value):null;if(start.level)M.position(start.level,start.exp);
+      // Generic Use slots own counts and costs. Hidden legacy fields may be
+      // blank after a form reset and must not be parsed before this branch.
       if(window.MapleUseSlots){start.uses=MapleUseSlots.starting();start.hp=start.mp=start.hpCost=start.mpCost=0;}
+      else {for(const k of ['hp','mp'])start[k]=M.integer($('start-'+k).value,'Starting '+k);start.hpCost=M.integer($('hp-cost').value,'HP cost');start.mpCost=M.integer($('mp-cost').value,'MP cost');}
       const etc=window.MapleEtcCapture?.starting();if(etc)start.etc=etc;
       const now=Date.now();state={stage:'running',id:'run-'+now+'-'+Math.random().toString(36).slice(2,8),start,startedAt:now,pausedMs:0,checkpoints:[],ledger:[],meta:{map:$('session-map').value.trim(),class:$('session-class').value.trim()}};$('end-level').value=start.level||'';$('cp-level').value=start.level||'';error('start-error','');persist();render();$('done-button').focus();if($('auto-start').checked&&start.level&&MapleScreenCapture.supported()){autoFilter=MapleAutoProgress.createFilter({start});autoLayout=null;autoRecorder.start();}
     }catch(e){error('start-error',e.message);}
@@ -238,7 +241,12 @@
   $('done-button').addEventListener('click',()=>{
     if(state.stage!=='running')return;const wasAutomatic=autoRecorder.active();if(wasAutomatic)stopAuto('Automatic screenshots stopped. Review your ending values.');const now=Date.now();if(state.pausedAt){state.pausedMs=(state.pausedMs||0)+Math.max(0,now-state.pausedAt);state.pausedAt=null;}state.stoppedAt=Math.max(now,state.startedAt+(state.pausedMs||0)+1);state.stage='ending';const cp=progressPoints().at(-1);if(state.start.uses!==undefined){delete state.useEndDraft;if(cp?.end.uses)state.useEndDraft=structuredClone(cp.end.uses);}if(cp){if(cp.source==='automatic'){for(const k of ['exp','mesos','hp','mp'])$('end-'+k).value=cp.end[k]===null?'':cp.end[k];$('screenshot-applied').textContent='Ending fields start from the last confirmed checkpoint at '+duration(cp.elapsedMs)+'. Update and review your actual final values before calculating.';}$('hp-added').value=cp.end.hpAdded;$('mp-added').value=cp.end.mpAdded;$('end-level').value=cp.end.level||'';if(!state.start.level)$('extra-exp').value=cp.end.extraExp;}persist();render();$('end-exp').focus();
   });
-  function readEnd(prefix){const e={};for(const k of ['exp','mesos','hp','mp'])e[k]=M.integer($(prefix+'-'+k).value,'Ending '+k);const cp=prefix==='cp';e.hpAdded=M.integer($(cp?'cp-hp-added':'hp-added').value,'HP items added');e.mpAdded=M.integer($(cp?'cp-mp-added':'mp-added').value,'MP items added');e.level=state.start.level?M.levelNumber($(cp?'cp-level':'end-level').value):null;e.extraExp=state.start.level?0:M.integer($(cp?'cp-extra':'extra-exp').value,'Manual level-up EXP');e.ledger=cp?[]:structuredClone(state.ledger||[]);if(state.start.uses!==undefined){e.hp=e.mp=e.hpAdded=e.mpAdded=0;e.uses=MapleUseSlots.ending(prefix);}if(state.start.etc?.enabled)e.etc=MapleEtcCapture.ending(prefix);return e;}
+  function readEnd(prefix){
+    const e={},cp=prefix==='cp';for(const k of ['exp','mesos'])e[k]=M.integer($(prefix+'-'+k).value,'Ending '+k);
+    if(state.start.uses!==undefined){e.hp=e.mp=e.hpAdded=e.mpAdded=0;e.uses=MapleUseSlots.ending(prefix);}
+    else {for(const k of ['hp','mp'])e[k]=M.integer($(prefix+'-'+k).value,'Ending '+k);e.hpAdded=M.integer($(cp?'cp-hp-added':'hp-added').value,'HP items added');e.mpAdded=M.integer($(cp?'cp-mp-added':'mp-added').value,'MP items added');}
+    e.level=state.start.level?M.levelNumber($(cp?'cp-level':'end-level').value):null;e.extraExp=state.start.level?0:M.integer($(cp?'cp-extra':'extra-exp').value,'Manual level-up EXP');e.ledger=cp?[]:structuredClone(state.ledger||[]);if(state.start.etc?.enabled)e.etc=MapleEtcCapture.ending(prefix);return e;
+  }
   $('checkpoint-form').addEventListener('submit',event=>{
     event.preventDefault();if(state.stage!=='running'||state.pausedAt)return;
     try{const time=elapsed(),end=readEnd('cp');if(time<=(state.checkpoints.at(-1)?.elapsedMs||0))throw new Error('Let some active training time pass before another checkpoint.');M.calculate(state.start,end,time);state.checkpoints.push({end,elapsedMs:time,at:Date.now()});delete state.etcCheckpoint;delete state.etcCheckpointDirty;window.MapleEtcCapture?.render();autoPreview=null;autoLastSample=null;rebaseAuto();paintLive();error('cp-error','');$('cp-saved').textContent='Checkpoint saved at '+duration(time)+'.';persist();renderResults();tick();}catch(e){error('cp-error',e.message);}
@@ -274,6 +282,6 @@
   }catch(e){error('history-error','A saved session could not be fully restored: '+e.message+'. Your saved history is kept separately.');}
   window.MapleOverlayFeed={session:()=>({id:state.id,stage:state.stage}),baseline:()=>MapleLiveModel.baseline(state),snapshot:(options={})=>MapleLiveModel.snapshot(state,{...options,lastSample:autoLastSample,now:Date.now()})};
   window.MapleEtcCapture?.init({getState:()=>state,changed:persist,refresh:()=>{autoPreview=null;autoLastSample=null;rebaseAuto();paintAuto();renderResults();}});
-  if(window.MapleUseSlots){MapleUseSlots.init({getState:()=>state,changed:persist,refresh:()=>{paintAuto();renderResults();}});for(const id of ['start-hp','start-mp','end-hp','end-mp','cp-hp','cp-mp']){$(id).required=false;$(id).value='0';}}
+  if(window.MapleUseSlots){MapleUseSlots.init({getState:()=>state,changed:persist,refresh:()=>{paintAuto();renderResults();}});for(const id of ['start-hp','start-mp','hp-cost','mp-cost','end-hp','end-mp','hp-added','mp-added','cp-hp','cp-mp','cp-hp-added','cp-mp-added']){$(id).required=false;$(id).disabled=true;}}
   render();
 })();
