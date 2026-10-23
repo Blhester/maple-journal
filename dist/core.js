@@ -41,6 +41,12 @@
     if(n<1||n>100)throw new Error('Levels must be between 1 and 100.');
     return n;
   }
+  function levelPercentPerHour(expHour,level){
+    if(level===null||level===undefined||level==='')return null;
+    const current=levelNumber(level);if(current===100)return null;
+    if(!Number.isFinite(expHour))throw new Error('Invalid EXP hourly rate.');
+    return expHour*100/expTable[current];
+  }
   function position(level,exp) {
     const n=levelNumber(level), xp=integer(exp,'EXP');
     if((n===100&&xp!==0)||(n<100&&xp>=expTable[n]))throw new Error('At level '+n+', EXP must be '+(n===100?'0.':'between 0 and '+(expTable[n]-1).toLocaleString('en-US')+'.'));
@@ -143,7 +149,7 @@
     const drops=etcLoot(start,end);if(drops===null)throw Error('Review the ending ETC counts or turn off ETC tracking for this run.');const manual=end.ledger||[];if(drops.some(r=>manual.some(e=>e.source==='etc'&&String(e.itemId)===r.itemId)))throw Error('An automatically tracked ETC item is also in the manual loot list. Remove one to avoid double-counting.');const ledger=ledgerTotals([...manual,...drops]);
     const adjustedNet=net+ledger.income-ledger.expense,estimatedNet=adjustedNet+ledger.loot;
     if(![adjustedNet,estimatedNet].every(Number.isSafeInteger))throw new Error('Adjusted totals are too large.');
-    return {hpUsed,mpUsed,hpCost,mpCost,gross,net,exp,durationMs,rates,ledger,adjustedNet,estimatedNet,supplyCost,uses:uses?.details,etcDrops:drops,
+    return {hpUsed,mpUsed,hpCost,mpCost,gross,net,exp,durationMs,rates,expPercentHour:levelPercentPerHour(rates.hour.exp,hasLevel?end.level:null),ledger,adjustedNet,estimatedNet,supplyCost,uses:uses?.details,etcDrops:drops,
       hpPerMinute:hpUsed*60000/durationMs,mpPerMinute:mpUsed*60000/durationMs,
       supplyCostPerHour:supplyCost*3600000/durationMs,
       supplyShare:gross>0?supplyCost*100/gross:null,
@@ -221,6 +227,6 @@
     for(const record of clean)records.set(record.id,record);
     return [...records.values()].sort((a,b)=>b.stoppedAt-a.stoppedAt);
   }
-  root.MapleMath = {cleanEtc,cleanEtcItems,etcLoot,cleanUses,cleanUseEnd,useTotals,catalog,integer,calculate,expTable,cumulative,levelNumber,position,activeElapsed,ledgerValue,ledgerTotals,profitRates,forecast,intervals,groupMaps,normalizeProgress,normalizeSession,mergeHistory};
+  root.MapleMath = {levelPercentPerHour,cleanEtc,cleanEtcItems,etcLoot,cleanUses,cleanUseEnd,useTotals,catalog,integer,calculate,expTable,cumulative,levelNumber,position,activeElapsed,ledgerValue,ledgerTotals,profitRates,forecast,intervals,groupMaps,normalizeProgress,normalizeSession,mergeHistory};
   if (typeof module !== 'undefined') module.exports = root.MapleMath;
 })(typeof window !== 'undefined' ? window : globalThis);

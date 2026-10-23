@@ -90,7 +90,7 @@
     const rateReady=ms>=60000;
     const hpPerMinute=hpUsed===null||!rateReady?null:hpUsed*60000/ms,mpPerMinute=mpUsed===null||!rateReady?null:mpUsed*60000/ms;
     const runway=(count,used)=>count===null?null:count===0?0:rateReady&&used>0?count*ms/used:null;
-    return {cashNet,etcValue,etcDrops:drops,uses:uses?.details,exp,expHour:rateReady?exp*3600000/ms:0,net,netHour:net===null?null:rateReady?net*3600000/ms:0,rateReady,hpUsed,mpUsed,hpPerMinute,mpPerMinute,hpRunwayMs:runway(e.hp,hpUsed),mpRunwayMs:runway(e.mp,mpUsed),supplyCost,remaining,etaMs:remaining===0?0:rateReady&&remaining!==null&&exp>0?remaining*ms/exp:null};
+    return {cashNet,etcValue,etcDrops:drops,uses:uses?.details,exp,expHour:rateReady?exp*3600000/ms:0,expPercentHour:M.levelPercentPerHour(rateReady?exp*3600000/ms:0,start.level?e.level:null),net,netHour:net===null?null:rateReady?net*3600000/ms:0,rateReady,hpUsed,mpUsed,hpPerMinute,mpPerMinute,hpRunwayMs:runway(e.hp,hpUsed),mpRunwayMs:runway(e.mp,mpUsed),supplyCost,remaining,etaMs:remaining===0?0:rateReady&&remaining!==null&&exp>0?remaining*ms/exp:null};
   }
   // One bounded job at a time. Late browser timers take one fresh sample, never
   // replay missed minutes or invent timestamps. Permission is requested only

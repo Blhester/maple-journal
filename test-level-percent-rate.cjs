@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('node:assert/strict'),M=require('./dist/core.js'),A=require('./dist/auto-progress.js'),harness=require('./test-screenshot-transfer.cjs');
+const start={level:10,exp:100,mesos:10000,hp:100,mp:100,hpCost:80,mpCost:150,hpPotion:'meat',mpPotion:'lemon'},end={level:10,exp:529,mesos:10000,hp:100,mp:100,hpAdded:0,mpAdded:0,extraExp:0,ledger:[]};
+// Independent fixture: level10 requires1716 EXP.429 earned over2 active hours
+// is214.5 EXP/hour, exactly12.5% of that level per hour.
+assert.equal(M.expTable[10],1716);const r=M.calculate(start,end,7200000);assert.equal(r.rates.hour.exp,214.5);assert.equal(r.expPercentHour,12.5);assert.equal(A.stats(start,{end,elapsedMs:7200000}).expPercentHour,12.5);
+assert.equal(M.levelPercentPerHour(3432,10),200,'Rates above one full level/hour remain uncapped');assert.equal(M.levelPercentPerHour(-1716,10),-100);assert.equal(M.levelPercentPerHour(0,10),0);
+for(const level of [undefined,null,'',100])assert.equal(M.levelPercentPerHour(1000,level),null);
+const leveled={...end,level:11,exp:100},leveledStart={...start,exp:1600};const levelUp=M.calculate(leveledStart,leveled,3600000);assert.equal(levelUp.exp,216);assert.equal(levelUp.expPercentHour,21600/2360,'Use level11 full requirement2360 after a level-up');assert.notEqual(levelUp.expPercentHour,21600/1716);assert.equal(A.stats(leveledStart,{end:leveled,elapsedMs:3600000}).expPercentHour,levelUp.expPercentHour);
+assert.equal(A.stats(start,{end,elapsedMs:59999}).expPercentHour,0,'Live percentages follow the existing first-minute warmup');assert.equal(M.calculate({...start,level:null},{...end,level:null},7200000).expPercentHour,null);
+const epoch=Date.parse('2026-10-20T20:00:00Z'),point={end,elapsedMs:7200000,at:epoch,source:'automatic'},state={id:'percent-known',stage:'running',startedAt:epoch-9000000,pausedAt:epoch,pausedMs:1800000,start,checkpoints:[point],autoPoints:[point],ledger:[],meta:{map:'Test map',class:'Test job'}};
+const storage=new Map([['maple-journal-session-v1',JSON.stringify(state)]]),h=harness(storage);assert.equal(h.node('live-exp-percent-hour').textContent,'12.5% of level 10 / hour');assert.equal(h.node('live-exp-hour').textContent,'214.5');
+h.fire('done-button');for(const [k,v]of Object.entries({level:10,exp:529,mesos:10000,hp:100,mp:100}))h.node('end-'+k).value=v;h.fire('end-form','submit');assert.equal(h.node('end-error').textContent,'');assert.equal(h.node('exp-percent-hour').textContent,'12.5% of level 10 / hour');assert.equal(h.node('exp-hour').textContent,'214.5');assert.equal(harness(h.storage).node('exp-percent-hour').textContent,'12.5% of level 10 / hour');
+console.log('Passed: independently known level percentage rate, active time/pauses, level-up denominator change, warmup, zero/negative/over100 rates, missing level/level100, and real live/final/reloaded UI agreement.');

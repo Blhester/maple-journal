@@ -76,6 +76,7 @@
   function progressPoints(){
     return MapleLiveModel.points(state);
   }
+  const levelPace=(value,level)=>value===null?(Number(level)===100?'Level % / hour unavailable at level 100':'Level % / hour needs a recorded level'):format(value)+'% of level '+level+' / hour';
   function paintLive(){
     const running=state.stage==='running';$('live-dashboard').hidden=!running;if(!running)return;
     const model=MapleLiveModel.project(state,{preview:autoPreview,lastSample:autoLastSample}),point=model.point,pending=!!point?.preview;window.MapleUseSlots?.paintLive(model.stats);window.MapleEtcCapture?.paint(model.stats);
@@ -85,10 +86,10 @@
     for(const k of ['hp','mp'])$('live-'+k+'-drain').textContent='Waiting for a capture';$('live-confirmed').textContent=String(state.autoPoints?.length||0);$('live-exp-gained').textContent='No usable capture yet';$('live-net-total').textContent='Keep your inventory open to read mesos';
     const rows=model.intervalRows;
     MapleHistory.lineChart($('live-exp-chart'),rows,'expHour',{live:true});MapleHistory.lineChart($('live-mesos-chart'),rows,'netHour',{live:true});
-    if(!point){$('live-exp-hour').textContent='0';$('live-exp-gained').textContent='0 EXP gained';$('live-mesos-hour').textContent=autoLastSample?'N/A':'0';$('live-net-total').textContent=autoLastSample?'Mesos N/A · awaiting a readable capture':'0 net mesos · starting balance';$('live-snapshot-note').textContent='Rates start at 0. A usable capture after one full active minute starts the rate estimates. Keep the HUD and potion counts visible; mesos needs an open inventory.';return;}
+    if(!point){$('live-exp-percent-hour').textContent=levelPace(M.levelPercentPerHour(0,state.start.level),state.start.level);$('live-exp-hour').textContent='0';$('live-exp-gained').textContent='0 EXP gained';$('live-mesos-hour').textContent=autoLastSample?'N/A':'0';$('live-net-total').textContent=autoLastSample?'Mesos N/A · awaiting a readable capture':'0 net mesos · starting balance';$('live-snapshot-note').textContent='Rates start at 0. A usable capture after one full active minute starts the rate estimates. Keep the HUD and potion counts visible; mesos needs an open inventory.';return;}
     const stats=model.stats,mesosAvailable=stats.net!==null&&autoLastSample?.mesosReadable!==false;
     if(!stats.rateReady)$('live-quality').textContent='Gathering first minute';
-    $('live-exp-hour').textContent=format(stats.expHour);$('live-exp-gained').textContent=format(stats.exp)+' EXP gained';
+    $('live-exp-percent-hour').textContent=levelPace(stats.expPercentHour,point.end.level);$('live-exp-hour').textContent=format(stats.expHour);$('live-exp-gained').textContent=format(stats.exp)+' EXP gained';
     if(mesosAvailable){$('live-mesos-hour').textContent=format(stats.netHour);$('live-net-total').textContent=format(stats.net)+(state.start.etc?.enabled?' estimated net · includes '+format(stats.etcValue)+' unsold ETC ('+format(stats.cashNet)+' cash net)':' net mesos · after use-item costs');}
     else $('live-net-total').textContent='Net mesos N/A · balance or supply counts unreadable / awaiting validation';
     $('live-level').textContent=(point.end.level||'Level N/A')+' · '+format(point.end.exp)+' EXP';$('live-hp').textContent=(point.end.hp===null?'N/A':format(point.end.hp))+' '+(M.catalog.hp.find(item=>item.id===state.start.hpPotion)?.name||'items');$('live-mp').textContent=(point.end.mp===null?'N/A':format(point.end.mp))+' '+(M.catalog.mp.find(item=>item.id===state.start.mpPotion)?.name||'items');$('live-supply-cost').textContent=stats.supplyCost===null?'N/A':format(stats.supplyCost)+' mesos';$('live-eta').textContent=eta(stats.etaMs);for(const k of ['hp','mp']){const rate=stats[k+'PerMinute'],left=stats[k+'RunwayMs'];$('live-'+k+'-drain').textContent=point.end[k]===null?'Count unreadable':point.end[k]===0?'Empty':rate===null?'Gathering usage rate':rate===0?'No use recorded':format(rate)+'/min · '+eta(left)+' left';}
@@ -174,13 +175,13 @@
   }
   function renderResults(){
     const complete=state.stage==='complete';$('session-results').hidden=!complete;$('review-link').hidden=!complete;$('session-nav').hidden=!complete;latest=null;if(!complete)return;const snap=snapshot();
-    for(const id of ['total-exp','total-net','gross','hp-spend','mp-spend','net-breakdown','adjusted-net','estimated-net','loot-total',...['hour','ten','minute'].flatMap(p=>['exp-'+p,'mesos-'+p])]){$(id).textContent='—';$(id).classList.remove('negative');}
+    for(const id of ['exp-percent-hour','total-exp','total-net','gross','hp-spend','mp-spend','net-breakdown','adjusted-net','estimated-net','loot-total',...['hour','ten','minute'].flatMap(p=>['exp-'+p,'mesos-'+p])]){$(id).textContent='—';$(id).classList.remove('negative');}
     $('hp-used').textContent='';$('mp-used').textContent='';$('ledger-totals').hidden=true;
     for(const id of ['hp-efficiency','mp-efficiency','supply-cost','supply-share','hp-runway','mp-runway','target-eta','projection-exp-30','projection-mesos-30','projection-exp-60','projection-mesos-60'])$(id).textContent='—';
     $('results-description').textContent='Log a checkpoint or finish to see your pace and profit.';$('insight-source').textContent='Log a checkpoint or finish a session to unlock insights.';$('target-detail').textContent='Add starting and ending levels to estimate leveling time.';
     if(snap){
       const r=M.calculate(state.start,snap.end,snap.time);window.MapleUseSlots?.paintStats(r.uses,'result-use-stats');window.MapleEtcCapture?.paintResult(r);latest={...snap,result:r};
-      paint('total-exp',r.exp);paint('total-net',r.net);paint('gross',r.gross);paint('net-breakdown',r.net);
+      $('exp-percent-hour').textContent=levelPace(r.expPercentHour,snap.end.level);paint('total-exp',r.exp);paint('total-net',r.net);paint('gross',r.gross);paint('net-breakdown',r.net);
       $('hp-used').textContent='· '+format(r.hpUsed)+' × '+format(state.start.hpCost);$('mp-used').textContent='· '+format(r.mpUsed)+' × '+format(state.start.mpCost);$('hp-spend').textContent='−'+format(r.hpCost);$('mp-spend').textContent='−'+format(r.mpCost);
       for(const p of ['hour','ten','minute']){paint('exp-'+p,r.rates[p].exp);paint('mesos-'+p,r.rates[p].mesos);}
       $('results-description').textContent=snap.label;$('insight-source').textContent=snap.label;
