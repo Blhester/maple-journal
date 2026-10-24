@@ -1,8 +1,8 @@
 (function(root,factory){const api=factory(typeof module==='object'?require('./core.js'):root.MapleMath,typeof module==='object'?require('./auto-progress.js'):root.MapleAutoProgress);root.MapleLiveModel=api;if(typeof module==='object')module.exports=api;})(typeof window==='object'?window:globalThis,function(M,A){
   'use strict';
   function points(state){const unique=new Map();for(const p of [...(state.checkpoints||[]),...(state.autoPoints||[])])if(!p.preview)unique.set(p.elapsedMs,p);return [...unique.values()].sort((a,b)=>a.elapsedMs-b.elapsedMs);}
-  // Forecast only the live display. Raw checkpoints and the confirmed stream
-  // feed retain their nulls; forecasts never become the next rate anchor.
+  // Forecast the live dashboard and stream from validated capture endpoints.
+  // Raw checkpoints retain nulls; forecasts never become the next rate anchor.
   function financialProjection(start){
     const anchors=new Map();
     function component(key,label,value,ms,learn,missing,limit=Infinity){
@@ -53,21 +53,21 @@
     const liveStats=point?(point.preview?forecast(point,stats,{learn:false}):financial.at(-1)?.live):null;
     const rows=[{to:0,expHour:0,netHour:0},...all.map((p,i)=>{const s=financial[i]?.observed||stats;return {to:p.elapsedMs,expHour:s.expHour,netHour:s.netHour,preview:!!p.preview};})];
     if(lastSample&&!lastSample.mesosReadable&&lastSample.elapsedMs>(rows.at(-1)?.to||0))rows.push({to:lastSample.elapsedMs,expHour:null,netHour:null});
-    return {point,stats,liveStats,rows,intervalRows:intervalRows(state.start,confirmed,{financial}),liveIntervalRows:intervalRows(state.start,confirmed,{estimate:true,financial}),confirmed,activeMs:state.start?M.activeElapsed(state,now):0};
+    return {point,stats,liveStats,liveRows:[{to:0,expHour:0,netHour:0},...financial.map(({point,live})=>({to:point.elapsedMs,expHour:live.expHour,netHour:live.netHour}))],confirmedStats:financial.map(({point,live})=>({ms:point.elapsedMs,exp:live.exp,net:live.net})),rows,intervalRows:intervalRows(state.start,confirmed,{financial}),liveIntervalRows:intervalRows(state.start,confirmed,{estimate:true,financial}),confirmed,activeMs:state.start?M.activeElapsed(state,now):0};
   }
-  // Explicit allowlist: neither the running session nor its raw values leave
-  // this boundary. Calling without preview gives confirmed-only stream data.
+  // Explicit allowlist: only averages/gains from validated capture endpoints
+  // leave this boundary. Component forecasts match the live dashboard, while
+  // pending OCR, raw balances, item identities and counts remain local.
   function baseline(state){
-    const p=points(state).at(-1),s=p?A.stats(state.start,p):null;
+    const view=project(state),p=view.point,s=view.liveStats;
     return {session:String(state.id),ms:p?.elapsedMs||0,exp:s?.exp||0,net:p?s.net:0};
   }
   function snapshot(state,{lastSample=null,now=Date.now(),since=null}={}){
     if(!state.id||!state.start)return null;
-    const view=project(state,{now}),s=view.stats,p=view.point;
+    const view=project(state,{now}),s=view.liveStats,p=view.point;
     let phase=state.stage==='complete'?'complete':state.stage==='ending'?'ending':state.pausedAt?'paused':s?.rateReady?'running':'starting';
-    let expHour=s?.expHour||0,netHour=p?(p.end.mesos===null?null:s.netHour):0,expTotal=s?.exp||0,netTotal=p?s.net:0,rateReady=!!s?.rateReady;
-    let rows=view.rows,sampleAt=p?.at??state.startedAt;
-    if(lastSample?.mesosReadable===false){netHour=null;netTotal=null;}
+    let expHour=s?.expHour||0,netHour=p?s.netHour:0,expTotal=s?.exp||0,netTotal=p?s.net:0,rateReady=!!s?.rateReady;
+    let rows=view.liveRows,sampleAt=p?.at??state.startedAt;
     if(phase==='complete'){
       const r=M.calculate(state.start,state.end,M.activeElapsed(state));expHour=r.rates.hour.exp;netHour=(state.start.etc?r.estimatedNet:r.net)*3600000/r.durationMs;expTotal=r.exp;netTotal=state.start.etc?r.estimatedNet:r.net;rateReady=true;sampleAt=state.stoppedAt;
       rows=rows.filter(row=>row.to<r.durationMs).concat({to:r.durationMs,expHour,netHour});
@@ -75,7 +75,7 @@
     if(since?.session===String(state.id)&&Number.isFinite(since.ms)&&since.ms>=0&&Number.isFinite(since.exp)&&(since.net===null||Number.isFinite(since.net))){
       // Keep the baseline in the tracker. Recalculate from confirmed cumulative
       // gains, including sub-minute readings whose displayed rates were zero.
-      const readings=view.confirmed.map(point=>{const value=A.stats(state.start,point);return {ms:point.elapsedMs,exp:value.exp,net:value.net};}).filter(row=>row.ms>since.ms);
+      const readings=view.confirmedStats.filter(row=>row.ms>since.ms);
       if(phase==='complete'){
         const ms=M.activeElapsed(state);readings.splice(0,readings.length,...readings.filter(row=>row.ms<ms),...(ms>since.ms?[{ms,exp:expTotal,net:netTotal}]:[]));
       }
@@ -86,7 +86,6 @@
       rows=readings.map(row=>({to:row.ms-since.ms,expHour:rate(row.exp-since.exp,row.ms-since.ms),netHour:row.net===null||!anchor||row.ms<anchor.ms?null:rate(row.net-anchor.net,row.ms-anchor.ms)}));
       const latest=readings.at(-1);expTotal=latest?latest.exp-since.exp:0;netTotal=!anchor||latest?.net===null?null:latest?latest.net-anchor.net:0;
       expHour=rows.at(-1)?.expHour??0;netHour=rows.length?rows.at(-1).netHour:since.net===null?null:0;
-      if(phase!=='complete'&&lastSample?.mesosReadable===false){netHour=null;netTotal=null;}
       rateReady=!!latest&&(latest.ms-since.ms>=60000||phase==='complete');
       if(['starting','running'].includes(phase))phase=rateReady?'running':'starting';
       view.activeMs=Math.max(0,view.activeMs-since.ms);

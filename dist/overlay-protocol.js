@@ -21,7 +21,7 @@
   function status(envelope,now=Date.now()){
     if(!envelope?.snapshot||envelope.snapshot.phase==='hidden')return 'Hidden';const s=envelope.snapshot;
     if(s.phase==='complete')return 'Completed';if(now-envelope.publishedAt>90000)return 'Disconnected';if(s.phase==='paused')return 'Paused';if(s.phase==='ending')return 'Awaiting final review';
-    if(now-s.captureAt>180000)return 'Readings stale';return s.phase==='starting'?'Gathering first minute':'Confirmed readings';
+    if(now-s.captureAt>180000)return 'Readings stale';return s.phase==='starting'?'Gathering first minute':'Live averages';
   }
   return {defaults,dimensions,display,select,hidden,validate,status};
 });

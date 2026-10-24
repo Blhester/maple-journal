@@ -33,7 +33,7 @@
     $('overlay-local-controls').hidden=false;$('overlay-open').hidden=!browserMode;$('overlay-create').hidden=browserMode;$('overlay-reset').hidden=browserMode;$('overlay-preview').hidden=browserMode;$('overlay-opacity-wrap').hidden=browserMode;
     $('overlay-browser-instructions').hidden=!browserMode;$('overlay-helper-instructions').hidden=browserMode;$('overlay-helper-download').hidden=!browserMode;$('overlay-hosted-help').hidden=!browserMode;
     $('overlay-copy').textContent=browserMode?'Copy window link':'Copy OBS link';
-    if(!browserMode){$('overlay-mode-note').textContent='Only confirmed readings appear on stream. Share each run separately; completed results remain visible. Keep the helper and this browser tab open.';$('overlay-url-label').textContent='OBS Browser Source URL';$('overlay-link-note').textContent='This link is read-only and works on this computer. Keep it private. Reset link invalidates the old URL.';}
+    if(!browserMode){$('overlay-mode-note').textContent='Only validated captures appear; meso averages can include estimates on stream. Share each run separately; completed results remain visible. Keep the helper and this browser tab open.';$('overlay-url-label').textContent='OBS Browser Source URL';$('overlay-link-note').textContent='This link is read-only and works on this computer. Keep it private. Reset link invalidates the old URL.';}
     window.MapleOverlay=client;paint(client.view());window.addEventListener('pagehide',()=>client.dispose());
   }
   void init();
