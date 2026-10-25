@@ -15,15 +15,15 @@
       end[key]=M.integer(r.value,key);
     }
     if(start.uses!==undefined){end.uses=start.uses.map(slot=>{const r=read.results.uses?.find(r=>r.id===slot.id),v=r?.result;let quantity=null;try{if(readableResult(v))quantity=M.integer(v.value,'Use count');}catch{}return {id:slot.id,quantity,added:0};});}
-    if(start.etc){try{end.etc=read.results.etc?.readable?M.cleanEtcItems(read.results.etc.items):null;}catch{end.etc=null;}}
+    if(start.etc){end.etc=null;end.etcReadings=[];try{const rows=read.results.etc?.items||[];end.etcReadings=M.cleanEtcItems(rows.filter(r=>r.quantity!==null&&r.quantity!==undefined));if(read.results.etc?.readable)end.etc=M.cleanEtcItems(rows);}catch{end.etcReadings=[];}}
     if(!start.level)throw new Error('Record a starting level before enabling automatic progress.');
     M.position(end.level,end.exp);
     if(end.level<start.level)throw new Error('Level is below the starting level; sample skipped.');
     if(!Number.isSafeInteger(read.at)||!Number.isFinite(elapsedMs)||elapsedMs<=0)throw new Error('Invalid snapshot time.');
     return {end,elapsedMs,at:read.at,source:'automatic'};
   }
-  function createFilter({start,anchor,mesoAnchor}){
-    let base=anchor||{end:{...start,hpAdded:0,mpAdded:0,extraExp:0,ledger:[]},elapsedMs:0},pending=null,held=[],rates=[],lastTime=base.elapsedMs,mesoBase=mesoAnchor||(base.end.mesos===null?{end:{...start},elapsedMs:0}:base),mesoRates=[],etcBase=Array.isArray(base.end.etc)?base.end.etc:start.etc?.baseline;
+  function createFilter({start,anchor,mesoAnchor,etcAnchor=[]}){
+    let base=anchor||{end:{...start,hpAdded:0,mpAdded:0,extraExp:0,ledger:[]},elapsedMs:0},pending=null,held=[],rates=[],lastTime=base.elapsedMs,mesoBase=mesoAnchor||(base.end.mesos===null?{end:{...start},elapsedMs:0}:base),mesoRates=[],etcBase=new Map([...(start.etc?.baseline||[]),...etcAnchor,...(base.end.etcReadings||[]),...(Array.isArray(base.end.etc)?base.end.etc:[])].map(r=>[r.itemId,r]));
     // Keep trend anchors across missing counts, without copying old quantities
     // into a new snapshot or inventing a supply cost.
     let supplyBase={hp:base.end.hp??mesoAnchor?.end.hp??start.hp,mp:base.end.mp??mesoAnchor?.end.mp??start.mp};
@@ -59,7 +59,15 @@
           if(mesos===null||point.end.mesos===null){mesos=null;mesosNote='Inventory mesos not readable in both confirming captures.';}
           else if(mesos<mesoBase.end.mesos||point.end.mesos<mesos){mesos=null;mesosNote='Mesos spike, decrease or spend needs another reading or manual validation.';}
           else if(mesoRates.length>=3){const rate=(mesos-mesoBase.end.mesos)*60000/(pending.elapsedMs-mesoBase.elapsedMs),m=median(mesoRates),mad=median(mesoRates.map(x=>Math.abs(x-m)));if(rate>m*5+mad*6+5000){mesos=null;mesosNote='Mesos rate is outside the recent pattern; validate manually.';}}
-          const confirmed={...pending,end:{...pending.end,mesos,hp:point.end.hp===null?null:pending.end.hp,mp:point.end.mp===null?null:pending.end.mp},mesosNote};if(start.uses!==undefined)confirmed.end.uses=pending.end.uses.map(r=>({...r,quantity:point.end.uses.find(x=>x.id===r.id)?.quantity===null?null:r.quantity}));if(start.etc){const a=pending.end.etc,b=point.end.etc;const followsEtc=(old,next)=>old&&next&&old.filter(r=>!start.etc.excluded.includes(r.itemId)).every(r=>(next.find(n=>n.itemId===r.itemId)?.quantity??-1)>=r.quantity);confirmed.end.etc=followsEtc(etcBase,a)&&followsEtc(a,b)?a:null;if(confirmed.end.etc)etcBase=confirmed.end.etc;}stats(start,confirmed);
+          const confirmed={...pending,end:{...pending.end,mesos,hp:point.end.hp===null?null:pending.end.hp,mp:point.end.mp===null?null:pending.end.mp},mesosNote};if(start.uses!==undefined)confirmed.end.uses=pending.end.uses.map(r=>({...r,quantity:point.end.uses.find(x=>x.id===r.id)?.quantity===null?null:r.quantity}));
+          if(start.etc){
+            const a=pending.end.etcReadings||pending.end.etc||[],b=new Map((point.end.etcReadings||point.end.etc||[]).map(r=>[r.itemId,r])),excluded=new Set(start.etc.excluded);
+            const valid=a.filter(r=>!excluded.has(r.itemId)&&r.quantity>=(etcBase.get(r.itemId)?.quantity||0)&&(b.get(r.itemId)?.quantity??-1)>=r.quantity);
+            const ids=new Set(valid.map(r=>r.itemId)),complete=pending.end.etc&&point.end.etc&&[...etcBase.values(),...a].every(r=>excluded.has(r.itemId)||ids.has(r.itemId));
+            confirmed.end.etc=complete?pending.end.etc:null;
+            if(pending.end.etcReadings!==undefined||!complete)confirmed.end.etcReadings=valid;
+            for(const row of valid)etcBase.set(row.itemId,row);
+          }stats(start,confirmed);
           if(mesos!==null){mesoRates.push((mesos-mesoBase.end.mesos)*60000/(pending.elapsedMs-mesoBase.elapsedMs));mesoRates=mesoRates.slice(-7);mesoBase=confirmed;}
           rates.push(speed(base,confirmed));rates=rates.slice(-7);base=confirmed;for(const k of ['hp','mp'])if(confirmed.end[k]!==null)supplyBase[k]=confirmed.end[k];for(const row of confirmed.end.uses||[])if(row.quantity!==null)supplyBase['use:'+row.id]=row.quantity;accepted.push(confirmed);
         }
@@ -69,7 +77,7 @@
       const missing=start.uses!==undefined?point.end.uses.filter(r=>r.quantity===null).map(r=>start.uses.find(s=>s.id===r.id)?.name||r.id):['hp','mp'].filter(k=>point.end[k]===null);
       return {preview,accepted,rejected,pending,held:0,message:(accepted.length?'Progress confirmed. Latest sample is waiting for the next reading.':'Sample waiting for the next reading. No value was guessed or filled in.')+(missing.length?' EXP continues; '+missing.map(k=>k.toUpperCase()).join('/')+' unreadable. Live financial estimates use the last validated rate or value; raw counts stay unknown.':'')};
     }
-    function rebase(point){base=point;etcBase=Array.isArray(point.end.etc)?point.end.etc:start.etc?.baseline;supplyBase={hp:point.end.hp,mp:point.end.mp};pending=null;held=[];rates=[];lastTime=point.elapsedMs;mesoBase=point;mesoRates=[];for(const slot of start.uses||[])supplyBase['use:'+slot.id]=point.end.uses?.find(r=>r.id===slot.id)?.quantity??slot.quantity;}
+    function rebase(point){base=point;etcBase=new Map([...(start.etc?.baseline||[]),...(point.end.etcReadings||[]),...(Array.isArray(point.end.etc)?point.end.etc:[])].map(r=>[r.itemId,r]));supplyBase={hp:point.end.hp,mp:point.end.mp};pending=null;held=[];rates=[];lastTime=point.elapsedMs;mesoBase=point;mesoRates=[];for(const slot of start.uses||[])supplyBase['use:'+slot.id]=point.end.uses?.find(r=>r.id===slot.id)?.quantity??slot.quantity;}
     return {offer,rebase};
   }
   function stats(start,point){

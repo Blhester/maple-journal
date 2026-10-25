@@ -107,7 +107,7 @@
   }
   function rebaseAuto(){
     if(!autoRecorder?.active())return;
-    autoRecorder.cancelPending();autoFilter=MapleAutoProgress.createFilter({start:state.start,anchor:progressPoints().at(-1),mesoAnchor:state.checkpoints.at(-1)});
+    autoRecorder.cancelPending();autoFilter=MapleAutoProgress.createFilter({start:state.start,anchor:progressPoints().at(-1),mesoAnchor:state.checkpoints.at(-1),etcAnchor:MapleLiveModel.etcTotals(state)});
     autoMessage='Manual checkpoint recorded. Automatic validation now uses its values and cumulative restocks.';paintAuto();
   }
   autoRecorder=MapleAutoProgress.createRecorder({
@@ -137,7 +137,7 @@
   $('auto-progress-toggle').addEventListener('change',()=>{
     if(!$('auto-progress-toggle').checked){stopAuto();return;}
     if(state.stage!=='running'||state.pausedAt||!state.start.level){paintAuto();return;}
-    autoFilter=MapleAutoProgress.createFilter({start:state.start,anchor:progressPoints().at(-1),mesoAnchor:state.checkpoints.at(-1)});autoLayout=null;autoPreview=null;autoRecorder.start();
+    autoFilter=MapleAutoProgress.createFilter({start:state.start,anchor:progressPoints().at(-1),mesoAnchor:state.checkpoints.at(-1),etcAnchor:MapleLiveModel.etcTotals(state)});autoLayout=null;autoPreview=null;autoRecorder.start();
   });
   window.addEventListener('pagehide',()=>autoRecorder.stop('Reloaded or left page. Automatic capture must be enabled again.'));
   const format=n=>number.format(Math.abs(n)<.005?0:n);

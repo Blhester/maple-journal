@@ -1,10 +1,11 @@
 (function(root,factory){const api=factory(typeof module==='object'?require('./core.js'):root.MapleMath,typeof module==='object'?require('./auto-progress.js'):root.MapleAutoProgress);root.MapleLiveModel=api;if(typeof module==='object')module.exports=api;})(typeof window==='object'?window:globalThis,function(M,A){
   'use strict';
   function points(state){const unique=new Map();for(const p of [...(state.checkpoints||[]),...(state.autoPoints||[])])if(!p.preview)unique.set(p.elapsedMs,p);return [...unique.values()].sort((a,b)=>a.elapsedMs-b.elapsedMs);}
+  function etcTotals(state){const rows=new Map((state.start?.etc?.baseline||[]).map(r=>[r.itemId,r]));for(const p of points(state))for(const r of p.end.etcReadings||p.end.etc||[])rows.set(r.itemId,r);return [...rows.values()];}
   // Forecast the live dashboard and stream from validated capture endpoints.
   // Raw checkpoints retain nulls; forecasts never become the next rate anchor.
   function financialProjection(start){
-    const anchors=new Map();
+    const anchors=new Map(),etcItems=new Map((start.etc?.baseline||[]).map(r=>[r.itemId,r])),initialEtc=new Map(etcItems);
     function component(key,label,value,ms,learn,missing,limit=Infinity){
       const prior=anchors.get(key)||{value:0,ms:0,rate:null};
       if(value!==null&&Number.isFinite(value)){
@@ -20,7 +21,14 @@
       let cost=0;
       if(start.uses!==undefined){for(const row of observed.uses){const available=start.uses.find(s=>s.id===row.id).quantity+row.added,used=component('use:'+row.id,row.name,row.used,ms,learn,missing,available);cost+=Math.min(available,Math.max(0,used))*row.cost;}}
       else for(const key of ['hp','mp'])cost+=component(key,key.toUpperCase()+' supply',observed[key+'Used'],ms,learn,missing,start[key]+(e[key+'Added']||0))*start[key+'Cost'];
-      const etc=component('etc','ETC drops',observed.etcValue,ms,learn,missing),net=gain-cost+etc;
+      let etc=0;
+      if(start.etc?.enabled){
+        const current=new Map((e.etcReadings||e.etc||[]).map(r=>[r.itemId,r])),known=new Map(etcItems),gaps=[];
+        for(const row of current.values())if(!known.has(row.itemId)){known.set(row.itemId,row);if(learn)etcItems.set(row.itemId,row);}
+        for(const [id,item]of known){if(start.etc.excluded.includes(id))continue;const row=current.get(id),initial=initialEtc.get(id)?.quantity||0,quantity=row&&row.quantity>=initial?row.quantity-initial:null,price=initialEtc.get(id)?.unitPrice??item.unitPrice;etc+=component('etc:'+id,'ETC drops',quantity===null?null:quantity*price,ms,learn,gaps);}
+        if(gaps.length||e.etc===null)missing.push({key:'etc',label:'ETC drops',mode:gaps.some(r=>r.mode==='rate')?'rate':'held',ageMs:gaps.length?Math.max(...gaps.map(r=>r.ageMs)):0});
+      }
+      const net=gain-cost+etc;
       const amount=value=>Number.isFinite(value)&&Math.abs(value)<=Number.MAX_SAFE_INTEGER,safe=[gain,cost,etc,net].every(amount);
       return {...observed,supplyCost:amount(cost)?cost:null,cashNet:amount(gain-cost)?gain-cost:null,etcValue:amount(etc)?etc:null,net:safe?net:null,netHour:safe?(observed.rateReady?net*3600000/ms:0):null,estimated:missing.length>0,estimatedComponents:missing};
     };
@@ -93,5 +101,5 @@
     const series=rows.filter(row=>row.to>0).slice(-240).map(row=>({ms:row.to,exp:row.expHour,mesos:row.netHour}));
     return {version:1,session:String(state.id),phase,activeMs:view.activeMs,sampleAt,captureAt:lastSample?.usable?lastSample.at:p?.at??state.startedAt,rateReady,expHour,netHour,expTotal,netTotal,series:[{ms:0,exp:0,mesos:0},...series]};
   }
-  return {points,intervalRows,project,snapshot,baseline};
+  return {points,etcTotals,intervalRows,project,snapshot,baseline};
 });

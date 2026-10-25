@@ -67,3 +67,5 @@ Completed: active ETC inventory scan, per-item exclusions, duplicate-stack aggre
 
 [x] Tune ETC icon identity/geometry/count crops; expose slot diagnostics and prevent silent opt-outs on unreadable starting counts. Add native-aspect/offset/scale/background/negative tests and preserve all-slot duplicate-stack scanning.
 [ ] Validate additional real ETC screenshots, especially the user's failing layout, expanded grids and scaled HUDs.
+
+[x] Fix ETC quantity updates not contributing meso value when any other slot is unreadable; validate/value items independently and retain actual per-item counts for restart/final review.
