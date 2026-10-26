@@ -4,7 +4,7 @@
     const key='maple-journal-overlay-v1';let credentials=null,settings=P.display(),last=null,baseline=null,sharedId=null,leaseToken=null,revision=0,dirty=false,processing=null,retry=null,attempt=0,disposed=false,message='Create an overlay, then share a run.';
     try{const saved=JSON.parse(storage.getItem(key));if(saved){settings=P.display(saved.settings);baseline=saved.baseline||null;if(saved.credentials&&['id','readToken','publishToken'].every(k=>/^[A-Za-z0-9_-]{43}$/.test(saved.credentials[k])))credentials=saved.credentials;if(saved.last?.phase==='complete')last=P.validate(saved.last);}}catch{message='Stored overlay settings could not be restored. Create a new overlay.';}
     function view(){return {credentials:credentials?{id:credentials.id,readToken:credentials.readToken}:null,settings:{...settings},sharing:!!sharedId,canResetStats:!!sharedId&&getSession().id===sharedId&&getSession().stage==='running',message};}
-    function fullSnapshot(){const snapshot=getSnapshot({since:baseline});return snapshot?P.select(snapshot,{...P.defaults,showTime:true}):null;}
+    function fullSnapshot(){const snapshot=getSnapshot({since:baseline});return snapshot?P.select(snapshot,{...P.defaults,showTime:true,expPercent:true,eta:true}):null;}
     function change(text){if(text)message=text;onChange(view());}
     function persist(){try{storage.setItem(key,JSON.stringify({credentials,settings,last,baseline}));}catch{change('Browser storage is unavailable. Keep this tab open; a reload may need a new OBS link.');}}
     async function request(suffix,{method='POST',body={},read=false,keepalive=false}={}){

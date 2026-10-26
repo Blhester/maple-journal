@@ -142,3 +142,9 @@ tbody td{font-size:16px}.totals span{font-size:12px}.insight-grid strong{font-si
 .live-rate-cards .live-finance-note{display:block;margin-top:8px;font-size:14px;line-height:1.5;color:var(--muted)}.live-estimate-line{stroke-dasharray:2 5;opacity:.8}.live-estimate-dot{fill:var(--paper,#fffef9);stroke:#66864d;stroke-width:2.5}[data-theme="dark"] .live-estimate-dot{fill:#1b2b23;stroke:#b4cd91}
 
 .live-stat>span{margin-right:8px}
+
+.tracking-mode-choice{display:block;margin:0 0 20px}.tracking-mode-choice small{display:block;margin-top:7px;color:var(--muted)}.exp-only #session-view .finance-only,.exp-only #session-view .legacy-use,.exp-only #use-setup,.exp-only #use-current,.exp-only #session-supplies,.exp-only #live-use-stats,.exp-only #use-cp-list,.exp-only #use-end-list,.exp-only #result-use-stats,.exp-only #session-view .etc-track-panel,.exp-only #ledger-details,.exp-only #profit-metric,.exp-only #session-results .rate-table td:last-child,.exp-only #session-results .rate-table th:last-child,.exp-only #session-results .insight-grid,.exp-only #session-results .method{display:none!important}.exp-only .live-rate-cards,.exp-only .live-charts{grid-template-columns:1fr}.exp-only #trend-rows td:last-child{display:none}.exp-only #start-note{display:none}
+
+.exp-only .live-charts .chart svg{height:230px;width:100%}
+
+.exp-only #session-view .etc-section,.exp-only #adjustments,.exp-only #trend-mesos{display:none!important}

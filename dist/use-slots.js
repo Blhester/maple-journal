@@ -13,7 +13,7 @@
   function commit(){options.changed();}
   function init(config){
     options={...config,readQuantity:quantityReader};document.body.classList.add('generic-uses');
-    const s=state();if(s.start&&s.start.uses===undefined){s.start.uses=legacy(s.start);const convert=e=>{if(e)e.uses=s.start.uses.map((r,i)=>({id:r.id,quantity:e[i?'mp':'hp'],added:e[(i?'mp':'hp')+'Added']||0}));};convert(s.end);for(const p of [...(s.checkpoints||[]),...(s.autoPoints||[])])convert(p.end);for(const e of [s.end,...(s.checkpoints||[]).map(p=>p.end),...(s.autoPoints||[]).map(p=>p.end)])if(e)e.hp=e.mp=e.hpAdded=e.mpAdded=0;s.start.hp=s.start.mp=s.start.hpCost=s.start.mpCost=0;}
+    const s=state();if(s.start&&!s.start.expOnly&&s.start.uses===undefined){s.start.uses=legacy(s.start);const convert=e=>{if(e)e.uses=s.start.uses.map((r,i)=>({id:r.id,quantity:e[i?'mp':'hp'],added:e[(i?'mp':'hp')+'Added']||0}));};convert(s.end);for(const p of [...(s.checkpoints||[]),...(s.autoPoints||[])])convert(p.end);for(const e of [s.end,...(s.checkpoints||[]).map(p=>p.end),...(s.autoPoints||[]).map(p=>p.end)])if(e)e.hp=e.mp=e.hpAdded=e.mpAdded=0;s.start.hp=s.start.mp=s.start.hpCost=s.start.mpCost=0;}
     if(!s.useDraft)s.useDraft=s.start?.uses?clone(s.start.uses):legacy({hp:0,mp:0,hpCost:Number($('hp-cost').value)||80,mpCost:Number($('mp-cost').value)||150,hpPotion:$('hp-potion').value,mpPotion:$('mp-potion').value});
     $('use-add').addEventListener('click',()=>{if(slots().length>=12)return;slots().push({id:'use-'+Date.now().toString(36),itemId:'custom',name:'Custom use item',cost:null,quantity:0});render();commit();});
     render();
@@ -43,7 +43,7 @@
   function endRows(prefix){const s=state(),key=prefix==='cp'?'useCheckpointDraft':'useEndDraft';if(!s[key]){const last=(prefix!=='cp'&&s.end?.uses)||MapleLiveModel.points(s).at(-1)?.end.uses;s[key]=slots().map(r=>({id:r.id,quantity:last?.find(x=>x.id===r.id)?.quantity??'',added:last?.find(x=>x.id===r.id)?.added||0}));}return s[key];}
   function endEditor(host,prefix){host.replaceChildren();for(const row of endRows(prefix)){const slot=slots().find(s=>s.id===row.id),card=el('div',undefined,'use-slot-end');card.append(imageFor(slot.itemId),el('strong',slot.name));number(card,'Remaining quantity',row.quantity,v=>{row.quantity=v;commit();});number(card,'Added since start',row.added,v=>{row.added=v;commit();});host.append(card);}}
   function render(){
-    if(!options)return;const s=state(),setup=s.stage==='setup';$('use-setup').hidden=!setup;$('use-current').hidden=!['running','ending'].includes(s.stage);
+    if(!options)return;const s=state();if(s.start?.expOnly||s.stage==='setup'&&s.expOnly){for(const id of ['use-setup','use-current','use-cp-list','use-end-list']){$(id).hidden=true;for(const n of $(id).querySelectorAll('input,select,button'))n.disabled=true;}return;}const setup=s.stage==='setup';for(const id of ['use-cp-list','use-end-list'])$(id).hidden=false;$('use-setup').hidden=!setup;$('use-current').hidden=!['running','ending'].includes(s.stage);
     editor($('use-setup-list'),s.useDraft||[]);if(!setup&&s.start?.uses){editor($('use-current-list'),clone(s.start.uses),{running:true});endEditor($('use-end-list'),'end');endEditor($('use-cp-list'),'cp');}
     $('use-add').disabled=(s.useDraft?.length||0)>=12;
   }

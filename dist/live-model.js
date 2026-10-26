@@ -5,6 +5,7 @@
   // Forecast the live dashboard and stream from validated capture endpoints.
   // Raw checkpoints retain nulls; forecasts never become the next rate anchor.
   function financialProjection(start){
+    if(start.expOnly)return (point,observed)=>observed;
     const anchors=new Map(),etcItems=new Map((start.etc?.baseline||[]).map(r=>[r.itemId,r])),initialEtc=new Map(etcItems);
     function component(key,label,value,ms,learn,missing,limit=Infinity){
       const prior=anchors.get(key)||{value:0,ms:0,rate:null};
@@ -72,12 +73,12 @@
   }
   function snapshot(state,{lastSample=null,now=Date.now(),since=null}={}){
     if(!state.id||!state.start)return null;
-    const view=project(state,{now}),s=view.liveStats,p=view.point;
+    const view=project(state,{now}),s=view.liveStats,p=view.point,captureActiveMs=view.activeMs;
     let phase=state.stage==='complete'?'complete':state.stage==='ending'?'ending':state.pausedAt?'paused':s?.rateReady?'running':'starting';
     let expHour=s?.expHour||0,netHour=p?s.netHour:0,expTotal=s?.exp||0,netTotal=p?s.net:0,rateReady=!!s?.rateReady;
     let rows=view.liveRows,sampleAt=p?.at??state.startedAt;
     if(phase==='complete'){
-      const r=M.calculate(state.start,state.end,M.activeElapsed(state));expHour=r.rates.hour.exp;netHour=(state.start.etc?r.estimatedNet:r.net)*3600000/r.durationMs;expTotal=r.exp;netTotal=state.start.etc?r.estimatedNet:r.net;rateReady=true;sampleAt=state.stoppedAt;
+      const r=M.calculate(state.start,state.end,M.activeElapsed(state));expHour=r.rates.hour.exp;netHour=state.start.expOnly?null:(state.start.etc?r.estimatedNet:r.net)*3600000/r.durationMs;expTotal=r.exp;netTotal=state.start.etc?r.estimatedNet:r.net;rateReady=true;sampleAt=state.stoppedAt;
       rows=rows.filter(row=>row.to<r.durationMs).concat({to:r.durationMs,expHour,netHour});
     }
     if(since?.session===String(state.id)&&Number.isFinite(since.ms)&&since.ms>=0&&Number.isFinite(since.exp)&&(since.net===null||Number.isFinite(since.net))){
@@ -99,7 +100,10 @@
       view.activeMs=Math.max(0,view.activeMs-since.ms);
     }
     const series=rows.filter(row=>row.to>0).slice(-240).map(row=>({ms:row.to,exp:row.expHour,mesos:row.netHour}));
-    return {version:1,session:String(state.id),phase,activeMs:view.activeMs,sampleAt,captureAt:lastSample?.usable?lastSample.at:p?.at??state.startedAt,rateReady,expHour,netHour,expTotal,netTotal,series:[{ms:0,exp:0,mesos:0},...series]};
+    const current=phase==='complete'?state.end:p?.end,level=current?.level||state.start.level,expPercentHour=M.levelPercentPerHour(expHour,level),remaining=level===100?0:!Number.isInteger(level)?null:current?M.expTable[level]-current.exp:null;let etaMs=remaining===0?0:rateReady&&expHour>0&&remaining!==null?remaining*3600000/expHour:null;if(etaMs!==null&&phase!=='complete'&&p)etaMs=Math.max(0,etaMs-Math.max(0,captureActiveMs-p.elapsedMs));
+    if(!Number.isFinite(etaMs)||etaMs>Number.MAX_SAFE_INTEGER)etaMs=null;
+    if(state.start.expOnly){netHour=netTotal=null;rows=rows.map(r=>({...r,netHour:null}));}
+    return {expOnly:state.start.expOnly===true,expPercentHour,etaMs,version:1,session:String(state.id),phase,activeMs:view.activeMs,sampleAt,captureAt:lastSample?.usable?lastSample.at:p?.at??state.startedAt,rateReady,expHour,netHour,expTotal,netTotal,series:[{ms:0,exp:0,mesos:0},...series]};
   }
   return {points,etcTotals,intervalRows,project,snapshot,baseline};
 });

@@ -68,7 +68,7 @@
     return value;
   }
   function profitRates(result,metric='net') {
-    if(!['net','adjustedNet','estimatedNet'].includes(metric))throw new Error('Unknown profit metric.');
+    if(!['net','adjustedNet','estimatedNet'].includes(metric))throw new Error('Unknown profit metric.');if(result.expOnly)return {hour:null,ten:null,minute:null};
     return Object.fromEntries([['hour',3600000],['ten',600000],['minute',60000]].map(([key,ms])=>[key,result[metric]*ms/result.durationMs]));
   }
   function ledgerTotals(entries=[]) {
@@ -123,6 +123,7 @@
   }
   function calculate(start, end, durationMs) {
     if (!Number.isFinite(durationMs) || durationMs <= 0) throw new Error('The session needs a positive elapsed time.');
+    if(start.expOnly===true){const from=levelNumber(start.level),to=levelNumber(end.level);if(to<from)throw Error('Ending level cannot be below starting level.');const exp=position(to,integer(end.exp,'Ending EXP'))-position(from,integer(start.exp,'Starting EXP')),rates=Object.fromEntries([['hour',3600000],['ten',600000],['minute',60000]].map(([key,ms])=>[key,{exp:exp*ms/durationMs,mesos:null}]));return {expOnly:true,exp,durationMs,rates,expPercentHour:levelPercentPerHour(rates.hour.exp,to),net:null,adjustedNet:null,estimatedNet:null,etcDrops:[],ledger:{loot:0,income:0,expense:0}};}
     const values = {};
     for (const key of ['exp','mesos','hp','mp']) values[key] = integer(end[key], 'Ending ' + key);
     const extraExp = integer(end.extraExp ?? 0, 'Level-up EXP');
@@ -157,7 +158,7 @@
       mpRunwayMs:values.mp===0?0:mpUsed>0?values.mp*durationMs/mpUsed:null};
   }
   function forecast(end,result,target) {
-    const projections=[30,60].map(minutes=>({minutes,exp:result.exp*minutes*60000/result.durationMs,mesos:result.net*minutes*60000/result.durationMs}));
+    const projections=[30,60].map(minutes=>({minutes,exp:result.exp*minutes*60000/result.durationMs,mesos:result.expOnly?null:result.net*minutes*60000/result.durationMs}));
     if(end.level===null||end.level===undefined||end.level==='')return {projections,remaining:null,etaMs:null,reason:'Add starting and ending levels for a leveling estimate.'};
     const current=levelNumber(end.level), to=target?levelNumber(target):Math.min(100,current+1);
     const remaining=Math.max(0,cumulative[to]-position(current,end.exp));
@@ -170,7 +171,7 @@
     let previous={exp:0,net:0,time:0};const rows=[];
     for(const point of points){
       if(!Number.isFinite(point.elapsedMs)||point.elapsedMs<=previous.time)throw new Error('Checkpoint times must increase.');
-      const total=calculate(start,point.end,point.elapsedMs);if(start.etc?.enabled)total.net=total.estimatedNet;const span=point.elapsedMs-previous.time;
+      const total=calculate(start,point.end,point.elapsedMs);if(start.expOnly){const span=point.elapsedMs-previous.time;rows.push({from:previous.time,to:point.elapsedMs,exp:total.exp-previous.exp,net:null,expHour:(total.exp-previous.exp)*3600000/span,netHour:null,final:!!point.final});previous={exp:total.exp,net:0,time:point.elapsedMs};continue;}if(start.etc?.enabled)total.net=total.estimatedNet;const span=point.elapsedMs-previous.time;
       rows.push({from:previous.time,to:point.elapsedMs,exp:total.exp-previous.exp,net:total.net-previous.net,expHour:(total.exp-previous.exp)*3600000/span,netHour:(total.net-previous.net)*3600000/span,final:!!point.final});
       previous={exp:total.exp,net:total.net,time:point.elapsedMs};
     }
@@ -183,14 +184,15 @@
       const name=(session.meta?.map||'Unspecified map').trim()||'Unspecified map',key=name.toLocaleLowerCase('en-US');
       const r=calculate(session.start,session.end,activeElapsed(session));
       const g=groups.get(key)||{map:name,runs:0,time:0,exp:0,mesos:0};
-      g.runs++;g.time+=r.durationMs;g.exp+=r.exp;g.mesos+=r[metric];groups.set(key,g);
+      g.runs++;g.time+=r.durationMs;g.exp+=r.exp;if(!r.expOnly){g.mesos+=r[metric];g.financeTime=(g.financeTime||0)+r.durationMs;}groups.set(key,g);
     }
-    return [...groups.values()].map(g=>({...g,expHour:g.exp*3600000/g.time,netHour:g.mesos*3600000/g.time})).sort((a,b)=>b.expHour-a.expHour);
+    return [...groups.values()].map(g=>({...g,expHour:g.exp*3600000/g.time,netHour:g.financeTime?g.mesos*3600000/g.financeTime:null})).sort((a,b)=>b.expHour-a.expHour);
   }
   function normalizeProgress(start,points=[],maxTime=Infinity){
     if(!Array.isArray(points)||points.length>5000)throw new Error('Invalid automatic progress list.');let previous=0;
     return points.map(point=>{
       const elapsedMs=integer(point.elapsedMs,'Progress time'),e=point.end;if(elapsedMs<=previous||elapsedMs>maxTime||!e)throw new Error('Invalid automatic progress timing.');previous=elapsedMs;
+      if(start.expOnly){const end={level:levelNumber(e.level),exp:integer(e.exp,'Progress EXP'),mesos:null,hp:null,mp:null,hpAdded:0,mpAdded:0,extraExp:0,ledger:[]};calculate(start,end,elapsedMs);return {elapsedMs,end,source:'automatic',...(point.at?{at:integer(point.at,'Progress capture time')}: {})};}
       const end={...(start.etc?{etc:e.etc===null||e.etc===undefined?null:cleanEtcItems(e.etc)}:{}),mesos:e.mesos===null?null:integer(e.mesos,'Progress mesos'),level:levelNumber(e.level),extraExp:0,ledger:[]};
       if(start.etc&&e.etcReadings!==undefined)end.etcReadings=cleanEtcItems(e.etcReadings);
       for(const key of ['exp','hp','mp','hpAdded','mpAdded'])end[key]=['hp','mp'].includes(key)&&e[key]===null?null:integer(e[key]??(['hpAdded','mpAdded'].includes(key)?0:undefined),'Progress '+key);
@@ -205,12 +207,13 @@
     if(!raw||typeof raw!=='object')throw new Error('Invalid session record.');
     const startedAt=integer(raw.startedAt,'Start time'),stoppedAt=integer(raw.stoppedAt,'Stop time'),pausedMs=integer(raw.pausedMs??0,'Paused time');
     if(startedAt<=0||stoppedAt<=startedAt||pausedMs>=stoppedAt-startedAt)throw new Error('Invalid session timing.');
-    const start={};for(const k of ['exp','mesos','hp','mp','hpCost','mpCost'])start[k]=integer(raw.start?.[k],'Starting '+k);
-    if(raw.start.uses!==undefined)start.uses=cleanUses(raw.start.uses);if(raw.start.etc)start.etc=cleanEtc(raw.start.etc);
+    const start={};if(raw.start?.expOnly===true){start.expOnly=true;start.exp=integer(raw.start.exp,'Starting EXP');for(const k of ['mesos','hp','mp','hpCost','mpCost'])start[k]=0;}else for(const k of ['exp','mesos','hp','mp','hpCost','mpCost'])start[k]=integer(raw.start?.[k],'Starting '+k);
+    if(!start.expOnly&&raw.start.uses!==undefined)start.uses=cleanUses(raw.start.uses);if(!start.expOnly&&raw.start.etc)start.etc=cleanEtc(raw.start.etc);
     start.level=raw.start.level!==undefined&&raw.start.level!==null&&raw.start.level!==''?levelNumber(raw.start.level):null;
     for(const type of ['hp','mp'])start[type+'Potion']=String(raw.start[type+'Potion']||'custom').slice(0,40);
     function cleanEnd(e){
       if(!e||typeof e!=='object')throw new Error('Missing ending values.');
+      if(start.expOnly)return {exp:integer(e.exp,'Ending EXP'),level:levelNumber(e.level),mesos:null,hp:null,mp:null,hpAdded:0,mpAdded:0,extraExp:0,ledger:[]};
       const out={};for(const k of ['exp','mesos','hp','mp'])out[k]=integer(e[k],'Ending '+k);
       for(const k of ['hpAdded','mpAdded','extraExp'])out[k]=integer(e[k]??0,k);
       if(start.uses!==undefined)out.uses=cleanUseEnd(start,e.uses);if(start.etc)out.etc=e.etc===null||e.etc===undefined?null:cleanEtcItems(e.etc);

@@ -69,3 +69,5 @@ Completed: active ETC inventory scan, per-item exclusions, duplicate-stack aggre
 [ ] Validate additional real ETC screenshots, especially the user's failing layout, expanded grids and scaled HUDs.
 
 [x] Fix ETC quantity updates not contributing meso value when any other slot is unreadable; validate/value items independently and retain actual per-item counts for restart/final review.
+
+[x] EXP-only recording mode, skip all financial OCR/calculation paths, preserve full-tracking preferences, and add optional level-%/hour and next-level timer to browser/direct OBS overlays with validation, privacy and ETA clock tests.

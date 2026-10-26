@@ -6,6 +6,7 @@
   function fromRead(read,start,elapsedMs){
     const end={hpAdded:0,mpAdded:0,extraExp:0,ledger:[]};
     for(const key of keys){
+      if(start.expOnly&&['mesos','hp','mp'].includes(key)){end[key]=null;continue;}
       if(start.uses!==undefined&&['hp','mp'].includes(key)){end[key]=0;continue;}
       const r=read.results[key],readable=readableResult(r);
       // An unreadable supply must not discard good EXP. Keep unknowns explicit;
@@ -14,8 +15,8 @@
       if(!readable)throw new Error('Uncertain '+key+' reading; sample skipped.');
       end[key]=M.integer(r.value,key);
     }
-    if(start.uses!==undefined){end.uses=start.uses.map(slot=>{const r=read.results.uses?.find(r=>r.id===slot.id),v=r?.result;let quantity=null;try{if(readableResult(v))quantity=M.integer(v.value,'Use count');}catch{}return {id:slot.id,quantity,added:0};});}
-    if(start.etc){end.etc=null;end.etcReadings=[];try{const rows=read.results.etc?.items||[];end.etcReadings=M.cleanEtcItems(rows.filter(r=>r.quantity!==null&&r.quantity!==undefined));if(read.results.etc?.readable)end.etc=M.cleanEtcItems(rows);}catch{end.etcReadings=[];}}
+    if(!start.expOnly&&start.uses!==undefined){end.uses=start.uses.map(slot=>{const r=read.results.uses?.find(r=>r.id===slot.id),v=r?.result;let quantity=null;try{if(readableResult(v))quantity=M.integer(v.value,'Use count');}catch{}return {id:slot.id,quantity,added:0};});}
+    if(!start.expOnly&&start.etc){end.etc=null;end.etcReadings=[];try{const rows=read.results.etc?.items||[];end.etcReadings=M.cleanEtcItems(rows.filter(r=>r.quantity!==null&&r.quantity!==undefined));if(read.results.etc?.readable)end.etc=M.cleanEtcItems(rows);}catch{end.etcReadings=[];}}
     if(!start.level)throw new Error('Record a starting level before enabling automatic progress.');
     M.position(end.level,end.exp);
     if(end.level<start.level)throw new Error('Level is below the starting level; sample skipped.');
@@ -44,7 +45,7 @@
     function offer(point){
       if(!Number.isFinite(point.elapsedMs)||point.elapsedMs<=lastTime)throw new Error('Snapshot times must increase.');
       point={...point,end:{...point.end,hpAdded:base.end.hpAdded||0,mpAdded:base.end.mpAdded||0,extraExp:0,ledger:[]}};
-      if(start.uses!==undefined)point.end.uses=M.cleanUseEnd(start,(point.end.uses||[]).map(r=>({...r,added:base.end.uses?.find(b=>b.id===r.id)?.added||0})),{partial:true});
+      if(!start.expOnly&&start.uses!==undefined)point.end.uses=M.cleanUseEnd(start,(point.end.uses||[]).map(r=>({...r,added:base.end.uses?.find(b=>b.id===r.id)?.added||0})),{partial:true});
       vector(point);lastTime=point.elapsedMs;const accepted=[],rejected=[];
       if(!follows(base,point)){
         held.push(point);if(held.length>4)rejected.push({point:held.shift(),reason:'Unconfirmed change; review a manual checkpoint.'});
@@ -56,11 +57,11 @@
         else if(unusual(pending))rejected.push({point:pending,reason:'Rate is far outside the recent pattern; review manually.'});
         else {
           let mesos=pending.end.mesos,mesosNote='';
-          if(mesos===null||point.end.mesos===null){mesos=null;mesosNote='Inventory mesos not readable in both confirming captures.';}
+          if(start.expOnly){mesos=null;}else if(mesos===null||point.end.mesos===null){mesos=null;mesosNote='Inventory mesos not readable in both confirming captures.';}
           else if(mesos<mesoBase.end.mesos||point.end.mesos<mesos){mesos=null;mesosNote='Mesos spike, decrease or spend needs another reading or manual validation.';}
           else if(mesoRates.length>=3){const rate=(mesos-mesoBase.end.mesos)*60000/(pending.elapsedMs-mesoBase.elapsedMs),m=median(mesoRates),mad=median(mesoRates.map(x=>Math.abs(x-m)));if(rate>m*5+mad*6+5000){mesos=null;mesosNote='Mesos rate is outside the recent pattern; validate manually.';}}
-          const confirmed={...pending,end:{...pending.end,mesos,hp:point.end.hp===null?null:pending.end.hp,mp:point.end.mp===null?null:pending.end.mp},mesosNote};if(start.uses!==undefined)confirmed.end.uses=pending.end.uses.map(r=>({...r,quantity:point.end.uses.find(x=>x.id===r.id)?.quantity===null?null:r.quantity}));
-          if(start.etc){
+          const confirmed={...pending,end:{...pending.end,mesos,hp:point.end.hp===null?null:pending.end.hp,mp:point.end.mp===null?null:pending.end.mp},mesosNote};if(!start.expOnly&&start.uses!==undefined)confirmed.end.uses=pending.end.uses.map(r=>({...r,quantity:point.end.uses.find(x=>x.id===r.id)?.quantity===null?null:r.quantity}));
+          if(!start.expOnly&&start.etc){
             const a=pending.end.etcReadings||pending.end.etc||[],b=new Map((point.end.etcReadings||point.end.etc||[]).map(r=>[r.itemId,r])),excluded=new Set(start.etc.excluded);
             const valid=a.filter(r=>!excluded.has(r.itemId)&&r.quantity>=(etcBase.get(r.itemId)?.quantity||0)&&(b.get(r.itemId)?.quantity??-1)>=r.quantity);
             const ids=new Set(valid.map(r=>r.itemId)),complete=pending.end.etc&&point.end.etc&&[...etcBase.values(),...a].every(r=>excluded.has(r.itemId)||ids.has(r.itemId));
@@ -74,7 +75,7 @@
       }
       pending=point;
       const preview={...point,end:{...point.end,mesos:point.end.mesos!==null&&point.end.mesos>=mesoBase.end.mesos?point.end.mesos:null},preview:true};
-      const missing=start.uses!==undefined?point.end.uses.filter(r=>r.quantity===null).map(r=>start.uses.find(s=>s.id===r.id)?.name||r.id):['hp','mp'].filter(k=>point.end[k]===null);
+      const missing=start.expOnly?[]:start.uses!==undefined?point.end.uses.filter(r=>r.quantity===null).map(r=>start.uses.find(s=>s.id===r.id)?.name||r.id):['hp','mp'].filter(k=>point.end[k]===null);
       return {preview,accepted,rejected,pending,held:0,message:(accepted.length?'Progress confirmed. Latest sample is waiting for the next reading.':'Sample waiting for the next reading. No value was guessed or filled in.')+(missing.length?' EXP continues; '+missing.map(k=>k.toUpperCase()).join('/')+' unreadable. Live financial estimates use the last validated rate or value; raw counts stay unknown.':'')};
     }
     function rebase(point){base=point;etcBase=new Map([...(start.etc?.baseline||[]),...(point.end.etcReadings||[]),...(Array.isArray(point.end.etc)?point.end.etc:[])].map(r=>[r.itemId,r]));supplyBase={hp:point.end.hp,mp:point.end.mp};pending=null;held=[];rates=[];lastTime=point.elapsedMs;mesoBase=point;mesoRates=[];for(const slot of start.uses||[])supplyBase['use:'+slot.id]=point.end.uses?.find(r=>r.id===slot.id)?.quantity??slot.quantity;}
@@ -82,6 +83,7 @@
   }
   function stats(start,point){
     const e=point.end,ms=point.elapsedMs;if(!Number.isFinite(ms)||ms<=0)throw new Error('Invalid progress time.');
+    if(start.expOnly){const r=M.calculate(start,e,ms),remaining=e.level===100?0:M.expTable[e.level]-e.exp,rateReady=ms>=60000;return {exp:r.exp,expHour:rateReady?r.rates.hour.exp:0,expPercentHour:M.levelPercentPerHour(rateReady?r.rates.hour.exp:0,e.level),rateReady,remaining,etaMs:remaining===0?0:rateReady&&r.exp>0?remaining*ms/r.exp:null,net:null,netHour:null,cashNet:null,etcValue:null,supplyCost:null,estimated:false,estimatedComponents:[]};}
     const exp=start.level?M.position(e.level,e.exp)-M.position(start.level,start.exp):M.integer(e.exp,'EXP')-M.integer(start.exp,'Starting EXP')+M.integer(e.extraExp??0,'Extra EXP');
     const hpUsed=e.hp===null?null:M.integer(start.hp,'HP')+M.integer(e.hpAdded??0,'HP added')-M.integer(e.hp,'HP remaining'),mpUsed=e.mp===null?null:M.integer(start.mp,'MP')+M.integer(e.mpAdded??0,'MP added')-M.integer(e.mp,'MP remaining');
     if((hpUsed!==null&&hpUsed<0)||(mpUsed!==null&&mpUsed<0))throw new Error('Confirm supply restocks with a manual checkpoint.');

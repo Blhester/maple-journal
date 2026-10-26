@@ -17,7 +17,8 @@
   }
   const text=(tag,value,className)=>{const e=document.createElement(tag);e.textContent=value;if(className)e.className=className;return e;};
   function error(id,message){$(id).textContent=message||'';$(id).hidden=!message;}
-  const activeFields=()=>C.fields.filter(field=>(!window.MapleUseSlots?.ready()||!['hp','mp'].includes(field.id))&&(context.stage==='setup'||!['map','class'].includes(field.id)));
+  const expOnly=()=>options?.getContext().expOnly===true;
+  const activeFields=()=>C.fields.filter(field=>(!expOnly()||['level','exp'].includes(field.id))&&(!window.MapleUseSlots?.ready()||!['hp','mp'].includes(field.id))&&(context.stage==='setup'||!['map','class'].includes(field.id)));
   function svg(tag,attrs){const e=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [key,value]of Object.entries(attrs))e.setAttribute(key,value);return e;}
   function drawGuide(){
     for(const [index,field]of C.fields.entries()){
@@ -201,8 +202,8 @@
         const level=results.level?.value??(!background?(selectedOnly&&$('ocr-use-level')?.checked?$('ocr-value-level').value:options.getContext().level):null);
         results[field.id]=field.id==='exp'?C.convertPercent(C.selectPercent(reads),level):field.id==='map'?MapleMapMatcher.select(reads):C.select(field.id,reads);
       }
-    if(!selectedOnly&&window.MapleUseSlots?.ready()){const rows=await MapleUseSlots.read(image,readUseQuantity,{match:!background,isCurrent:()=>token===run,onStatus:value=>{$('ocr-progress-text').textContent=value;}});if(token!==run)return;results.uses=rows;}
-    if(!selectedOnly&&window.MapleEtcCapture){if(!background)$('ocr-progress-text').textContent='Reading visible ETC inventory · matching icons and stack counts…';results.etc=await MapleEtcCapture.read(image,readUseQuantity,{background,isCurrent:()=>token===run});if(token!==run)return;}
+    if(!expOnly()&&!selectedOnly&&window.MapleUseSlots?.ready()){const rows=await MapleUseSlots.read(image,readUseQuantity,{match:!background,isCurrent:()=>token===run,onStatus:value=>{$('ocr-progress-text').textContent=value;}});if(token!==run)return;results.uses=rows;}
+    if(!expOnly()&&!selectedOnly&&window.MapleEtcCapture){if(!background)$('ocr-progress-text').textContent='Reading visible ETC inventory · matching icons and stack counts…';results.etc=await MapleEtcCapture.read(image,readUseQuantity,{background,isCurrent:()=>token===run});if(token!==run)return;}
     return results;
   }
   async function read(selectedOnly=false){
@@ -293,7 +294,7 @@
         const current=options.getContext();if(current.stage!==context.stage)throw new Error('The session changed. Close this window and import the screenshot again.');
         syncExpEstimate();
         const values={};for(const field of activeFields()){if(!$('ocr-use-'+field.id).checked)continue;const value=$('ocr-value-'+field.id).value.trim();const parsed=field.id==='map'?MapleMapMatcher.resolve(value)?.label||null:C.parse(field.id,value);if(parsed===null)throw new Error(field.id==='map'?'Choose a map from the MeowDB list, or uncheck Training map.':'Enter a valid '+field.label.toLowerCase()+', or uncheck it.');values[field.id]=parsed;if(['hp','mp'].includes(field.id))values[field.id+'Potion']=$('ocr-potion-'+field.id).value;}
-        if(window.MapleUseSlots?.ready())values.uses=MapleUseSlots.reviewed();if(window.MapleEtcCapture)values.etc=MapleEtcCapture.reviewed();
+        if(!expOnly()&&window.MapleUseSlots?.ready())values.uses=MapleUseSlots.reviewed();if(!expOnly()&&window.MapleEtcCapture)values.etc=MapleEtcCapture.reviewed();
         if(!Object.keys(values).length)throw new Error('Check at least one field to apply.');
         window.MapleUseSlots?.validate(values.uses);options.apply(values);$('screenshot-dialog').close();
       }catch(e){error('ocr-review-error',e.message);}
@@ -313,11 +314,11 @@
       captureController=null;url=URL.createObjectURL(blob);img=new Image();img.src=url;await Promise.race([img.decode(),aborted]);
       if(token!==run)throw new DOMException('Reading cancelled.','AbortError');
       image=img;const width=img.naturalWidth,height=img.naturalHeight;
-      const box=sourceRegion('mesos'),probe=document.createElement('canvas');probe.width=box.w;probe.height=box.h;const ctx=probe.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,box.x,box.y,box.w,box.h,0,0,box.w,box.h);const inventoryVisible=C.inventoryVisible(ctx.getImageData(0,0,box.w,box.h).data);probe.width=probe.height=1;
-      const results=await Promise.race([recognize(C.fields.filter(field=>field.numeric&&(!window.MapleUseSlots?.ready()||!['hp','mp'].includes(field.id))&&(inventoryVisible||field.id!=='mesos')),token,{background:true}),aborted]);
+      let inventoryVisible=true;if(!expOnly()){const box=sourceRegion('mesos'),probe=document.createElement('canvas');probe.width=box.w;probe.height=box.h;const ctx=probe.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,box.x,box.y,box.w,box.h,0,0,box.w,box.h);inventoryVisible=C.inventoryVisible(ctx.getImageData(0,0,box.w,box.h).data);probe.width=probe.height=1;}
+      const results=await Promise.race([recognize(C.fields.filter(field=>field.numeric&&(!expOnly()||['level','exp'].includes(field.id))&&(!window.MapleUseSlots?.ready()||!['hp','mp'].includes(field.id))&&(inventoryVisible||field.id!=='mesos')),token,{background:true}),aborted]);
       if(!inventoryVisible)results.mesos={value:null,confidence:0,reason:'Inventory balance box is not visible.'};
       if(token!==run||signal?.aborted)throw new DOMException('Reading cancelled.','AbortError');
-      return {results,at,width,height,inventoryVisible,layout:JSON.stringify({regions,tunings,uses:window.MapleUseSlots?.slots().map(r=>({id:r.id,region:r.region}))})};
+      return {results,at,width,height,inventoryVisible,layout:JSON.stringify({regions,tunings,expOnly:expOnly(),uses:expOnly()?undefined:window.MapleUseSlots?.slots().map(r=>({id:r.id,region:r.region}))})};
     }finally{
       signal?.removeEventListener('abort',cancel);if(img)img.src='';if(url)URL.revokeObjectURL(url);
       if(token===run){if(worker)await worker.terminate();worker=null;releaseReadCanvases();for(const item of workerUrls)URL.revokeObjectURL(item);workerUrls=[];captureController=null;clearImage();setBusy(false);}

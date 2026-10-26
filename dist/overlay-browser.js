@@ -28,7 +28,7 @@
     function publish(){
       if(disposed||!release)return;
       const snapshot=P.validate(last?P.select(last,settings):P.hidden(settings)),e={id,revision:(read(storage,id,now())?.revision||0)+1,publishedAt:now(),serverNow:now(),snapshot};
-      storage.setItem(stateKey(id),JSON.stringify(e));persist();channel?.postMessage({type:'updated'});change(last?'Sharing validated capture averages; mesos can include estimates.':'Overlay hidden. Reopen the same window for your next shared run.');
+      storage.setItem(stateKey(id),JSON.stringify(e));persist();channel?.postMessage({type:'updated'});change(last?'Sharing validated capture averages.':'Overlay hidden. Reopen the same window for your next shared run.');
     }
     function update(){
       if(disposed)return;const session=getSession();

@@ -4,7 +4,7 @@
   const n=new Intl.NumberFormat('en-US',{maximumFractionDigits:2}),compact=new Intl.NumberFormat('en-US',{notation:'compact',maximumFractionDigits:1});
   let records=[],page=0,selected=null;
   const text=(tag,value,className)=>{const e=document.createElement(tag);e.textContent=value;if(className)e.className=className;return e;};
-  const fmt=value=>n.format(Math.abs(value)<.005?0:value);
+  const fmt=value=>value===null?'N/A':n.format(Math.abs(value)<.005?0:value);
   const time=ms=>{const m=Math.floor(ms/60000),s=Math.floor(ms/1000)%60;return m>=60?Math.floor(m/60)+'h '+m%60+'m':m+'m '+s+'s';};
   function notice(message){$('history-error').textContent=message;$('history-error').hidden=!message;}
   function svgElement(tag,attrs={},value){const node=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [k,v]of Object.entries(attrs))node.setAttribute(k,String(v));if(value!==undefined)node.textContent=value;return node;}
@@ -69,10 +69,10 @@
     const metric=$('compare-metric').value,groups=M.groupMaps(sessions,metric),body=$('map-rows');body.replaceChildren();
     for(const [i,g]of groups.entries()){const tr=document.createElement('tr');for(const value of [(i+1)+'. '+g.map,g.runs+' / '+time(g.time),fmt(g.expHour),fmt(g.netHour)])tr.append(text('td',value));body.append(tr);}
     if(!groups.length){$('map-highlights').textContent=records.length?'No maps match the current history filters.':'Finish and save your first session to start comparing maps.';emptyChart($('map-chart'),records.length?'Change the class or level filters above to see your maps.':'Every map you log gets a place on this chart.');return;}
-    const profitable=[...groups].sort((a,b)=>b.netHour-a.netHour)[0];$('map-highlights').textContent='Fastest EXP: '+groups[0].map+' · Highest net rate: '+profitable.map+'. '+(metric==='estimatedNet'?'Profit includes estimated unsold loot.':'');
-    const xs=groups.map(g=>g.expHour),ys=groups.map(g=>g.netHour),xLow=Math.min(0,...xs),xHigh=Math.max(1,...xs),yLow=Math.min(0,...ys),yHigh=Math.max(1,...ys),pad=Math.max(1,(yHigh-yLow)*.15);
+    const profitable=[...groups].filter(g=>g.netHour!==null).sort((a,b)=>b.netHour-a.netHour)[0];$('map-highlights').textContent='Fastest EXP: '+groups[0].map+' · Highest net rate: '+(profitable?.map||'No financial runs')+'. '+(metric==='estimatedNet'?'Profit includes estimated unsold loot.':'');
+    const xs=groups.map(g=>g.expHour),ys=groups.map(g=>g.netHour??0),xLow=Math.min(0,...xs),xHigh=Math.max(1,...xs),yLow=Math.min(0,...ys),yHigh=Math.max(1,...ys),pad=Math.max(1,(yHigh-yLow)*.15);
     const {svg,X,Y}=baseChart($('map-chart'),'Map EXP per hour versus '+metric+' mesos per hour','EXP / hour',metric==='estimatedNet'?'Estimated mesos / hour':'Net mesos / hour',xLow,xHigh*1.08,yLow-pad,yHigh+pad);
-    for(const [i,g]of groups.entries()){const dot=svgElement('circle',{cx:X(g.expHour),cy:Y(g.netHour),r:7,class:'map-dot'});dot.append(svgElement('title',{},g.map+' · '+fmt(g.expHour)+' EXP/h · '+fmt(g.netHour)+' mesos/h · '+g.runs+' runs'));svg.append(dot,svgElement('text',{x:X(g.expHour)+11,y:Y(g.netHour)+4,class:'chart-marker'},String(i+1)));}
+    for(const [i,g]of groups.entries()){if(g.netHour===null)continue;const dot=svgElement('circle',{cx:X(g.expHour),cy:Y(g.netHour),r:7,class:'map-dot'});dot.append(svgElement('title',{},g.map+' · '+fmt(g.expHour)+' EXP/h · '+fmt(g.netHour)+' mesos/h · '+g.runs+' runs'));svg.append(dot,svgElement('text',{x:X(g.expHour)+11,y:Y(g.netHour)+4,class:'chart-marker'},String(i+1)));}
   }
   function save(session){
     // Storage is authoritative: another tab may have replaced or cleared history.

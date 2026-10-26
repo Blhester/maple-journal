@@ -107,6 +107,7 @@ require('./test-background-ocr.cjs');
 require('./test-live-dashboard.cjs');
 require('./test-live-intervals.cjs');
 require('./test-level-percent-rate.cjs');
+require('./test-exp-only.cjs');
 require('./test-partial-supplies.cjs');
 require('./test-supply-runway.cjs');
 require('./test-session-supplies.cjs');

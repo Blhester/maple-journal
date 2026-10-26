@@ -102,3 +102,5 @@ Stream meso average fix (Oct 23, 2026): overlay snapshots, cumulative graph poin
 ETC detection tuning: native-aspect icon matching with position/scale tolerances, conservative grid translation, focused quantity crops and per-slot review diagnostics. Unreadable counts require explicit correction or exclusion; stack aggregation and new-item discovery remain automatic.
 
 Partial ETC value: independently confirmed drops increase estimated net mesos even when another ETC slot fails. Missing-item forecasts remain labeled; exclusions and starting inventory subtraction still apply. Final review uses actual counts.
+
+EXP-only tracking: level/EXP-only forms and OCR, no financial calculations or item scans, saved-mode/history support, compact live/final views. Stream overlays can show current-level %/hour and a next-level ETA countdown; EXP-only defaults to both plus active time. Pauses, level-ups, warmup and reset are respected.
