@@ -34,7 +34,7 @@
     scores.sort((a,b)=>a.error-b.error);
     return scores[0].error<=.022&&scores[1].error-scores[0].error>=.006?scores[0]:null;
   }
-  function read({data,width:W,height:H,format='amount'}={}){
+  function read({data,width:W,height:H,format='amount',allowComplete=false}={}){
     const percentage=format==='percent';
     if(!Number.isInteger(W)||!Number.isInteger(H)||W<3||H<7||W>512||H>64||!data||data.length!==W*H*4)return noMatch('Use a tight region around the full EXP number.');
     const luminance=Array.from({length:W*H},(_,i)=>Math.min(data[i*4],data[i*4+1],data[i*4+2])*data[i*4+3]/255),sorted=[...luminance].sort((a,b)=>a-b),bg=sorted[Math.floor(sorted.length*.25)],fg=sorted[Math.floor(sorted.length*.99)];
@@ -70,7 +70,7 @@
         if(!fit){failed=true;break;}text+=fit.digit;error+=fit.error;count++;accepted.push(box);
       }
       if(percentage){
-        if(failed||!/^\d{1,2}\.\d{2}$/.test(text)||Number(text)>=100||accepted[0]?.left===0||percentBox.left-accepted.at(-1).right>height*.8)continue;
+        if(failed||!/^\d{1,3}\.\d{2}$/.test(text)||Number(text)>100||Number(text)===100&&!allowComplete||accepted[0]?.left===0||percentBox.left-accepted.at(-1).right>height*.8)continue;
         answers.push({value:Number(text).toFixed(2),error:error/count,boxes:accepted});continue;
       }
       if(failed||!count||count>16||text.endsWith(',')||!/^\d+(?:,\d+)*$/.test(text))continue;

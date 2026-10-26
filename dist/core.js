@@ -190,9 +190,16 @@
   }
   function normalizeProgress(start,points=[],maxTime=Infinity){
     if(!Array.isArray(points)||points.length>5000)throw new Error('Invalid automatic progress list.');let previous=0;
+    function inference(point,end){
+      if(point.expPercent===undefined)return {};
+      const percent=point.expPercent;if(typeof percent!=='string'||!/^(?:\d{1,2}\.\d{2}|100\.00)$/.test(percent))throw Error('Invalid progress EXP percentage.');
+      const basis=Number(percent.replace('.','')),expected=end.level===100||basis===10000?0:Number(BigInt(expTable[end.level])*BigInt(basis)/10000n);
+      if(end.exp!==expected||end.level===100&&basis!==0&&basis!==10000)throw Error('Progress percentage does not match level and EXP.');
+      return {expPercent:percent,...(point.levelInferred===true?{levelInferred:true}:{})};
+    }
     return points.map(point=>{
       const elapsedMs=integer(point.elapsedMs,'Progress time'),e=point.end;if(elapsedMs<=previous||elapsedMs>maxTime||!e)throw new Error('Invalid automatic progress timing.');previous=elapsedMs;
-      if(start.expOnly){const end={level:levelNumber(e.level),exp:integer(e.exp,'Progress EXP'),mesos:null,hp:null,mp:null,hpAdded:0,mpAdded:0,extraExp:0,ledger:[]};calculate(start,end,elapsedMs);return {elapsedMs,end,source:'automatic',...(point.at?{at:integer(point.at,'Progress capture time')}: {})};}
+      if(start.expOnly){const end={level:levelNumber(e.level),exp:integer(e.exp,'Progress EXP'),mesos:null,hp:null,mp:null,hpAdded:0,mpAdded:0,extraExp:0,ledger:[]};calculate(start,end,elapsedMs);return {elapsedMs,end,source:'automatic',...inference(point,end),...(point.at?{at:integer(point.at,'Progress capture time')}: {})};}
       const end={...(start.etc?{etc:e.etc===null||e.etc===undefined?null:cleanEtcItems(e.etc)}:{}),mesos:e.mesos===null?null:integer(e.mesos,'Progress mesos'),level:levelNumber(e.level),extraExp:0,ledger:[]};
       if(start.etc&&e.etcReadings!==undefined)end.etcReadings=cleanEtcItems(e.etcReadings);
       for(const key of ['exp','hp','mp','hpAdded','mpAdded'])end[key]=['hp','mp'].includes(key)&&e[key]===null?null:integer(e[key]??(['hpAdded','mpAdded'].includes(key)?0:undefined),'Progress '+key);
@@ -200,7 +207,7 @@
       let supplyCost=0;for(const key of ['hp','mp']){const available=start[key]+end[key+'Added'];if(!Number.isSafeInteger(available))throw new Error('Progress supplies are too large.');if(end[key]===null)continue;const used=available-end[key];if(used<0)throw new Error('Progress supplies need confirmed additions.');if(!Number.isSafeInteger(used))throw new Error('Progress supplies are too large.');supplyCost+=used*start[key+'Cost'];}if(!Number.isSafeInteger(supplyCost))throw new Error('Progress cost is too large.');
       if(start.uses!==undefined){end.uses=cleanUseEnd(start,e.uses,{partial:true});useTotals(start,end,elapsedMs,{partial:true});}
       if((!start.etc||etcLoot(start,end)!==null)&&end.mesos!==null&&end.hp!==null&&end.mp!==null&&(!end.uses||end.uses.every(r=>r.quantity!==null)))calculate(start,end,elapsedMs);
-      return {elapsedMs,end,source:'automatic',...(point.at?{at:integer(point.at,'Progress capture time')}: {})};
+      return {elapsedMs,end,source:'automatic',...inference(point,end),...(point.at?{at:integer(point.at,'Progress capture time')}: {})};
     });
   }
   function normalizeSession(raw) {

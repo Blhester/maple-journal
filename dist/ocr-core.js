@@ -72,12 +72,12 @@
     const alternatives=[...new Set(candidates.map(read=>read.value))].filter(value=>value!==best.value);
     return {value:best.value,raw,confidence:best.confidence||0,votes:score(best.value),readCount:candidates.length,disagrees:alternatives.length>0,alternatives};
   }
-  function parsePercent(text){
-    const raw=String(text??'').normalize('NFKC').trim(),matches=[...raw.matchAll(/(?:^|[^\d.,+-])(\d{1,2}[.,]\d{2})\s*%/g)];
-    if(matches.length!==1||(raw.match(/%/g)||[]).length!==1)return null;return Number(matches[0][1].replace(',','.')).toFixed(2);
+  function parsePercent(text,{allowComplete=false}={}){
+    const raw=String(text??'').normalize('NFKC').trim(),matches=[...raw.matchAll(/(?:^|[^\d.,+-])(\d{1,3}[.,]\d{2})\s*%/g)];
+    if(matches.length!==1||(raw.match(/%/g)||[]).length!==1)return null;const n=Number(matches[0][1].replace(',','.'));return n<100||allowComplete&&n===100?n.toFixed(2):null;
   }
-  function selectPercent(reads){
-    const converted=reads.map(read=>({...read,text:parsePercent(read.text)})),values=converted.filter(read=>read.text!==null),raw=reads.map(read=>(read.label?read.label+': ':'')+read.text.trim()).join('\n');
+  function selectPercent(reads,options){
+    const converted=reads.map(read=>({...read,text:parsePercent(read.text,options)})),values=converted.filter(read=>read.text!==null),raw=reads.map(read=>(read.label?read.label+': ':'')+read.text.trim()).join('\n');
     if(!values.length)return {value:null,raw,confidence:0,disagrees:false,alternatives:[],method:'exp-percent-text'};
     const votes=value=>values.filter(read=>read.text===value).length;values.sort((a,b)=>votes(b.text)-votes(a.text));const best=values[0],alternatives=[...new Set(values.map(read=>read.text))].filter(value=>value!==best.text);
     return {value:best.text,raw,confidence:best.confidence||0,votes:votes(best.text),readCount:values.length,disagrees:alternatives.length>0,alternatives,method:'exp-percent-text'};

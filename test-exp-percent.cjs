@@ -12,6 +12,8 @@ function render(text,scale){
 }
 for(const value of ['0.00','0.01','9.99','24.70','50.00','91.23','99.99'])for(const scale of [1,1.25,1.5,2,3])assert.equal(R.read({...render(value+'%',scale),format:'percent'}).value,Number(value).toFixed(2),value+' at '+scale+'x');
 for(const value of ['100.00%','24.7%','2470%','24.70','24.70%%'])assert.equal(R.read({...render(value,1.5),format:'percent'}).value,null,'Reject malformed percentage '+value);
+for(const scale of [1,1.25,1.5,2,3])assert.equal(R.read({...render('100.00%',scale),format:'percent',allowComplete:true}).value,'100.00');
+assert.equal(C.parsePercent('[100.00%]',{allowComplete:true}),'100.00');assert.equal(C.parsePercent('[100.01%]',{allowComplete:true}),null);assert.equal(C.parsePercent('[101.00%]',{allowComplete:true}),null);
 for(const value of ['24.70%','268,628 [24.70%]','EXP 1,087,000 [24,70%]'])assert.equal(C.parsePercent(value),'24.70');
 for(const value of ['100.00%','-24.70%','+24.70%','24.7%','24.70','268,628','24.70%%','24.70% 25.00%'])assert.equal(C.parsePercent(value),null);
 assert.equal(C.percentExp(58,'24.70'),'268621');assert.equal(C.percentExp(58,'50.00'),'543768');assert.equal(C.percentExp(58,'99.99'),'1087427');assert.equal(C.percentExp(59,'0.01'),'114');assert.equal(C.percentExp(100,'0.00'),'0');

@@ -104,3 +104,5 @@ ETC detection tuning: native-aspect icon matching with position/scale tolerances
 Partial ETC value: independently confirmed drops increase estimated net mesos even when another ETC slot fails. Missing-item forecasts remain labeled; exclusions and starting inventory subtraction still apply. Final review uses actual counts.
 
 EXP-only tracking: level/EXP-only forms and OCR, no financial calculations or item scans, saved-mode/history support, compact live/final views. Stream overlays can show current-level %/hour and a next-level ETA countdown; EXP-only defaults to both plus active time. Pauses, level-ups, warmup and reset are respected.
+
+Automatic level tracking: use validated initial/manual level and consecutive HUD percentages instead of recurring level OCR. Confirm99% ->0–5% and100% transitions temporally, reject contradictory rollovers, retain percentage/level metadata on restore, and route ambiguous drops to manual checkpoints. Initial/final manual OCR review stays available. The same confirmed levels feed EXP rates, %/hour, ETA, graphs and overlays.

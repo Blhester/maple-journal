@@ -110,14 +110,14 @@
     // A cancelled/failed decode must never re-read the previous screenshot.
     if(shouldRead&&!controller.signal.aborted&&$('screenshot-dialog').open)await read();
   }
-  function readDigits(id,choice,box=null,source=image){
+  function readDigits(id,choice,box=null,source=image,allowComplete=false){
     const exp=choice==='exp-font',r=box||C.digitRegion(sourceRegion(id),image.naturalWidth,image.naturalHeight,id==='exp'&&exp?'exp-percent':choice),scale=Math.min(1,(exp?512:96)/r.w,(exp?64:32)/r.h),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(r.w*scale));canvas.height=Math.max(1,Math.round(r.h*scale));
     const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(source,r.x,r.y,r.w,r.h,0,0,canvas.width,canvas.height);const pixels=ctx.getImageData(0,0,canvas.width,canvas.height);canvas.width=canvas.height=1;
     return new Promise((resolve,reject)=>{
       const url=URL.createObjectURL(new Blob([(exp?MapleExpReader:MapleQuantityReader).workerSource()],{type:'text/javascript'}));let reader;
       const cleanup=()=>{reader?.terminate();URL.revokeObjectURL(url);if(digitCancel===cancel)digitCancel=null;};
       const cancel=()=>{cleanup();reject(new Error('Reading cancelled.'));};digitCancel=cancel;
-      try{reader=new Worker(url);reader.onmessage=event=>{cleanup();if(event.data.error)reject(new Error(event.data.error));else resolve(event.data.result);};reader.onerror=()=>{cleanup();reject(new Error('The local number reader could not run.'));};reader.postMessage({data:pixels.data,width:pixels.width,height:pixels.height,format:id==='exp'?'percent':'amount'},[pixels.data.buffer]);}catch(e){cleanup();reject(e);}
+      try{reader=new Worker(url);reader.onmessage=event=>{cleanup();if(event.data.error)reject(new Error(event.data.error));else resolve(event.data.result);};reader.onerror=()=>{cleanup();reject(new Error('The local number reader could not run.'));};reader.postMessage({data:pixels.data,width:pixels.width,height:pixels.height,format:id==='exp'?'percent':'amount',allowComplete},[pixels.data.buffer]);}catch(e){cleanup();reject(e);}
     });
   }
   async function readUseQuantity(source,r,settings,countRegion){
@@ -182,9 +182,9 @@
         $('ocr-progress-text').textContent='Reading '+field.label.toLowerCase()+' · '+(index+1)+' of '+fields.length;
         const readerChoice=C.tuning(field.id,tunings[field.id]).reader;
         if(readerChoice!=='general'){
-          const result=await readDigits(field.id,readerChoice);if(token!==run)return;
+          const result=await readDigits(field.id,readerChoice,null,image,background);if(token!==run)return;
           const level=results.level?.value??(!background?(selectedOnly&&$('ocr-use-level')?.checked?$('ocr-value-level').value:options.getContext().level):null);
-          results[field.id]=field.id==='exp'?C.convertPercent(result,level):{...result,value:C.parse(field.id,result.value)};
+          results[field.id]=field.id==='exp'?(background?{...result,percent:result.value,levelUsed:null,estimated:result.value!==null}:C.convertPercent(result,level)):{...result,value:C.parse(field.id,result.value)};
           $('ocr-progress').value=(index+1)/fields.length;continue;
         }
         await ensureTextWorker();if(token!==run)return;
@@ -200,7 +200,8 @@
           const surface=prepared||crop(field.id,pass.treatment);readCanvases.add(surface);const {data}=await worker.recognize(surface);reads.push({text:data.text,confidence:data.confidence,label:pass.label});
         }
         const level=results.level?.value??(!background?(selectedOnly&&$('ocr-use-level')?.checked?$('ocr-value-level').value:options.getContext().level):null);
-        results[field.id]=field.id==='exp'?C.convertPercent(C.selectPercent(reads),level):field.id==='map'?MapleMapMatcher.select(reads):C.select(field.id,reads);
+        if(field.id==='exp'){const result=C.selectPercent(reads,{allowComplete:background});results.exp=background?{...result,percent:result.value,levelUsed:null,estimated:result.value!==null}:C.convertPercent(result,level);}
+        else results[field.id]=field.id==='map'?MapleMapMatcher.select(reads):C.select(field.id,reads);
       }
     if(!expOnly()&&!selectedOnly&&window.MapleUseSlots?.ready()){const rows=await MapleUseSlots.read(image,readUseQuantity,{match:!background,isCurrent:()=>token===run,onStatus:value=>{$('ocr-progress-text').textContent=value;}});if(token!==run)return;results.uses=rows;}
     if(!expOnly()&&!selectedOnly&&window.MapleEtcCapture){if(!background)$('ocr-progress-text').textContent='Reading visible ETC inventory · matching icons and stack counts…';results.etc=await MapleEtcCapture.read(image,readUseQuantity,{background,isCurrent:()=>token===run});if(token!==run)return;}
@@ -315,7 +316,7 @@
       if(token!==run)throw new DOMException('Reading cancelled.','AbortError');
       image=img;const width=img.naturalWidth,height=img.naturalHeight;
       let inventoryVisible=true;if(!expOnly()){const box=sourceRegion('mesos'),probe=document.createElement('canvas');probe.width=box.w;probe.height=box.h;const ctx=probe.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,box.x,box.y,box.w,box.h,0,0,box.w,box.h);inventoryVisible=C.inventoryVisible(ctx.getImageData(0,0,box.w,box.h).data);probe.width=probe.height=1;}
-      const results=await Promise.race([recognize(C.fields.filter(field=>field.numeric&&(!expOnly()||['level','exp'].includes(field.id))&&(!window.MapleUseSlots?.ready()||!['hp','mp'].includes(field.id))&&(inventoryVisible||field.id!=='mesos')),token,{background:true}),aborted]);
+      const results=await Promise.race([recognize(C.fields.filter(field=>field.numeric&&field.id!=='level'&&(!expOnly()||field.id==='exp')&&(!window.MapleUseSlots?.ready()||!['hp','mp'].includes(field.id))&&(inventoryVisible||field.id!=='mesos')),token,{background:true}),aborted]);
       if(!inventoryVisible)results.mesos={value:null,confidence:0,reason:'Inventory balance box is not visible.'};
       if(token!==run||signal?.aborted)throw new DOMException('Reading cancelled.','AbortError');
       return {results,at,width,height,inventoryVisible,layout:JSON.stringify({regions,tunings,expOnly:expOnly(),uses:expOnly()?undefined:window.MapleUseSlots?.slots().map(r=>({id:r.id,region:r.region}))})};

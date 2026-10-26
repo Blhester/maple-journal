@@ -78,8 +78,34 @@
       const missing=start.expOnly?[]:start.uses!==undefined?point.end.uses.filter(r=>r.quantity===null).map(r=>start.uses.find(s=>s.id===r.id)?.name||r.id):['hp','mp'].filter(k=>point.end[k]===null);
       return {preview,accepted,rejected,pending,held:0,message:(accepted.length?'Progress confirmed. Latest sample is waiting for the next reading.':'Sample waiting for the next reading. No value was guessed or filled in.')+(missing.length?' EXP continues; '+missing.map(k=>k.toUpperCase()).join('/')+' unreadable. Live financial estimates use the last validated rate or value; raw counts stay unknown.':'')};
     }
+    // Only the initial review/manual checkpoint supplies a level. A background
+    // capture carries the raw percentage; a candidate rollover remains pending
+    // until the ordinary temporal filter corroborates it with another capture.
+    function offerRead(read,elapsedMs){
+      if(read.results.level){const point=fromRead(read,start,elapsedMs);return {point,...offer(point)};}
+      const raw=read.results.exp,percent=raw?.percent??raw?.value;
+      if(!readableResult(raw)||typeof percent!=='string'||!/^(?:\d{1,2}\.\d{2}|100\.00)$/.test(percent))throw Error('Uncertain EXP percentage; sample skipped.');
+      const basis=Number(percent.replace('.','')),pct=p=>p.expPercent!==undefined?(p.expPercent==='100.00'?0:Number(p.expPercent.replace('.',''))):p.end.level===100?0:Math.round(p.end.exp*10000/M.expTable[p.end.level]);
+      const credible=pending&&follows(base,pending)&&!unusual(pending),reference=credible?pending:base,provisional=credible&&pending.end.level>base.end.level;
+      let level=reference.end.level,reason='';
+      // Returning to 99% contradicts a provisional rollover, including 99→100.
+      if(provisional&&basis>=9900&&basis<10000)level=base.end.level;
+      else if(level===100){if(basis!==0&&basis!==10000)throw Error('Level 100 is the supported table endpoint. Confirm your level manually.');}
+      else if(basis===10000){
+        if(reference.expPercent!=='100.00')level++;
+        reason='100% EXP';
+      }else if(!provisional){
+        if(pct(reference)>=9900&&basis<=500){level++;reason='99% to 0–5% EXP';}
+        else if(basis<pct(base))throw Error('EXP percentage dropped without a 99–100% level-up transition. Confirm your current level with a manual checkpoint.');
+      }
+      const value=level===100?'0':String(BigInt(M.expTable[level])*BigInt(basis===10000?0:basis)/10000n);
+      const point=fromRead({...read,results:{...read.results,level:{value:level,method:'classic-digits'},exp:{...raw,value}}},start,elapsedMs);
+      point.expPercent=percent;point.levelInferred=true;
+      const result=offer(point);if(reason)result.message+=' Level '+level+' inferred from '+reason+'; the transition still needs confirmation.';
+      return {point,...result};
+    }
     function rebase(point){base=point;etcBase=new Map([...(start.etc?.baseline||[]),...(point.end.etcReadings||[]),...(Array.isArray(point.end.etc)?point.end.etc:[])].map(r=>[r.itemId,r]));supplyBase={hp:point.end.hp,mp:point.end.mp};pending=null;held=[];rates=[];lastTime=point.elapsedMs;mesoBase=point;mesoRates=[];for(const slot of start.uses||[])supplyBase['use:'+slot.id]=point.end.uses?.find(r=>r.id===slot.id)?.quantity??slot.quantity;}
-    return {offer,rebase};
+    return {offer,offerRead,rebase};
   }
   function stats(start,point){
     const e=point.end,ms=point.elapsedMs;if(!Number.isFinite(ms)||ms<=0)throw new Error('Invalid progress time.');

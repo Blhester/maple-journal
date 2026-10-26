@@ -123,7 +123,7 @@
         const layout=read.width+'x'+read.height+':'+read.layout;
         if(autoLayout&&autoLayout!==layout){autoLog(null,'Skipped','Screen size or read settings changed. Recalibrate before restarting.');stopAuto('Capture layout changed. Check your regions and restart automatic mode.');persist();return;}autoLayout=layout;
         autoLastSample={at:read.at,elapsedMs:M.activeElapsed(state,read.at),mesosReadable:false,usable:false};
-        const point=MapleAutoProgress.fromRead(read,state.start,autoLastSample.elapsedMs),result=autoFilter.offer(point);autoPreview=result.preview;autoLastSample.mesosReadable=!!autoPreview&&MapleAutoProgress.stats(state.start,autoPreview).net!==null;autoLastSample.usable=!!autoPreview;
+        const result=autoFilter.offerRead(read,autoLastSample.elapsedMs),point=result.point;autoPreview=result.preview;autoLastSample.mesosReadable=!!autoPreview&&MapleAutoProgress.stats(state.start,autoPreview).net!==null;autoLastSample.usable=!!autoPreview;
         for(const rejected of result.rejected)autoLog(rejected.point,'Discarded',rejected.reason);
         autoLog(point,result.held?'Held':'Waiting',result.message);
         for(const accepted of result.accepted){
