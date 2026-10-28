@@ -16,7 +16,7 @@
       end[key]=M.integer(r.value,key);
     }
     if(!start.expOnly&&start.uses!==undefined){end.uses=start.uses.map(slot=>{const r=read.results.uses?.find(r=>r.id===slot.id),v=r?.result;let quantity=null;try{if(readableResult(v))quantity=M.integer(v.value,'Use count');}catch{}return {id:slot.id,quantity,added:0};});}
-    if(!start.expOnly&&start.etc){end.etc=null;end.etcReadings=[];try{const rows=read.results.etc?.items||[];end.etcReadings=M.cleanEtcItems(rows.filter(r=>r.quantity!==null&&r.quantity!==undefined));if(read.results.etc?.readable)end.etc=M.cleanEtcItems(rows);}catch{end.etcReadings=[];}}
+    if(!start.expOnly&&start.etc){end.etc=null;end.etcReadings=[];try{const rows=read.results.etc?.items||[];end.etcReadings=M.cleanEtcItems(rows.filter(r=>M.isTrackedEtc(start.etc,r.itemId)&&r.quantity!==null&&r.quantity!==undefined));if(read.results.etc?.readable)end.etc=M.cleanEtcItems(rows.filter(r=>M.isTrackedEtc(start.etc,r.itemId)));}catch{end.etcReadings=[];}}
     if(!start.level)throw new Error('Record a starting level before enabling automatic progress.');
     M.position(end.level,end.exp);
     if(end.level<start.level)throw new Error('Level is below the starting level; sample skipped.');
@@ -63,8 +63,8 @@
           const confirmed={...pending,end:{...pending.end,mesos,hp:point.end.hp===null?null:pending.end.hp,mp:point.end.mp===null?null:pending.end.mp},mesosNote};if(!start.expOnly&&start.uses!==undefined)confirmed.end.uses=pending.end.uses.map(r=>({...r,quantity:point.end.uses.find(x=>x.id===r.id)?.quantity===null?null:r.quantity}));
           if(!start.expOnly&&start.etc){
             const a=pending.end.etcReadings||pending.end.etc||[],b=new Map((point.end.etcReadings||point.end.etc||[]).map(r=>[r.itemId,r])),excluded=new Set(start.etc.excluded);
-            const valid=a.filter(r=>!excluded.has(r.itemId)&&r.quantity>=(etcBase.get(r.itemId)?.quantity||0)&&(b.get(r.itemId)?.quantity??-1)>=r.quantity);
-            const ids=new Set(valid.map(r=>r.itemId)),complete=pending.end.etc&&point.end.etc&&[...etcBase.values(),...a].every(r=>excluded.has(r.itemId)||ids.has(r.itemId));
+            const valid=a.filter(r=>M.isTrackedEtc(start.etc,r.itemId)&&r.quantity>=(etcBase.get(r.itemId)?.quantity||0)&&(b.get(r.itemId)?.quantity??-1)>=r.quantity);
+            const ids=new Set(valid.map(r=>r.itemId)),complete=pending.end.etc&&point.end.etc&&[...etcBase.values(),...a].every(r=>!M.isTrackedEtc(start.etc,r.itemId)||ids.has(r.itemId));
             confirmed.end.etc=complete?pending.end.etc:null;
             if(pending.end.etcReadings!==undefined||!complete)confirmed.end.etcReadings=valid;
             for(const row of valid)etcBase.set(row.itemId,row);

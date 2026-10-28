@@ -148,3 +148,5 @@ tbody td{font-size:16px}.totals span{font-size:12px}.insight-grid strong{font-si
 .exp-only .live-charts .chart svg{height:230px;width:100%}
 
 .exp-only #session-view .etc-section,.exp-only #adjustments,.exp-only #trend-mesos{display:none!important}
+
+.etc-watch-search{margin:16px 0}.etc-watch-search label{width:100%!important}.etc-watch-search .use-search-results p{padding:8px 12px}.etc-watch-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}.etc-watch-list .etc-watch-item{margin:0}.etc-watch-item>div{display:flex;align-items:center;flex-wrap:wrap;gap:8px}.etc-watch-item img{width:32px;height:32px}.etc-watch-item strong{flex:1}.etc-watch-item small{color:var(--muted);flex-basis:100%;margin-left:40px}.etc-watch-item .text-button{margin:0}.etc-watch-item label{width:100%!important}.etc-watch-search .use-search-results button{font-size:14px}.etc-watch-item input[type=number]{max-width:none;width:100%}

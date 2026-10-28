@@ -26,7 +26,7 @@
       if(start.etc?.enabled){
         const current=new Map((e.etcReadings||e.etc||[]).map(r=>[r.itemId,r])),known=new Map(etcItems),gaps=[];
         for(const row of current.values())if(!known.has(row.itemId)){known.set(row.itemId,row);if(learn)etcItems.set(row.itemId,row);}
-        for(const [id,item]of known){if(start.etc.excluded.includes(id))continue;const row=current.get(id),initial=initialEtc.get(id)?.quantity||0,quantity=row&&row.quantity>=initial?row.quantity-initial:null,price=initialEtc.get(id)?.unitPrice??item.unitPrice;etc+=component('etc:'+id,'ETC drops',quantity===null?null:quantity*price,ms,learn,gaps);}
+        for(const [id,item]of known){if(!M.isTrackedEtc(start.etc,id))continue;const row=current.get(id),initial=initialEtc.get(id)?.quantity||0,quantity=row&&row.quantity>=initial?row.quantity-initial:null,price=initialEtc.get(id)?.unitPrice??item.unitPrice;etc+=component('etc:'+id,'ETC drops',quantity===null?null:quantity*price,ms,learn,gaps);}
         if(gaps.length||e.etc===null)missing.push({key:'etc',label:'ETC drops',mode:gaps.some(r=>r.mode==='rate')?'rate':'held',ageMs:gaps.length?Math.max(...gaps.map(r=>r.ageMs)):0});
       }
       const net=gain-cost+etc;

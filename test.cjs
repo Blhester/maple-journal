@@ -87,6 +87,7 @@ require('./test-potions.cjs');
 require('./test-use-slots.cjs');
 require('./test-use-transfer.cjs');
 require('./test-etc-tracking.cjs');
+require('./test-etc-watchlist.cjs');
 require('./test-etc-partial-value.cjs');
 require('./test-etc-vision.cjs');
 require('./test-financial-fallback.cjs');

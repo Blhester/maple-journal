@@ -110,16 +110,18 @@
   function cleanEtcItems(items){
     if(!Array.isArray(items)||items.length>30)throw Error('ETC tracking supports 30 visible item types.');const ids=new Set();return items.map(r=>{const itemId=String(r.itemId);if(!/^\d{1,10}$/.test(itemId)||ids.has(itemId))throw Error('Invalid or duplicate ETC item.');ids.add(itemId);return {itemId,name:String(r.name||'ETC item').slice(0,100),quantity:integer(r.quantity,'ETC count'),unitPrice:integer(r.unitPrice,'ETC vendor price')};});
   }
+  function isTrackedEtc(config,id){return !!config&&!config.excluded?.includes(id)&&(config.trackedIds===undefined||config.trackedIds.includes(id));}
   function cleanEtc(config){
     if(!config?.enabled)return undefined;const r=config.region;if(!r||!['x','y','w','h'].every(k=>Number.isFinite(r[k]))||r.x<0||r.y<0||r.w<=0||r.h<=0||r.x+r.w>1||r.y+r.h>1)throw Error('Invalid ETC inventory region.');
     if(!Array.isArray(config.excluded)||config.excluded.length>331||config.excluded.some(id=>!/^\d{1,10}$/.test(id)))throw Error('Invalid ETC exclusions.');
-    const ignoredCells=config.ignoredCells||[];if(!Array.isArray(ignoredCells)||ignoredCells.length>30||ignoredCells.some(i=>!Number.isInteger(i)||i<0||i>=30))throw Error('Invalid ETC ignored cells.');return {enabled:true,ignoredCells:[...new Set(ignoredCells)],region:{x:r.x,y:r.y,w:r.w,h:r.h},baseline:cleanEtcItems(config.baseline),excluded:[...new Set(config.excluded)]};
+    const ignoredCells=config.ignoredCells||[];if(!Array.isArray(ignoredCells)||ignoredCells.length>30||ignoredCells.some(i=>!Number.isInteger(i)||i<0||i>=30))throw Error('Invalid ETC ignored cells.');const baseline=cleanEtcItems(config.baseline),out={enabled:true,ignoredCells:[...new Set(ignoredCells)],region:{x:r.x,y:r.y,w:r.w,h:r.h},baseline,excluded:[...new Set(config.excluded)]};
+    if(config.trackedIds!==undefined){const ids=config.trackedIds;if(!Array.isArray(ids)||ids.length>30||ids.some(id=>typeof id!=='string'||!/^\d{1,10}$/.test(id))||new Set(ids).size!==ids.length||baseline.length!==ids.length||baseline.some(r=>!ids.includes(r.itemId)))throw Error('Review a starting total for every selected ETC item.');out.trackedIds=[...ids];}return out;
   }
   function etcLoot(start,end){
     const config=cleanEtc(start.etc);if(!config)return [];
     if(!end.etc)return null;const rows=cleanEtcItems(end.etc),old=new Map(config.baseline.map(r=>[r.itemId,r])),now=new Map(rows.map(r=>[r.itemId,r])),excluded=new Set(config.excluded);
-    for(const r of config.baseline)if(!excluded.has(r.itemId)&&(!now.has(r.itemId)||now.get(r.itemId).quantity<r.quantity))return null;
-    return rows.filter(r=>!excluded.has(r.itemId)).map(r=>{const initial=old.get(r.itemId),quantity=r.quantity-(initial?.quantity||0),unitPrice=initial?.unitPrice??r.unitPrice;if(quantity<0)return null;const value=quantity*unitPrice;if(!Number.isSafeInteger(value))throw Error('ETC value is too large.');return {source:'etc',itemId:r.itemId,label:initial?.name||r.name,quantity,unitPrice,value,kind:'loot'};}).filter(r=>r&&r.quantity>0);
+    for(const r of config.baseline)if(isTrackedEtc(config,r.itemId)&&(!now.has(r.itemId)||now.get(r.itemId).quantity<r.quantity))return null;
+    return rows.filter(r=>isTrackedEtc(config,r.itemId)).map(r=>{const initial=old.get(r.itemId),quantity=r.quantity-(initial?.quantity||0),unitPrice=initial?.unitPrice??r.unitPrice;if(quantity<0)return null;const value=quantity*unitPrice;if(!Number.isSafeInteger(value))throw Error('ETC value is too large.');return {source:'etc',itemId:r.itemId,label:initial?.name||r.name,quantity,unitPrice,value,kind:'loot'};}).filter(r=>r&&r.quantity>0);
   }
   function calculate(start, end, durationMs) {
     if (!Number.isFinite(durationMs) || durationMs <= 0) throw new Error('The session needs a positive elapsed time.');
@@ -238,6 +240,6 @@
     for(const record of clean)records.set(record.id,record);
     return [...records.values()].sort((a,b)=>b.stoppedAt-a.stoppedAt);
   }
-  root.MapleMath = {levelPercentPerHour,cleanEtc,cleanEtcItems,etcLoot,cleanUses,cleanUseEnd,useTotals,catalog,integer,calculate,expTable,cumulative,levelNumber,position,activeElapsed,ledgerValue,ledgerTotals,profitRates,forecast,intervals,groupMaps,normalizeProgress,normalizeSession,mergeHistory};
+  root.MapleMath = {isTrackedEtc,levelPercentPerHour,cleanEtc,cleanEtcItems,etcLoot,cleanUses,cleanUseEnd,useTotals,catalog,integer,calculate,expTable,cumulative,levelNumber,position,activeElapsed,ledgerValue,ledgerTotals,profitRates,forecast,intervals,groupMaps,normalizeProgress,normalizeSession,mergeHistory};
   if (typeof module !== 'undefined') module.exports = root.MapleMath;
 })(typeof window !== 'undefined' ? window : globalThis);
