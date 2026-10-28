@@ -1,6 +1,7 @@
 MAPLE JOURNAL — Verification record, October 20, 2026
 
 Automated: node test.cjs
+EXP display-scale regression: node test-exp-display-scaling.cjs checks a real HUD crop enlarged to 4K scale with block and smooth interpolation, a 4K-to-1080p/1440p browser capture pass, fractional scaling, and enlarged clipped/unrelated/blank crops. The strict reader accepts the complete percentage and rejects the invalid crops.
 Passed original net and EXP rates, zero and negative gains, free supplies, restocks, input bounds, overflow, Classic formula boundaries (including 50/51 and 89/90), one/multiple level-ups, invalid within-level EXP, level-100 endpoint, target ETA/projections, zero/negative pace, paused active time, distinct ledger totals, efficiency/runway, interval trends, history normalization/upserts, invalid import rejection without changing existing records, legacy records without levels, and time-weighted map grouping.
 
 Browser checks on a local HTTP preview

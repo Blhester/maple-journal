@@ -34,7 +34,7 @@
     scores.sort((a,b)=>a.error-b.error);
     return scores[0].error<=.022&&scores[1].error-scores[0].error>=.006?scores[0]:null;
   }
-  function read({data,width:W,height:H,format='amount',allowComplete=false}={}){
+  function readSingle({data,width:W,height:H,format='amount',allowComplete=false}={}){
     const percentage=format==='percent';
     if(!Number.isInteger(W)||!Number.isInteger(H)||W<3||H<7||W>512||H>64||!data||data.length!==W*H*4)return noMatch('Use a tight region around the full EXP number.');
     const luminance=Array.from({length:W*H},(_,i)=>Math.min(data[i*4],data[i*4+1],data[i*4+2])*data[i*4+3]/255),sorted=[...luminance].sort((a,b)=>a-b),bg=sorted[Math.floor(sorted.length*.25)],fg=sorted[Math.floor(sorted.length*.99)];
@@ -83,6 +83,35 @@
     if(new Set(answers.map(a=>a.value)).size!==1)return noMatch('The EXP digit matches disagree. Review the crop or enter the number manually.');
     const best=answers.sort((a,b)=>a.error-b.error)[0];
     return {value:best.value,method:percentage?'classic-exp-percent':'classic-exp',raw:percentage?'Classic EXP percentage: '+best.value+'%':'Classic EXP font: '+best.value,fitError:best.error,confidence:0,disagrees:false,alternatives:[],boxes:best.boxes};
+  }
+  function resize({data,width,height},factor){
+    const W=Math.round(width*factor),H=Math.round(height*factor),result=new Uint8ClampedArray(W*H*4);
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+      const sx=(x+.5)/factor-.5,sy=(y+.5)/factor-.5,ix=Math.floor(sx),iy=Math.floor(sy),fx=sx-ix,fy=sy-iy,i=(y*W+x)*4;
+      for(let channel=0;channel<4;channel++){
+        let value=0;
+        for(let dy=0;dy<2;dy++)for(let dx=0;dx<2;dx++){
+          const px=Math.max(0,Math.min(width-1,ix+dx)),py=Math.max(0,Math.min(height-1,iy+dy));
+          value+=data[(py*width+px)*4+channel]*(dx?fx:1-fx)*(dy?fy:1-fy);
+        }result[i+channel]=value;
+      }
+    }
+    return {data:result,width:W,height:H};
+  }
+  function read(input){
+    const original=readSingle(input);if(original.value!==null||!input||!input.data||!Number.isInteger(input.width)||!Number.isInteger(input.height)||input.height<20||input.width>512||input.height>64||input.data.length!==input.width*input.height*4)return original;
+    // A 1080p game enlarged on a 4K desktop can turn each seven-pixel glyph
+    // into a blocky 10–14-pixel glyph. Recover its native sampling before
+    // running the same strict full-number matcher. Never combine partial reads.
+    const matches=[];
+    for(const factor of [.5,2/3,.75]){
+      const scaled=resize(input,factor);if(scaled.height<7)continue;
+      const result=readSingle({...scaled,format:input.format,allowComplete:input.allowComplete});
+      if(result.value!==null)matches.push(result);
+    }
+    if(!matches.length)return original;
+    if(new Set(matches.map(match=>match.value)).size!==1)return noMatch('Resized EXP digit matches disagree. Review the crop or enter the number manually.');
+    return {...matches.sort((a,b)=>a.fitError-b.fitError)[0],resampled:true};
   }
   return {read};
 });

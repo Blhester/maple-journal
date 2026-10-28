@@ -97,6 +97,7 @@ require('node:child_process').execFileSync(process.execPath,['test-use-detection
 require('./test-quantity.cjs');
 require('./test-exp-reader.cjs');
 require('./test-exp-percent.cjs');
+require('./test-exp-display-scaling.cjs');
 require('./test-level-inference.cjs');
 
 require('./test-maps.cjs');
