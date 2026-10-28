@@ -27,7 +27,7 @@
   const startIds=['session-map','session-class','start-level','start-exp','start-mesos','hp-potion','start-hp','hp-cost','mp-potion','start-mp','mp-cost'];
   const endIds=['end-level','end-exp','end-mesos','end-hp','end-mp','extra-exp','hp-added','mp-added'];
   const autoHelp=$('auto-progress-help').textContent;
-  let state={stage:'setup',ledger:[],checkpoints:[]},timerInterval,latest=null,autoRecorder=null,autoFilter=null,autoLayout=null,autoPreview=null,autoLastSample=null,autoMessage='Off. Enable Auto screenshots to choose a monitor.';
+  let state={stage:'setup',ledger:[],checkpoints:[]},timerInterval,latest=null,autoRecorder=null,autoFilter=null,counterFinanceFilter=null,autoLayout=null,autoPreview=null,autoLastSample=null,autoMessage='Off. Enable Auto screenshots to choose a monitor.';
   MapleEtc.init({getEntries:()=>state.ledger||[],onChange:entries=>{state.ledger=entries;persist();renderLedger();}});
   MapleScreenshot.init({
     correctSupply:(type,item)=>correctSupply(type,item),
@@ -81,23 +81,32 @@
   const levelPace=(value,level)=>value===null?(Number(level)===100?'Level % / hour unavailable at level 100':'Level % / hour needs a recorded level'):format(value)+'% of level '+level+' / hour';
   function paintLive(){
     const running=state.stage==='running';$('live-dashboard').hidden=!running;if(!running)return;
-    const model=MapleLiveModel.project(state,{preview:autoPreview,lastSample:autoLastSample}),point=model.point,pending=!!point?.preview;if(!expOnly()){window.MapleUseSlots?.paintLive(model.stats);window.MapleEtcCapture?.paint(model.liveStats);}
+    const model=MapleLiveModel.counters(state,{now:Date.now(),preview:autoPreview,lastSample:autoLastSample}),point=model.point,pending=!!point?.preview;if(!expOnly()){window.MapleUseSlots?.paintLive(model.reset&&!model.financeAnchor?{rateReady:false,uses:state.start.uses?.map(r=>({...r,quantity:null,used:null,perMinute:null,runwayMs:null}))}:model.stats);window.MapleEtcCapture?.paint(model.liveStats);}
+    $('live-exp-rate-label').textContent='EXP / HOUR · '+(model.reset?'SINCE RESET':'SESSION AVG');$('live-mesos-rate-label').textContent='NET MESOS / HOUR · '+(model.reset?'SINCE RESET':'SESSION AVG');$('live-reset-note').textContent=model.reset?(!model.anchor?'Reset. Waiting for the next validated reading. ':!model.expPoint?'Mesos baseline set. Waiting for a readable EXP capture. ':!expOnly()&&!model.financeAnchor?'EXP baseline set. Waiting for readable balance and item totals for net mesos. ':'Counters start from fresh readings. ')+'Full recording is kept for final review and history.':'Full recording is kept for final review and history.';
     $('live-quality').textContent=point?(pending?'Latest capture · pending':'Confirmed progress'):'Waiting for a capture';
     $('live-context').textContent=[state.meta?.map,state.meta?.class].filter(Boolean).join(' · ')||'Rates use active training time and your validated starting values.';
     for(const id of ['exp-hour','mesos-hour','level','hp','mp','supply-cost','eta'])$('live-'+id).textContent='N/A';
-    for(const k of ['hp','mp'])$('live-'+k+'-drain').textContent='Waiting for a capture';$('live-confirmed').textContent=String(state.autoPoints?.length||0);$('live-exp-gained').textContent='No usable capture yet';$('live-net-total').textContent='Keep your inventory open to read mesos';$('live-finance-note').textContent='';
+    for(const k of ['hp','mp'])$('live-'+k+'-drain').textContent='Waiting for a capture';$('live-confirmed').textContent=String(model.reset?model.confirmed.length:state.autoPoints?.length||0);$('live-exp-gained').textContent='No usable capture yet';$('live-net-total').textContent='Keep your inventory open to read mesos';$('live-finance-note').textContent='';
     if(expOnly()){const s=model.liveStats;MapleHistory.lineChart($('live-exp-chart'),model.intervalRows,'expHour',{live:true});$('live-exp-hour').textContent=format(s?.expHour||0);$('live-exp-percent-hour').textContent=levelPace(s?.expPercentHour??M.levelPercentPerHour(0,state.start.level),point?.end.level||state.start.level);$('live-exp-gained').textContent=format(s?.exp||0)+' EXP gained';$('live-level').textContent=(point?.end.level||state.start.level)+' · '+format(point?.end.exp??state.start.exp)+' EXP';$('live-eta').textContent=eta(s?.etaMs??null);$('live-confirmed').textContent=String(model.confirmed.length);$('live-snapshot-note').textContent='EXP-only tracking · rates use active time and confirmed snapshots; financial readings are skipped.';return;}
     const rows=model.liveIntervalRows;
     MapleHistory.lineChart($('live-exp-chart'),rows,'expHour',{live:true});MapleHistory.lineChart($('live-mesos-chart'),rows,'netHour',{live:true});
-    if(!point){$('live-exp-percent-hour').textContent=levelPace(M.levelPercentPerHour(0,state.start.level),state.start.level);$('live-exp-hour').textContent='0';$('live-exp-gained').textContent='0 EXP gained';$('live-mesos-hour').textContent=autoLastSample?'N/A':'0';$('live-net-total').textContent=autoLastSample?'Mesos N/A · awaiting a readable capture':'0 net mesos · starting balance';$('live-snapshot-note').textContent='Rates start at 0. A usable capture after one full active minute starts the rate estimates. Keep the HUD and potion counts visible; mesos needs an open inventory.';return;}
+    if(!point){$('live-exp-percent-hour').textContent=levelPace(M.levelPercentPerHour(0,state.start.level),state.start.level);$('live-exp-hour').textContent='0';$('live-exp-gained').textContent='0 EXP gained';$('live-mesos-hour').textContent=model.reset||autoLastSample?'N/A':'0';$('live-net-total').textContent=model.reset||autoLastSample?'Mesos N/A · awaiting a readable capture':'0 net mesos · starting balance';$('live-snapshot-note').textContent='Rates start at 0. A usable capture after one full active minute starts the rate estimates. Keep the HUD and potion counts visible; mesos needs an open inventory.';return;}
     const stats=model.liveStats,mesosAvailable=stats.net!==null;
     $('live-finance-note').textContent=stats.estimated?'Estimated · '+stats.estimatedComponents.map(r=>r.label+': '+(r.mode==='rate'?'last validated rate':'last validated value held')+' ('+duration(r.ageMs)+' old)').join('; ')+'. Reconciles when readable.':autoLastSample?.mesosReadable===false?'Keeping the last usable reading while this capture is unreadable.':'Uses readable values; pending readings still await confirmation.';
     if(!stats.rateReady)$('live-quality').textContent='Gathering first minute';else if(stats.estimated&&!pending)$('live-quality').textContent='Confirmed EXP · financial estimate';
-    $('live-exp-percent-hour').textContent=levelPace(stats.expPercentHour,point.end.level);$('live-exp-hour').textContent=format(stats.expHour);$('live-exp-gained').textContent=format(stats.exp)+' EXP gained';
+    $('live-exp-percent-hour').textContent=model.reset&&!model.expPoint?'Waiting for readable EXP':levelPace(stats.expPercentHour,point.end.level);$('live-exp-hour').textContent=format(stats.expHour);$('live-exp-gained').textContent=format(stats.exp)+' EXP gained';
     if(mesosAvailable){$('live-mesos-hour').textContent=format(stats.netHour);$('live-net-total').textContent=format(stats.net)+(state.start.etc?.enabled?' estimated net · includes '+format(stats.etcValue)+' unsold ETC ('+format(stats.cashNet)+' cash net)':' net mesos · after use-item costs');}
     else $('live-net-total').textContent='Net mesos N/A · balance or supply counts unreadable / awaiting validation';
     $('live-level').textContent=(point.end.level||'Level N/A')+' · '+format(point.end.exp)+' EXP';$('live-hp').textContent=(point.end.hp===null?'N/A':format(point.end.hp))+' '+(M.catalog.hp.find(item=>item.id===state.start.hpPotion)?.name||'items');$('live-mp').textContent=(point.end.mp===null?'N/A':format(point.end.mp))+' '+(M.catalog.mp.find(item=>item.id===state.start.mpPotion)?.name||'items');$('live-supply-cost').textContent=stats.supplyCost===null?'N/A':(stats.estimatedComponents.some(r=>r.key==='hp'||r.key==='mp'||r.key.startsWith('use:'))?'≈ ':'')+format(stats.supplyCost)+' mesos';$('live-eta').textContent=eta(stats.etaMs);for(const k of ['hp','mp']){const rate=stats[k+'PerMinute'],left=stats[k+'RunwayMs'];$('live-'+k+'-drain').textContent=point.end[k]===null?'Count unreadable':point.end[k]===0?'Empty':rate===null?'Gathering usage rate':rate===0?'No use recorded':format(rate)+'/min · '+eta(left)+' left';}
     $('live-snapshot-note').textContent=(pending?'Pending capture':'Confirmed snapshot')+' at '+duration(point.elapsedMs)+' active training. '+(!stats.rateReady?'Rates stay at 0 until a usable capture after one full active minute. Totals still show detected changes. ':pending?'Provisional rates update after each capture; this point is excluded from confirmed history until validated.':stats.estimated?'Readable values are confirmed; missing financial components use a labeled estimate.':'Only confirmed values are counted.')+(!mesosAvailable?' EXP continues while net mesos is N/A; check balance and all tracked shortcut regions.':'');
+  }
+  function recordCounterFinance(read,ms){
+    if(expOnly()||!state.start.level)return;
+    try{const constant=p=>p&&({...p,end:{...p.end,level:state.start.level,exp:state.start.exp,extraExp:0}});
+      if(!counterFinanceFilter)counterFinanceFilter=MapleAutoProgress.createFilter({start:state.start,anchor:constant(progressPoints().at(-1)),mesoAnchor:constant(state.checkpoints.at(-1)),etcAnchor:MapleLiveModel.etcTotals(state)});
+      const point=MapleAutoProgress.fromRead({...read,results:{...read.results,level:{value:state.start.level,method:'classic-digits'},exp:{value:state.start.exp,method:'classic-exp'}}},state.start,ms),result=counterFinanceFilter.offer(point);
+      state.counterFinancePoints??=[];for(const p of result.accepted)if(p.elapsedMs>(state.counterFinancePoints.at(-1)?.elapsedMs||0))state.counterFinancePoints.push(p);
+    }catch{/* Financial counters wait for a valid, corroborated observation. */}
   }
   function autoLog(point,status,message){
     state.autoLog??=[];const at=point?.at||Date.now(),entry={at,elapsedMs:point?.elapsedMs||elapsed(),status,message};
@@ -105,11 +114,11 @@
     const index=state.autoLog.findIndex(item=>item.at===at);if(index>=0)state.autoLog[index]=entry;else state.autoLog.push(entry);state.autoLog=state.autoLog.slice(-30);
   }
   function stopAuto(message='Automatic screenshots are off. Unconfirmed samples are not counted.',stopSharing=true){
-    autoRecorder?.stop(message);autoFilter=null;autoLayout=null;autoPreview=null;
+    autoRecorder?.stop(message);autoFilter=null;counterFinanceFilter=null;autoLayout=null;autoPreview=null;
     if(stopSharing)MapleScreenshot.stopSharing();paintAuto();
   }
   function rebaseAuto(){
-    if(!autoRecorder?.active())return;
+    counterFinanceFilter=null;if(!autoRecorder?.active())return;
     autoRecorder.cancelPending();autoFilter=MapleAutoProgress.createFilter({start:state.start,anchor:progressPoints().at(-1),mesoAnchor:state.checkpoints.at(-1),etcAnchor:expOnly()?[]:MapleLiveModel.etcTotals(state)});
     autoMessage='Manual checkpoint recorded. Automatic validation now uses its values and cumulative restocks.';paintAuto();
   }
@@ -120,9 +129,11 @@
     onSample:read=>{
       try{
         if(!expOnly()&&state.start.etc?.enabled&&read.results.etc?.items){state.etcSeen=structuredClone(read.results.etc.items);window.MapleEtcCapture?.render();}
+        if((state.counterFinancePoints?.length||0)>=4999){stopAuto('Checkpoint limit reached. Finish this session before starting another.');return;}
         const layout=read.width+'x'+read.height+':'+read.layout;
         if(autoLayout&&autoLayout!==layout){autoLog(null,'Skipped','Screen size or read settings changed. Recalibrate before restarting.');stopAuto('Capture layout changed. Check your regions and restart automatic mode.');persist();return;}autoLayout=layout;
         autoLastSample={at:read.at,elapsedMs:M.activeElapsed(state,read.at),mesosReadable:false,usable:false};
+        recordCounterFinance(read,autoLastSample.elapsedMs);
         const result=autoFilter.offerRead(read,autoLastSample.elapsedMs),point=result.point;autoPreview=result.preview;autoLastSample.mesosReadable=!!autoPreview&&MapleAutoProgress.stats(state.start,autoPreview).net!==null;autoLastSample.usable=!!autoPreview;
         for(const rejected of result.rejected)autoLog(rejected.point,'Discarded',rejected.reason);
         autoLog(point,result.held?'Held':'Waiting',result.message);
@@ -133,14 +144,14 @@
           autoLog(accepted,'Confirmed',expOnly()?'EXP checkpoint saved.':MapleAutoProgress.stats(state.start,accepted).net===null?'EXP confirmed. Missing financial readings use a labeled live estimate; raw values remain unknown.':'Saved as a full progress checkpoint.');
         }
         autoMessage=result.message;persist();paintAuto();window.MapleEtcCapture?.render();tick();
-      }catch(error){autoPreview=null;if(autoLastSample)autoLastSample.mesosReadable=false;autoLog(null,'Skipped',error.message);autoMessage=error.message;persist();paintAuto();}
+      }catch(error){autoPreview=null;if(autoLastSample)autoLastSample.mesosReadable=false;const partial=state.counterReset&&state.counterFinancePoints?.at(-1)?.at>state.counterReset.at;autoMessage=error.message+(partial?' Meso counters continue from independently validated financial readings.':'');autoLog(null,partial?'Partial':'Skipped',autoMessage);persist();paintAuto();tick();}
     }
   });
   $('auto-calibrate').addEventListener('click',()=>{if(state.stage!=='running')return;if(autoRecorder.active())stopAuto('Automatic capture stopped for calibration. Enable it again when ready.');MapleScreenshot.openCalibration();});
   $('auto-progress-toggle').addEventListener('change',()=>{
     if(!$('auto-progress-toggle').checked){stopAuto();return;}
     if(state.stage!=='running'||state.pausedAt||!state.start.level){paintAuto();return;}
-    autoFilter=MapleAutoProgress.createFilter({start:state.start,anchor:progressPoints().at(-1),mesoAnchor:state.checkpoints.at(-1),etcAnchor:MapleLiveModel.etcTotals(state)});autoLayout=null;autoPreview=null;autoRecorder.start();
+    counterFinanceFilter=null;autoFilter=MapleAutoProgress.createFilter({start:state.start,anchor:progressPoints().at(-1),mesoAnchor:state.checkpoints.at(-1),etcAnchor:MapleLiveModel.etcTotals(state)});autoLayout=null;autoPreview=null;autoRecorder.start();
   });
   window.addEventListener('pagehide',()=>autoRecorder.stop('Reloaded or left page. Automatic capture must be enabled again.'));
   const format=n=>n===null||n===undefined?'N/A':number.format(Math.abs(n)<.005?0:n);
@@ -152,9 +163,9 @@
   function persist(){state.startFields=values(startIds);state.endFields=values(endIds);try{localStorage.setItem(storageKey,JSON.stringify(state));}catch{$('storage-warning').hidden=false;}window.MapleOverlay?.update();}
   const elapsed=()=>M.activeElapsed(state);
   function tick(){
-    const active=elapsed();$('timer').innerHTML=duration(active).split(':').join('<span>:</span>');
+    const active=elapsed(),counterTime=state.counterReset&&['running','ending'].includes(state.stage)?MapleLiveModel.counterTime(state,Date.now()):active;$('timer-heading').textContent=state.counterReset&&['running','ending'].includes(state.stage)?'ACTIVE TIME SINCE RESET':'ACTIVE TRAINING TIME';$('timer').innerHTML=duration(counterTime).split(':').join('<span>:</span>');
     const wall=state.startedAt?Math.max(0,(state.stoppedAt??Date.now())-state.startedAt):0;
-    $('wall-time').textContent='Wall time '+duration(wall)+' · breaks '+duration(wall-active);
+    $('wall-time').textContent=(state.counterReset&&['running','ending'].includes(state.stage)?'Full recording '+duration(active)+' · ':'')+'Wall time '+duration(wall)+' · breaks '+duration(wall-active);
     const last=state.checkpoints?.at(-1)?.elapsedMs||0;
     $('checkpoint-reminder').hidden=state.stage!=='running'||!!state.pausedAt||active-last<600000;
   }
@@ -238,9 +249,10 @@
       else if(window.MapleUseSlots){start.uses=MapleUseSlots.starting();start.hp=start.mp=start.hpCost=start.mpCost=0;}
       else {for(const k of ['hp','mp'])start[k]=M.integer($('start-'+k).value,'Starting '+k);start.hpCost=M.integer($('hp-cost').value,'HP cost');start.mpCost=M.integer($('mp-cost').value,'MP cost');}
       const etc=expOnly()?undefined:window.MapleEtcCapture?.starting();if(etc)start.etc=etc;
-      const preferences={...(expOnly()?{useDraft:structuredClone(state.useDraft||[])}:{}),...(state.etcDraft?{etcDraft:{...state.etcDraft,baseline:[],validated:false}}:{})};const now=Date.now();state={...preferences,stage:'running',id:'run-'+now+'-'+Math.random().toString(36).slice(2,8),start,startedAt:now,pausedMs:0,checkpoints:[],ledger:[],meta:{map:$('session-map').value.trim(),class:$('session-class').value.trim()}};$('end-level').value=start.level||'';$('cp-level').value=start.level||'';error('start-error','');persist();render();$('done-button').focus();if($('auto-start').checked&&start.level&&MapleScreenCapture.supported()){autoFilter=MapleAutoProgress.createFilter({start});autoLayout=null;autoRecorder.start();}
+      const preferences={...(expOnly()?{useDraft:structuredClone(state.useDraft||[])}:{}),...(state.etcDraft?{etcDraft:{...state.etcDraft,baseline:[],validated:false}}:{})};counterFinanceFilter=null;const now=Date.now();state={...preferences,stage:'running',id:'run-'+now+'-'+Math.random().toString(36).slice(2,8),start,startedAt:now,pausedMs:0,checkpoints:[],ledger:[],meta:{map:$('session-map').value.trim(),class:$('session-class').value.trim()}};$('end-level').value=start.level||'';$('cp-level').value=start.level||'';error('start-error','');persist();render();$('done-button').focus();if($('auto-start').checked&&start.level&&MapleScreenCapture.supported()){autoFilter=MapleAutoProgress.createFilter({start});autoLayout=null;autoRecorder.start();}
     }catch(e){error('start-error',e.message);}
   });
+  $('reset-live-stats').addEventListener('click',()=>{if(state.stage!=='running')return;state.counterReset=MapleLiveModel.resetMarker(state,Date.now());autoPreview=null;autoLastSample=null;if(autoRecorder.active())autoRecorder.cancelPending();persist();paintAuto();tick();});
   $('pause-button').addEventListener('click',()=>{if(state.stage!=='running')return;const now=Date.now();if(state.pausedAt){state.pausedMs=(state.pausedMs||0)+Math.max(0,now-state.pausedAt);state.pausedAt=null;}else state.pausedAt=now;if(autoRecorder.active()){autoRecorder.cancelPending();autoMessage=state.pausedAt?'Paused with the session. No screenshots during breaks.':'Resumed. Next automatic snapshot in about 30 seconds.';}persist();render();});
   $('done-button').addEventListener('click',()=>{
     if(state.stage!=='running')return;const wasAutomatic=autoRecorder.active();if(wasAutomatic)stopAuto('Automatic screenshots stopped. Review your ending values.');const now=Date.now();if(state.pausedAt){state.pausedMs=(state.pausedMs||0)+Math.max(0,now-state.pausedAt);state.pausedAt=null;}state.stoppedAt=Math.max(now,state.startedAt+(state.pausedMs||0)+1);state.stage='ending';const cp=progressPoints().at(-1);if(state.start.uses!==undefined){delete state.useEndDraft;if(cp?.end.uses)state.useEndDraft=structuredClone(cp.end.uses);}if(cp){if(cp.source==='automatic'){for(const k of ['exp','mesos','hp','mp'])$('end-'+k).value=cp.end[k]===null?'':cp.end[k];$('screenshot-applied').textContent='Ending fields start from the last confirmed checkpoint at '+duration(cp.elapsedMs)+'. Update and review your actual final values before calculating.';}$('hp-added').value=cp.end.hpAdded;$('mp-added').value=cp.end.mpAdded;$('end-level').value=cp.end.level||'';if(!state.start.level)$('extra-exp').value=cp.end.extraExp;}persist();render();$('end-exp').focus();
@@ -264,7 +276,7 @@
   });
   $('edit-button').addEventListener('click',()=>{state.stage='ending';state.ledger=structuredClone(state.end.ledger||[]);persist();render();$('end-exp').focus();});
   function reset(){
-    if(autoRecorder.active())stopAuto();autoMessage='Off. Enable automatic screenshots when your next session starts.';
+    counterFinanceFilter=null;if(autoRecorder.active())stopAuto();autoMessage='Off. Enable automatic screenshots when your next session starts.';
     // Keep the last supply choices (and custom prices) in the next saved draft.
     const etcDraft=expOnly()?state.etcDraft:window.MapleEtcCapture?.preferences();
     const useDraft=window.MapleUseSlots?structuredClone(expOnly()?state.useDraft||[]:MapleUseSlots.slots()).map(r=>({...r,quantity:0})):undefined;
@@ -280,12 +292,12 @@
     if(saved&&['setup','running','ending','complete'].includes(saved.stage)){
       saved.checkpoints??=[];saved.ledger??=saved.end?.ledger||[];saved.pausedMs??=0;if(!Array.isArray(saved.checkpoints)||saved.checkpoints.length>5000)throw new Error('Invalid checkpoint list');M.ledgerTotals(saved.ledger);
       if(saved.stage!=='setup'){
-        for(const k of ['exp','mesos','hp','mp','hpCost','mpCost'])M.integer(saved.start[k],k);if(!saved.start.expOnly&&saved.start.uses!==undefined)M.cleanUses(saved.start.uses);if(!Number.isSafeInteger(saved.startedAt)||saved.startedAt<=0)throw new Error('Invalid start time');M.integer(saved.pausedMs,'Paused time');if(saved.pausedAt&&(!Number.isSafeInteger(saved.pausedAt)||saved.pausedAt<saved.startedAt))throw new Error('Invalid paused time');if(saved.stage!=='running'&&(!Number.isSafeInteger(saved.stoppedAt)||M.activeElapsed(saved)<=0))throw new Error('Invalid stop time');if(saved.pausedMs>(saved.stoppedAt??saved.pausedAt??Date.now())-saved.startedAt)throw new Error('Invalid pause duration');if((saved.checkpoints.at(-1)?.elapsedMs||0)>M.activeElapsed(saved))throw new Error('Checkpoint is beyond session time');if(saved.start.level)M.position(saved.start.level,saved.start.exp);saved.autoPoints=M.normalizeProgress(saved.start,saved.autoPoints||saved.checkpoints.filter(p=>p.source==='automatic'),M.activeElapsed(saved));M.intervals(saved.start,saved.checkpoints,saved.stage==='complete'?saved.end:null,saved.stage==='complete'?M.activeElapsed(saved):0);if(saved.stage==='complete')M.calculate(saved.start,saved.end,M.activeElapsed(saved));saved.id??='run-'+saved.startedAt;saved.meta??={map:saved.startFields?.['session-map']||'',class:saved.startFields?.['session-class']||''};
+        for(const k of ['exp','mesos','hp','mp','hpCost','mpCost'])M.integer(saved.start[k],k);if(!saved.start.expOnly&&saved.start.uses!==undefined)M.cleanUses(saved.start.uses);if(!Number.isSafeInteger(saved.startedAt)||saved.startedAt<=0)throw new Error('Invalid start time');M.integer(saved.pausedMs,'Paused time');if(saved.pausedAt&&(!Number.isSafeInteger(saved.pausedAt)||saved.pausedAt<saved.startedAt))throw new Error('Invalid paused time');if(saved.stage!=='running'&&(!Number.isSafeInteger(saved.stoppedAt)||M.activeElapsed(saved)<=0))throw new Error('Invalid stop time');if(saved.pausedMs>(saved.stoppedAt??saved.pausedAt??Date.now())-saved.startedAt)throw new Error('Invalid pause duration');if((saved.checkpoints.at(-1)?.elapsedMs||0)>M.activeElapsed(saved))throw new Error('Checkpoint is beyond session time');if(saved.start.level)M.position(saved.start.level,saved.start.exp);if(saved.counterFinancePoints)saved.counterFinancePoints=M.normalizeProgress(saved.start,saved.counterFinancePoints,M.activeElapsed(saved));saved.autoPoints=M.normalizeProgress(saved.start,saved.autoPoints||saved.checkpoints.filter(p=>p.source==='automatic'),M.activeElapsed(saved));M.intervals(saved.start,saved.checkpoints,saved.stage==='complete'?saved.end:null,saved.stage==='complete'?M.activeElapsed(saved):0);if(saved.stage==='complete')M.calculate(saved.start,saved.end,M.activeElapsed(saved));saved.id??='run-'+saved.startedAt;saved.meta??={map:saved.startFields?.['session-map']||'',class:saved.startFields?.['session-class']||''};
       }
       state=saved;restoreFields(saved.startFields);restoreFields(saved.endFields);if(saved.start?.level){$('end-level').value=saved.endFields?.['end-level']||saved.end?.level||saved.start.level;$('cp-level').value=saved.checkpoints.at(-1)?.end.level||saved.start.level;}if(saved.stage==='complete')$('profit-metric').value=(saved.start.etc?.enabled||saved.end.ledger?.some(e=>e.kind==='loot'))?'estimatedNet':saved.end.ledger?.length?'adjustedNet':'net';
     }
   }catch(e){error('history-error','A saved session could not be fully restored: '+e.message+'. Your saved history is kept separately.');}
-  window.MapleOverlayFeed={session:()=>({id:state.id,stage:state.stage,expOnly:expOnly()}),baseline:()=>MapleLiveModel.baseline(state),snapshot:(options={})=>MapleLiveModel.snapshot(state,{...options,lastSample:autoLastSample,now:Date.now()})};
+  window.MapleOverlayFeed={session:()=>({id:state.id,stage:state.stage,expOnly:expOnly()}),baseline:()=>MapleLiveModel.resetMarker(state,Date.now()),snapshot:(options={})=>MapleLiveModel.snapshot(state,{...options,lastSample:autoLastSample,now:Date.now()})};
   window.MapleEtcCapture?.init({getState:()=>state,changed:persist,refresh:()=>{autoPreview=null;autoLastSample=null;rebaseAuto();paintAuto();renderResults();}});
   if(window.MapleUseSlots){MapleUseSlots.init({getState:()=>state,changed:persist,refresh:()=>{paintAuto();renderResults();}});for(const id of ['start-hp','start-mp','hp-cost','mp-cost','end-hp','end-mp','hp-added','mp-added','cp-hp','cp-mp','cp-hp-added','cp-mp-added']){$(id).required=false;$(id).disabled=true;}}
   render();

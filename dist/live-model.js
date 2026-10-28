@@ -64,6 +64,58 @@
     if(lastSample&&!lastSample.mesosReadable&&lastSample.elapsedMs>(rows.at(-1)?.to||0))rows.push({to:lastSample.elapsedMs,expHour:null,netHour:null});
     return {point,stats,liveStats,liveRows:[{to:0,expHour:0,netHour:0},...financial.map(({point,live})=>({to:point.elapsedMs,expHour:live.expHour,netHour:live.netHour}))],confirmedStats:financial.map(({point,live})=>({ms:point.elapsedMs,exp:live.exp,net:live.net})),rows,intervalRows:intervalRows(state.start,confirmed,{financial}),liveIntervalRows:intervalRows(state.start,confirmed,{estimate:true,financial}),confirmed,activeMs:state.start?M.activeElapsed(state,now):0};
   }
+  function resetMarker(state,now=Date.now()){
+    return {kind:'next-reading',session:String(state.id),at:now,ms:M.activeElapsed(state,now)};
+  }
+  function validReset(state,r){return r?.kind==='next-reading'&&r.session===String(state.id)&&Number.isSafeInteger(r.at)&&r.at>=state.startedAt&&Number.isSafeInteger(r.ms)&&r.ms>=0;}
+  function afterReset(state,r,{final=false,finance=false}={}){
+    const all=finance&&Array.isArray(state.counterFinancePoints)?[...points(state).filter(p=>p.source!=='automatic'),...state.counterFinancePoints].sort((a,b)=>a.elapsedMs-b.elapsedMs):points(state);if(final&&state.stage==='complete'&&state.end){const ms=M.activeElapsed(state);while(all.at(-1)?.elapsedMs>=ms)all.pop();all.push({end:state.end,elapsedMs:ms,at:state.stoppedAt,source:'reviewed'});}
+    return all.filter(p=>p.elapsedMs>r.ms&&(!Number.isFinite(p.at)||p.at>r.at));
+  }
+  function counterTime(state,now=Date.now()){
+    if(!validReset(state,state.counterReset))return M.activeElapsed(state,now);
+    const first=[afterReset(state,state.counterReset)[0],afterReset(state,state.counterReset,{finance:true})[0]].filter(Boolean).sort((a,b)=>a.elapsedMs-b.elapsedMs)[0];return first?Math.max(0,M.activeElapsed(state,now)-first.elapsedMs):0;
+  }
+  function financeStart(start,point){
+    const e=point.end,out={...start,level:e.level,exp:e.exp,mesos:e.mesos,hp:e.hp,mp:e.mp};
+    if(start.uses)out.uses=start.uses.map(row=>({...row,quantity:e.uses.find(r=>r.id===row.id).quantity}));
+    if(start.etc){const current=new Map((e.etc||[]).map(r=>[r.itemId,r])),original=new Map(start.etc.baseline.map(r=>[r.itemId,r]));out.etc={...start.etc,baseline:[...new Map([...start.etc.baseline,...(e.etc||[])].map(r=>[r.itemId,r])).values()].map(row=>({...row,quantity:current.get(row.itemId)?.quantity??row.quantity,unitPrice:original.get(row.itemId)?.unitPrice??row.unitPrice}))};}
+    return out;
+  }
+  function relativePoint(point,anchor){
+    const e=point.end,a=anchor.end,end={...e,ledger:[],extraExp:(e.extraExp||0)-(a.extraExp||0),hpAdded:(e.hpAdded||0)-(a.hpAdded||0),mpAdded:(e.mpAdded||0)-(a.mpAdded||0)};
+    if(e.uses)end.uses=e.uses.map(r=>({...r,added:r.added-(a.uses.find(x=>x.id===r.id)?.added||0)}));
+    return {...point,end,elapsedMs:point.elapsedMs-anchor.elapsedMs};
+  }
+  // A reset never seeds a baseline from old readings or financial forecasts.
+  // EXP and complete net-finance observations establish independent origins.
+  function counters(state,{now=Date.now(),reset=state.counterReset,final=false,...options}={}){
+    if(!validReset(state,reset))return project(state,{now,...options});
+    const expPoints=afterReset(state,reset,{final}),financePoints=state.start.expOnly?[]:afterReset(state,reset,{final,finance:true}),expAnchor=expPoints[0],financeAnchor=financePoints.find(p=>A.stats(state.start,p).net!==null),finance=financeAnchor?financeStart(state.start,financeAnchor):null,forecast=finance?financialProjection(finance):null;
+    const expByTime=new Map(expPoints.map(p=>[p.elapsedMs,p])),financeByTime=new Map(financePoints.map(p=>[p.elapsedMs,p]));
+    const timeline=new Map([...financePoints,...expPoints].map(p=>[p.elapsedMs,p])),fresh=[...timeline.values()].sort((a,b)=>a.elapsedMs-b.elapsedMs),anchor=fresh[0],origin=anchor?.elapsedMs??reset.ms,activeMs=anchor?Math.max(0,M.activeElapsed(state,now)-origin):0,liveRows=[],interval=[],financial=[];let latest=null,previousExp={value:0,ms:expAnchor?expAnchor.elapsedMs-origin:0},expStats=null,live=null,observed=null,expPoint=null;
+    for(const p of fresh){
+      const ms=p.elapsedMs-origin,ep=expByTime.get(p.elapsedMs),fp=financeByTime.get(p.elapsedMs);
+      if(ep){const span=ep.elapsedMs-expAnchor.elapsedMs,exp=state.start.level?M.position(ep.end.level,ep.end.exp)-M.position(expAnchor.end.level,expAnchor.end.exp):ep.end.exp+(ep.end.extraExp||0)-expAnchor.end.exp-(expAnchor.end.extraExp||0),ready=span>=60000||ep.source==='reviewed'&&span>0,expHour=ready&&span>0?exp*3600000/span:0,remaining=ep.end.level===100?0:ep.end.level?M.expTable[ep.end.level]-ep.end.exp:null;expStats={exp,expHour,expPercentHour:M.levelPercentPerHour(expHour,ep.end.level),remaining,etaMs:remaining===0?0:ready&&expHour>0&&remaining!==null?remaining*3600000/expHour:null,expRateReady:ready};expPoint=ep;}
+      if(finance&&fp&&fp.elapsedMs>=financeAnchor.elapsedMs){const relative=relativePoint(fp,financeAnchor);observed=A.stats(finance,{...relative,elapsedMs:Math.max(1,relative.elapsedMs)});if(fp.source==='reviewed'&&relative.elapsedMs>0)observed={...observed,rateReady:true,netHour:observed.net===null?null:observed.net*3600000/relative.elapsedMs};live=forecast(relative,observed);financial.push({point:relative,observed,live});}
+      latest={...(live||{}),exp:expStats?.exp??null,expHour:expStats?.expHour??null,expPercentHour:expStats?.expPercentHour??null,remaining:expStats?.remaining??null,etaMs:expStats?.etaMs??null,rateReady:!!expStats?.expRateReady||!!observed?.rateReady,expRateReady:!!expStats?.expRateReady,net:state.start.expOnly?null:live?.net??null,netHour:state.start.expOnly?null:live?.netHour??null,cashNet:live?.cashNet??null,etcValue:live?.etcValue??null,supplyCost:live?.supplyCost??null,estimated:!!live?.estimated,estimatedComponents:live?.estimatedComponents||[],financeReady:!!live,financeRateReady:!!observed?.rateReady,financeMs:financeAnchor&&fp?Math.max(0,fp.elapsedMs-financeAnchor.elapsedMs):null};
+      liveRows.push({to:ms,expHour:ep?latest.expHour:null,netHour:fp?latest.netHour:null});
+      interval.push({to:ms,expFrom:previousExp.ms,expHour:ep?(expStats.expRateReady&&ms>previousExp.ms?(expStats.exp-previousExp.value)*3600000/(ms-previousExp.ms):0):null,netHour:null});if(ep)previousExp={value:expStats.exp,ms};
+    }
+    const financeIntervals=finance?intervalRows(finance,financial.map(r=>r.point),{estimate:true,financial}):[],offset=financeAnchor?financeAnchor.elapsedMs-origin:0;
+    const financeByOffset=new Map(financeIntervals.map(r=>[r.to+offset,r]));
+    for(const row of interval){const f=financeByOffset.get(row.to);if(f)Object.assign(row,{netHour:f.netHour,netFrom:(f.netFrom||0)+offset,...(f.netEstimated?{netEstimated:true}:{})});}
+    if(!interval.length)interval.push({to:0,expHour:0,netHour:null});
+    const current=fresh.at(-1),financePoint=financePoints.at(-1);
+    return {reset,point:current?{...current,end:{...(financePoint?.end||current.end),level:expPoint?.end.level??null,exp:expPoint?.end.exp??null}}:null,stats:latest,liveStats:latest,confirmed:fresh,activeMs,liveRows:liveRows.length?liveRows:[{to:0,expHour:0,netHour:null}],rows:interval,intervalRows:interval,liveIntervalRows:interval,financeAnchor,expPoint,anchor};
+  }
+  function counterSnapshot(state,{now,lastSample,reset}){
+    const view=counters(state,{now,reset,final:true}),s=view.liveStats,p=view.point,phase=state.stage==='complete'?'complete':state.stage==='ending'?'ending':state.pausedAt?'paused':s?.rateReady?'running':'starting';
+    let etaMs=s?.etaMs??null;if(etaMs!==null&&p&&phase!=='complete')etaMs=Math.max(0,etaMs-Math.max(0,M.activeElapsed(state,now)-(view.expPoint?.elapsedMs??p.elapsedMs)));
+    if(!Number.isFinite(etaMs)||etaMs>Number.MAX_SAFE_INTEGER)etaMs=null;
+    const origin=view.liveRows[0]?.to===0?view.liveRows[0]:{to:0,expHour:0,netHour:null},rows=[origin,...view.liveRows.filter(r=>r.to>0).slice(-240)];
+    return {expOnly:state.start.expOnly===true,expPercentHour:s?s.expPercentHour:M.levelPercentPerHour(0,state.start.level),etaMs,version:1,session:String(state.id),phase,activeMs:view.anchor?view.activeMs:null,sampleAt:p?.at??reset.at,captureAt:lastSample?.usable&&lastSample.at>reset.at?lastSample.at:p?.at??reset.at,rateReady:!!s?.rateReady,expHour:s?s.expHour:0,netHour:s?.netHour??null,expTotal:s?s.exp:0,netTotal:s?.net??null,series:rows.map(r=>({ms:r.to,exp:r.expHour,mesos:r.netHour}))};
+  }
   // Explicit allowlist: only averages/gains from validated capture endpoints
   // leave this boundary. Component forecasts match the live dashboard, while
   // pending OCR, raw balances, item identities and counts remain local.
@@ -73,6 +125,10 @@
   }
   function snapshot(state,{lastSample=null,now=Date.now(),since=null}={}){
     if(!state.id||!state.start)return null;
+    let reset=validReset(state,state.counterReset)?state.counterReset:null;
+    if(validReset(state,since)&&(!reset||since.at>=reset.at))reset=since;
+    else if(since&&since.kind!=='next-reading'&&Number.isFinite(since.ms)&&reset&&since.ms>reset.ms)reset=null;
+    if(reset)return counterSnapshot(state,{now,lastSample,reset});
     const view=project(state,{now}),s=view.liveStats,p=view.point,captureActiveMs=view.activeMs;
     let phase=state.stage==='complete'?'complete':state.stage==='ending'?'ending':state.pausedAt?'paused':s?.rateReady?'running':'starting';
     let expHour=s?.expHour||0,netHour=p?s.netHour:0,expTotal=s?.exp||0,netTotal=p?s.net:0,rateReady=!!s?.rateReady;
@@ -105,5 +161,5 @@
     if(state.start.expOnly){netHour=netTotal=null;rows=rows.map(r=>({...r,netHour:null}));}
     return {expOnly:state.start.expOnly===true,expPercentHour,etaMs,version:1,session:String(state.id),phase,activeMs:view.activeMs,sampleAt,captureAt:lastSample?.usable?lastSample.at:p?.at??state.startedAt,rateReady,expHour,netHour,expTotal,netTotal,series:[{ms:0,exp:0,mesos:0},...series]};
   }
-  return {points,etcTotals,intervalRows,project,snapshot,baseline};
+  return {points,etcTotals,intervalRows,project,snapshot,baseline,resetMarker,counterTime,counters};
 });

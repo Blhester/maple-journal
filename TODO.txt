@@ -75,3 +75,5 @@ Completed: active ETC inventory scan, per-item exclusions, duplicate-stack aggre
 [x] Replace periodic level OCR with confirmed percentage rollover inference; cover99% thresholds, exact/repeated100%, false transitions, endpoint, manual rebasing, reload/history, full/EXP-only background workers and app/stream integration.
 
 [x] Replace broad ETC discovery for new recordings with a persistent selected-item watch list; baseline review, selected-template search, unselected-icon guard, all-slot/new-stack scanning, aggregation, quantity uncertainty and selected-only financial integration.
+
+[x] Add live time/counter reset using fresh validated per-metric baselines; preserve full recording, independent financial-only confirmation during EXP failures, strict missing-baseline behavior, counter charts/stream, reload, repeat reset, costs/restocks and pause tests.
