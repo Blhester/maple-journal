@@ -3,6 +3,31 @@
   const keys=['level','exp','mesos','hp','mp'];
   const median=values=>{const a=[...values].sort((a,b)=>a-b),i=Math.floor(a.length/2);return a.length%2?a[i]:(a[i-1]+a[i])/2;};
   function readableResult(r){const consensus=r?.votes>=2&&r.votes>r.readCount/2,font=['classic-exp','classic-exp-percent','classic-digits'].includes(r?.method),trusted=consensus||(!r?.disagrees&&Number.isFinite(r?.confidence)&&r.confidence>=70);return !!r&&r.value!==null&&r.value!==undefined&&!r.needsConfirmation&&(font||trusted);}
+  // Break detection observes only trusted EXP values. It deliberately keeps its
+  // own last reading: a missing or implausible OCR value cannot count as idle.
+  function createBreakDetector({start,seed}={}){
+    const initial={level:start.level,basis:start.level===100?0:Math.round(start.exp*10000/M.expTable[start.level]),idleCount:0,seen:false};
+    let last=seed&&Number.isSafeInteger(seed.level)&&Number.isSafeInteger(seed.basis)&&Number.isInteger(seed.idleCount)?{level:seed.level,basis:seed.basis,idleCount:Math.min(2,Math.max(0,seed.idleCount)),seen:seed.seen===true}:initial;
+    function offer(read,{paused=false}={}){
+      const raw=read?.results?.exp;if(!readableResult(raw))return {valid:false,gained:false,shouldPause:false,shouldResume:false,idleCount:last.idleCount};
+      const percent=raw.percent??raw.value;let level=last.level,basis;
+      if(typeof percent==='string'&&/^(?:\d{1,2}\.\d{2}|100\.00)$/.test(percent)){
+        basis=Number(percent.replace('.',''));
+        if(level<100&&((last.basis>=9900&&basis<=500)||(last.basis===10000&&basis<10000)))level++;
+        if(level===100&&basis!==0&&basis!==10000)return {valid:false,gained:false,shouldPause:false,shouldResume:false,idleCount:last.idleCount};
+      }else if(read.results.level&&readableResult(read.results.level)){
+        try{level=M.levelNumber(read.results.level.value);basis=Math.round(M.integer(raw.value,'EXP')*10000/(M.expTable[level]||1));M.position(level,M.integer(raw.value,'EXP'));}catch{return {valid:false,gained:false,shouldPause:false,shouldResume:false,idleCount:last.idleCount};}
+      }else return {valid:false,gained:false,shouldPause:false,shouldResume:false,idleCount:last.idleCount};
+      const prior=(last.level===100?M.cumulative[100]:M.cumulative[last.level]+Math.floor(M.expTable[last.level]*last.basis/10000));
+      const next=level===100?M.cumulative[100]:M.cumulative[level]+Math.floor(M.expTable[level]*basis/10000);
+      // A reviewed starting EXP can round to the neighboring displayed 0.01%.
+      // Accept that one-step difference only on the first capture.
+      if(next<prior&&(last.seen||level!==last.level||last.basis-basis>1))return {valid:false,gained:false,shouldPause:false,shouldResume:false,idleCount:last.idleCount};
+      const gained=next>prior,idleCount=gained?0:Math.min(2,last.idleCount+1);last={level,basis,idleCount,seen:true};
+      return {valid:true,gained,shouldPause:!paused&&idleCount>=2,shouldResume:paused&&gained,idleCount};
+    }
+    return {offer,snapshot:()=>({...last})};
+  }
   function fromRead(read,start,elapsedMs){
     const end={hpAdded:0,mpAdded:0,extraExp:0,ledger:[]};
     for(const key of keys){
@@ -156,5 +181,5 @@
     function cancelPending(){generation++;job?.abort();job=null;schedule();}
     return {start,stop,cancelPending,active:()=>enabled};
   }
-  return {fromRead,createFilter,createRecorder,stats};
+  return {fromRead,createFilter,createRecorder,createBreakDetector,stats};
 });

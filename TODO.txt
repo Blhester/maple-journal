@@ -3,7 +3,8 @@ Scope approved October 20, 2026: implement all proposed grind-insight features.
 
 [x] Define features, formulas, data storage, and comparison rules.
 [x] Implement Classic EXP requirements, level-spanning gains, and target-level estimates.
-[x] Implement pause/resume with refresh-safe active time and wall time.
+[x] Implement pause/resume with refresh-safe active time.
+[x] Add optional auto-detected breaks from two valid no-gain EXP readings, continued sampling, gain-based resume, and remove the wall-time display.
 [x] Add map/class metadata and preserve existing saved sessions.
 [x] Add optional checkpoint snapshots, 10-minute reminders, and interval trends.
 [x] Add potion efficiency, supply runway, and 30/60-minute projections.

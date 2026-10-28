@@ -105,6 +105,7 @@ require('./test-capture.cjs');
 require('./test-capture-controls.cjs');
 require('./test-capture-preview.cjs');
 require('./test-auto-progress.cjs');
+require('./test-auto-break.cjs');
 require('./test-background-ocr.cjs');
 require('./test-live-dashboard.cjs');
 require('./test-counter-reset.cjs');

@@ -27,7 +27,8 @@
   const startIds=['session-map','session-class','start-level','start-exp','start-mesos','hp-potion','start-hp','hp-cost','mp-potion','start-mp','mp-cost'];
   const endIds=['end-level','end-exp','end-mesos','end-hp','end-mp','extra-exp','hp-added','mp-added'];
   const autoHelp=$('auto-progress-help').textContent;
-  let state={stage:'setup',ledger:[],checkpoints:[]},timerInterval,latest=null,autoRecorder=null,autoFilter=null,counterFinanceFilter=null,autoLayout=null,autoPreview=null,autoLastSample=null,autoMessage='Off. Enable Auto screenshots to choose a monitor.';
+  let state={stage:'setup',ledger:[],checkpoints:[]},timerInterval,latest=null,autoRecorder=null,autoFilter=null,counterFinanceFilter=null,autoBreakDetector=null,autoLayout=null,autoPreview=null,autoLastSample=null,autoMessage='Off. Enable Auto screenshots to choose a monitor.';
+  function resetBreakDetector(){autoBreakDetector=state.autoBreakEnabled&&state.start?.level?MapleAutoProgress.createBreakDetector({start:state.start,seed:state.autoBreakWatch}):null;}
   MapleEtc.init({getEntries:()=>state.ledger||[],onChange:entries=>{state.ledger=entries;persist();renderLedger();}});
   MapleScreenshot.init({
     correctSupply:(type,item)=>correctSupply(type,item),
@@ -66,7 +67,7 @@
   function paintAuto(){
     const on=!!autoRecorder?.active(),running=state.stage==='running';
     $('auto-progress-toggle').checked=on;
-    $('auto-progress-toggle').disabled=!running||(!on&&(!!state.pausedAt||!state.start?.level||!MapleScreenCapture.supported()));
+    $('auto-progress-toggle').disabled=!running||(!on&&((!!state.pausedAt&&!state.autoBreakPaused)||!state.start?.level||!MapleScreenCapture.supported()));
     $('auto-progress-status').textContent=running&&!state.start?.level?'Automatic mode needs a recorded starting level. Finish this run manually; add a level before your next session.':autoMessage;
     const cp=state.autoPoints?.at(-1)||state.checkpoints?.filter(point=>point.source==='automatic').at(-1);
     $('auto-progress-last').textContent=cp?'Last confirmed at '+duration(cp.elapsedMs)+' · EXP '+format(cp.end.exp)+(expOnly()?'':' · mesos '+(cp.end.mesos===null?'N/A':format(cp.end.mesos))+(cp.end.uses?' · Use counts '+cp.end.uses.map(r=>(state.start.uses.find(s=>s.id===r.id)?.name||r.id)+': '+(r.quantity??'N/A')).join(', '):' · HP '+(cp.end.hp??'N/A')+' · MP '+(cp.end.mp??'N/A')))+'. Latest unconfirmed readings are not counted.':'No automatic checkpoints confirmed yet. Final values always need your review.';
@@ -118,12 +119,12 @@
     if(stopSharing)MapleScreenshot.stopSharing();paintAuto();
   }
   function rebaseAuto(){
-    counterFinanceFilter=null;if(!autoRecorder?.active())return;
+    counterFinanceFilter=null;state.autoBreakWatch=null;resetBreakDetector();if(!autoRecorder?.active())return;
     autoRecorder.cancelPending();autoFilter=MapleAutoProgress.createFilter({start:state.start,anchor:progressPoints().at(-1),mesoAnchor:state.checkpoints.at(-1),etcAnchor:expOnly()?[]:MapleLiveModel.etcTotals(state)});
     autoMessage='Manual checkpoint recorded. Automatic validation now uses its values and cumulative restocks.';paintAuto();
   }
   autoRecorder=MapleAutoProgress.createRecorder({
-    now:()=>Date.now(),getContext:()=>({running:state.stage==='running',paused:!!state.pausedAt,sessionId:state.id}),
+    now:()=>Date.now(),getContext:()=>({running:state.stage==='running',paused:!!state.pausedAt&&!state.autoBreakPaused,sessionId:state.id}),
     sample:args=>MapleScreenshot.sampleProgress(args),
     onStatus:status=>{if(status.message)autoMessage=status.message;paintAuto();},
     onSample:read=>{
@@ -132,6 +133,12 @@
         if((state.counterFinancePoints?.length||0)>=4999){stopAuto('Checkpoint limit reached. Finish this session before starting another.');return;}
         const layout=read.width+'x'+read.height+':'+read.layout;
         if(autoLayout&&autoLayout!==layout){autoLog(null,'Skipped','Screen size or read settings changed. Recalibrate before restarting.');stopAuto('Capture layout changed. Check your regions and restart automatic mode.');persist();return;}autoLayout=layout;
+        if(state.autoBreakEnabled){if(!autoBreakDetector)resetBreakDetector();const decision=autoBreakDetector?.offer(read,{paused:!!state.autoBreakPaused});if(decision?.valid)state.autoBreakWatch=autoBreakDetector.snapshot();
+          if(state.autoBreakPaused){
+            if(!decision?.shouldResume){autoMessage=decision?.valid?'Auto break · EXP has not increased yet. Checking again in 30 seconds.':'Auto break · EXP unreadable; waiting for a valid reading.';autoLog(null,'Break',autoMessage);persist();paintAuto();tick();return;}
+            const at=Math.max(state.pausedAt,read.at);state.pausedMs=(state.pausedMs||0)+Math.max(0,at-state.pausedAt);state.pausedAt=null;state.autoBreakPaused=false;autoMessage='EXP increased. Timer resumed automatically.';render();
+          }else if(decision?.shouldPause){state.pausedAt=read.at;state.autoBreakPaused=true;autoPreview=null;autoLastSample=null;autoMessage='No EXP gain in two readable captures. Timer paused automatically; screenshots continue until EXP increases.';autoLog(null,'Auto break',autoMessage);persist();render();return;}
+        }
         autoLastSample={at:read.at,elapsedMs:M.activeElapsed(state,read.at),mesosReadable:false,usable:false};
         recordCounterFinance(read,autoLastSample.elapsedMs);
         const result=autoFilter.offerRead(read,autoLastSample.elapsedMs),point=result.point;autoPreview=result.preview;autoLastSample.mesosReadable=!!autoPreview&&MapleAutoProgress.stats(state.start,autoPreview).net!==null;autoLastSample.usable=!!autoPreview;
@@ -150,8 +157,8 @@
   $('auto-calibrate').addEventListener('click',()=>{if(state.stage!=='running')return;if(autoRecorder.active())stopAuto('Automatic capture stopped for calibration. Enable it again when ready.');MapleScreenshot.openCalibration();});
   $('auto-progress-toggle').addEventListener('change',()=>{
     if(!$('auto-progress-toggle').checked){stopAuto();return;}
-    if(state.stage!=='running'||state.pausedAt||!state.start.level){paintAuto();return;}
-    counterFinanceFilter=null;autoFilter=MapleAutoProgress.createFilter({start:state.start,anchor:progressPoints().at(-1),mesoAnchor:state.checkpoints.at(-1),etcAnchor:MapleLiveModel.etcTotals(state)});autoLayout=null;autoPreview=null;autoRecorder.start();
+    if(state.stage!=='running'||(state.pausedAt&&!state.autoBreakPaused)||!state.start.level){paintAuto();return;}
+    counterFinanceFilter=null;resetBreakDetector();autoFilter=MapleAutoProgress.createFilter({start:state.start,anchor:progressPoints().at(-1),mesoAnchor:state.checkpoints.at(-1),etcAnchor:MapleLiveModel.etcTotals(state)});autoLayout=null;autoPreview=null;autoRecorder.start();
   });
   window.addEventListener('pagehide',()=>autoRecorder.stop('Reloaded or left page. Automatic capture must be enabled again.'));
   const format=n=>n===null||n===undefined?'N/A':number.format(Math.abs(n)<.005?0:n);
@@ -164,8 +171,7 @@
   const elapsed=()=>M.activeElapsed(state);
   function tick(){
     const active=elapsed(),counterTime=state.counterReset&&['running','ending'].includes(state.stage)?MapleLiveModel.counterTime(state,Date.now()):active;$('timer-heading').textContent=state.counterReset&&['running','ending'].includes(state.stage)?'ACTIVE TIME SINCE RESET':'ACTIVE TRAINING TIME';$('timer').innerHTML=duration(counterTime).split(':').join('<span>:</span>');
-    const wall=state.startedAt?Math.max(0,(state.stoppedAt??Date.now())-state.startedAt):0;
-    $('wall-time').textContent=(state.counterReset&&['running','ending'].includes(state.stage)?'Full recording '+duration(active)+' · ':'')+'Wall time '+duration(wall)+' · breaks '+duration(wall-active);
+    $('wall-time').hidden=!(state.counterReset&&['running','ending'].includes(state.stage));$('wall-time').textContent=$('wall-time').hidden?'':'Full recording · '+duration(active)+' active training';
     const last=state.checkpoints?.at(-1)?.elapsedMs||0;
     $('checkpoint-reminder').hidden=state.stage!=='running'||!!state.pausedAt||active-last<600000;
   }
@@ -224,11 +230,11 @@
   }
   function render(){
     const setup=state.stage==='setup',running=state.stage==='running',ending=state.stage==='ending',complete=state.stage==='complete',paused=!!state.pausedAt,hasLevel=!!state.start?.level;document.body?.classList.toggle('is-training',running);document.body?.classList.toggle('exp-only',expOnly());$('tracking-mode').value=expOnly()?'exp':'full';$('tracking-intro').textContent=expOnly()?'Read or enter your starting level and EXP. Inventory, supplies and meso calculations are skipped.':'Read a screenshot and validate your starting values and supplies once. Training then moves to your live dashboard.';$('trend-mesos').disabled=expOnly();if(expOnly())$('trend-metric').value='expHour';$('start-level').required=expOnly();$('level-optionality').textContent=expOnly()?'required, 1–100':'optional, 1–100';for(const id of ['start-hp','start-mp','hp-cost','mp-cost','end-hp','end-mp','hp-added','mp-added','cp-hp','cp-mp','cp-hp-added','cp-mp-added'])$(id).disabled=expOnly()||!!window.MapleUseSlots;for(const id of ['start-mesos','cp-mesos','end-mesos'])$(id).disabled=expOnly();$('auto-progress-help').textContent=expOnly()?'EXP-only: captures level and EXP every 30 seconds. Inventory and supplies can stay closed. Rates exclude breaks; your next-level ETA updates after confirmed captures.':autoHelp;
-    $('ocr-start-actions').hidden=!setup;$('start-form').hidden=!setup;$('start-fields').disabled=!setup;$('start-button').hidden=!setup;$('start-note').hidden=!setup;$('running-actions').hidden=!running;$('end-form').hidden=!ending;$('completed-actions').hidden=!complete;$('discard-button').hidden=setup||complete;$('discard-confirm').hidden=true;
+    $('auto-break').checked=setup?!!state.autoBreakPreference:!!state.autoBreakEnabled;$('ocr-start-actions').hidden=!setup;$('start-form').hidden=!setup;$('start-fields').disabled=!setup;$('start-button').hidden=!setup;$('start-note').hidden=!setup;$('running-actions').hidden=!running;$('end-form').hidden=!ending;$('completed-actions').hidden=!complete;$('discard-button').hidden=setup||complete;$('discard-confirm').hidden=true;
     $('stage-label').textContent=setup?'01 / PREPARE':running?'02 / TRAIN':'03 / REVIEW';$('session-title').textContent=setup?'Before the adventure':running?'Enjoy the adventure':ending?'Back from the adventure':'A session well spent';$('status').textContent=setup?'Ready when you are':running?(paused?'Taking a break':'Session in progress'):ending?'Timer stopped':'Session complete';
     for(let i=1;i<=3;i++)$('step-'+i).classList.toggle('active',i===(setup?1:running?2:3));
     $('timer-state').textContent=setup?'NOT STARTED':running?(paused?'PAUSED':'RECORDING'):complete?'COMPLETE':'STOPPED';$('timer-note').textContent=setup?'Your next adventure starts here.':running?(paused?'Take your time. Breaks do not count toward your pace.':'Every little bit of progress adds up.'):'Training time saved. Take your time with the numbers.';
-    $('pause-button').textContent=paused?'▶ Resume':'Ⅱ Pause';$('running-message').textContent=paused?'A well-earned break.':'You’re on the clock.';$('cp-save').disabled=paused;$('end-level-wrap').hidden=!hasLevel;$('end-level').required=hasLevel;$('manual-exp-wrap').hidden=hasLevel;$('cp-level-wrap').hidden=!hasLevel;$('cp-level').required=hasLevel;$('cp-extra-wrap').hidden=hasLevel;
+    $('pause-button').textContent=paused?'▶ Resume':'Ⅱ Pause';$('running-message').textContent=state.autoBreakPaused?'Auto break detected. Watching for EXP gain.':paused?'A well-earned break.':'You’re on the clock.';$('cp-save').disabled=paused;$('end-level-wrap').hidden=!hasLevel;$('end-level').required=hasLevel;$('manual-exp-wrap').hidden=hasLevel;$('cp-level-wrap').hidden=hasLevel;$('cp-level').required=hasLevel;$('cp-extra-wrap').hidden=hasLevel;
     clearInterval(timerInterval);tick();if(running)timerInterval=setInterval(tick,250);renderLedger();renderResults();updateLevelHint();syncSessionSupplies();window.MapleUseSlots?.render();window.MapleEtcCapture?.render();MaplePotionPicker.syncAll();paintAuto();
   }
   function updateLevelHint(){$('auto-start').disabled=!$('start-level').value||!MapleScreenCapture.supported();try{const v=$('start-level').value;$('level-hint').textContent=v?(Number(v)===100?'Level 100 is the end of the supported EXP table.':format(M.expTable[M.levelNumber(v)])+' EXP needed for this level. Enter within-level EXP below.'):'Add a level to handle level-ups and estimate time to your next level.';}catch(e){$('level-hint').textContent=e.message;}}
@@ -249,13 +255,13 @@
       else if(window.MapleUseSlots){start.uses=MapleUseSlots.starting();start.hp=start.mp=start.hpCost=start.mpCost=0;}
       else {for(const k of ['hp','mp'])start[k]=M.integer($('start-'+k).value,'Starting '+k);start.hpCost=M.integer($('hp-cost').value,'HP cost');start.mpCost=M.integer($('mp-cost').value,'MP cost');}
       const etc=expOnly()?undefined:window.MapleEtcCapture?.starting();if(etc)start.etc=etc;
-      const preferences={...(expOnly()?{useDraft:structuredClone(state.useDraft||[])}:{}),...(state.etcDraft?{etcDraft:{...state.etcDraft,baseline:[],validated:false}}:{})};counterFinanceFilter=null;const now=Date.now();state={...preferences,stage:'running',id:'run-'+now+'-'+Math.random().toString(36).slice(2,8),start,startedAt:now,pausedMs:0,checkpoints:[],ledger:[],meta:{map:$('session-map').value.trim(),class:$('session-class').value.trim()}};$('end-level').value=start.level||'';$('cp-level').value=start.level||'';error('start-error','');persist();render();$('done-button').focus();if($('auto-start').checked&&start.level&&MapleScreenCapture.supported()){autoFilter=MapleAutoProgress.createFilter({start});autoLayout=null;autoRecorder.start();}
+      const preferences={...(expOnly()?{useDraft:structuredClone(state.useDraft||[])}:{}),...(state.etcDraft?{etcDraft:{...state.etcDraft,baseline:[],validated:false}}:{})};counterFinanceFilter=null;const now=Date.now();state={...preferences,stage:'running',id:'run-'+now+'-'+Math.random().toString(36).slice(2,8),start,startedAt:now,pausedMs:0,autoBreakEnabled:$('auto-break').checked,autoBreakPreference:$('auto-break').checked,checkpoints:[],ledger:[],meta:{map:$('session-map').value.trim(),class:$('session-class').value.trim()}};resetBreakDetector();$('end-level').value=start.level||'';$('cp-level').value=start.level||'';error('start-error','');persist();render();$('done-button').focus();if($('auto-start').checked&&start.level&&MapleScreenCapture.supported()){autoFilter=MapleAutoProgress.createFilter({start});autoLayout=null;autoRecorder.start();}
     }catch(e){error('start-error',e.message);}
   });
   $('reset-live-stats').addEventListener('click',()=>{if(state.stage!=='running')return;state.counterReset=MapleLiveModel.resetMarker(state,Date.now());autoPreview=null;autoLastSample=null;if(autoRecorder.active())autoRecorder.cancelPending();persist();paintAuto();tick();});
-  $('pause-button').addEventListener('click',()=>{if(state.stage!=='running')return;const now=Date.now();if(state.pausedAt){state.pausedMs=(state.pausedMs||0)+Math.max(0,now-state.pausedAt);state.pausedAt=null;}else state.pausedAt=now;if(autoRecorder.active()){autoRecorder.cancelPending();autoMessage=state.pausedAt?'Paused with the session. No screenshots during breaks.':'Resumed. Next automatic snapshot in about 30 seconds.';}persist();render();});
+  $('pause-button').addEventListener('click',()=>{if(state.stage!=='running')return;const now=Date.now();if(state.pausedAt){state.pausedMs=(state.pausedMs||0)+Math.max(0,now-state.pausedAt);state.pausedAt=null;}else state.pausedAt=now;state.autoBreakPaused=false;state.autoBreakWatch=null;resetBreakDetector();if(autoRecorder.active()){autoRecorder.cancelPending();autoMessage=state.pausedAt?'Paused with the session. No screenshots during breaks.':'Resumed. Next automatic snapshot in about 30 seconds.';}persist();render();});
   $('done-button').addEventListener('click',()=>{
-    if(state.stage!=='running')return;const wasAutomatic=autoRecorder.active();if(wasAutomatic)stopAuto('Automatic screenshots stopped. Review your ending values.');const now=Date.now();if(state.pausedAt){state.pausedMs=(state.pausedMs||0)+Math.max(0,now-state.pausedAt);state.pausedAt=null;}state.stoppedAt=Math.max(now,state.startedAt+(state.pausedMs||0)+1);state.stage='ending';const cp=progressPoints().at(-1);if(state.start.uses!==undefined){delete state.useEndDraft;if(cp?.end.uses)state.useEndDraft=structuredClone(cp.end.uses);}if(cp){if(cp.source==='automatic'){for(const k of ['exp','mesos','hp','mp'])$('end-'+k).value=cp.end[k]===null?'':cp.end[k];$('screenshot-applied').textContent='Ending fields start from the last confirmed checkpoint at '+duration(cp.elapsedMs)+'. Update and review your actual final values before calculating.';}$('hp-added').value=cp.end.hpAdded;$('mp-added').value=cp.end.mpAdded;$('end-level').value=cp.end.level||'';if(!state.start.level)$('extra-exp').value=cp.end.extraExp;}persist();render();$('end-exp').focus();
+    if(state.stage!=='running')return;const wasAutomatic=autoRecorder.active();if(wasAutomatic)stopAuto('Automatic screenshots stopped. Review your ending values.');const now=Date.now();if(state.pausedAt){state.pausedMs=(state.pausedMs||0)+Math.max(0,now-state.pausedAt);state.pausedAt=null;}state.autoBreakPaused=false;state.stoppedAt=Math.max(now,state.startedAt+(state.pausedMs||0)+1);state.stage='ending';const cp=progressPoints().at(-1);if(state.start.uses!==undefined){delete state.useEndDraft;if(cp?.end.uses)state.useEndDraft=structuredClone(cp.end.uses);}if(cp){if(cp.source==='automatic'){for(const k of ['exp','mesos','hp','mp'])$('end-'+k).value=cp.end[k]===null?'':cp.end[k];$('screenshot-applied').textContent='Ending fields start from the last confirmed checkpoint at '+duration(cp.elapsedMs)+'. Update and review your actual final values before calculating.';}$('hp-added').value=cp.end.hpAdded;$('mp-added').value=cp.end.mpAdded;$('end-level').value=cp.end.level||'';if(!state.start.level)$('extra-exp').value=cp.end.extraExp;}persist();render();$('end-exp').focus();
   });
   function readEnd(prefix){
     const e={},cp=prefix==='cp';if(expOnly())return {exp:M.integer($(prefix+'-exp').value,'Ending EXP'),level:M.levelNumber($(prefix+'-level').value),mesos:null,hp:null,mp:null,hpAdded:0,mpAdded:0,extraExp:0,ledger:[]};for(const k of ['exp','mesos'])e[k]=M.integer($(prefix+'-'+k).value,'Ending '+k);
@@ -278,12 +284,13 @@
   function reset(){
     counterFinanceFilter=null;if(autoRecorder.active())stopAuto();autoMessage='Off. Enable automatic screenshots when your next session starts.';
     // Keep the last supply choices (and custom prices) in the next saved draft.
-    const etcDraft=expOnly()?state.etcDraft:window.MapleEtcCapture?.preferences();
+    const etcDraft=expOnly()?state.etcDraft:window.MapleEtcCapture?.preferences(),autoBreakPreference=!!state.autoBreakPreference;
     const useDraft=window.MapleUseSlots?structuredClone(expOnly()?state.useDraft||[]:MapleUseSlots.slots()).map(r=>({...r,quantity:0})):undefined;
     const supplies=values(['hp-potion','hp-cost','mp-potion','mp-cost']);
-    $('screenshot-applied').textContent='';MapleEtc.reset();state={stage:'setup',expOnly:expOnly(),checkpoints:[],ledger:[],...(useDraft?{useDraft}: {}),...(etcDraft?{etcDraft}: {})};autoPreview=null;autoLastSample=null;$('start-form').reset();$('end-form').reset();$('checkpoint-form').reset();restoreFields(supplies);
+    $('screenshot-applied').textContent='';MapleEtc.reset();state={stage:'setup',expOnly:expOnly(),autoBreakPreference,checkpoints:[],ledger:[],...(useDraft?{useDraft}: {}),...(etcDraft?{etcDraft}: {})};autoBreakDetector=null;autoPreview=null;autoLastSample=null;$('start-form').reset();$('end-form').reset();$('checkpoint-form').reset();restoreFields(supplies);
     for(const id of ['adjustments','ledger-details','checkpoint-details'])$(id).open=false;for(const id of ['end-error','start-error','cp-error','ledger-error'])error(id,'');$('cp-saved').textContent='';persist();render();$('start-exp').focus();
   }
+  $('auto-break').addEventListener('change',()=>{if(state.stage!=='setup')return;state.autoBreakPreference=$('auto-break').checked;persist();});
   $('tracking-mode').addEventListener('change',()=>{if(state.stage!=='setup')return;state.expOnly=$('tracking-mode').value==='exp';persist();render();const c=window.MapleOverlay;if(c&&expOnly())void c.configure({...c.view().settings,mesos:false,exp:false,expPercent:true,eta:true,showTime:true});});
   $('new-button').addEventListener('click',reset);$('discard-button').addEventListener('click',()=>{$('discard-confirm').hidden=false;$('keep-button').focus();});$('keep-button').addEventListener('click',()=>{$('discard-confirm').hidden=true;$('discard-button').focus();});$('confirm-discard').addEventListener('click',reset);
   for(const id of [...startIds,...endIds])$(id).addEventListener('input',()=>{persist();if(id==='start-level')updateLevelHint();});$('profit-metric').addEventListener('change',renderProfit);$('target-level').addEventListener('input',updateForecast);$('trend-metric').addEventListener('change',renderTrend);document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick();});

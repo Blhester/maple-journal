@@ -26,7 +26,7 @@ Track estimated unsold loot, income not yet in the entered balance, and expenses
 Use starting/ending levels plus within-level EXP to calculate gains across one or more levels. Use MeowDB Classic formulas for levels 1–99 and level 100 as the table endpoint. Preserve manual extra-EXP adjustment for older sessions without level metadata.
 
 9. Pause/resume
-Exclude breaks from every rate and estimate. Show active and wall time, preserve pauses through refresh, and allow Done while paused.
+Exclude breaks from every rate and estimate. Show active training time, preserve pauses through refresh, and allow Done while paused. An optional setup checkbox watches automatic EXP captures: two trusted no-gain readings pause the timer; a later trusted EXP gain resumes it. Unreadable EXP does not count, and screenshots continue during an automatic break.
 
 Existing features retained
 Start/Done flow, EXP and original-formula mesos per hour/10 minutes/minute, editable MeowDB supplies including Meat/Lemon, custom supply prices, negative gains, refresh recovery, light/dark slider, sun/moon icons, and a standalone HTML copy.
