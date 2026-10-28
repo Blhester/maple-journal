@@ -261,7 +261,7 @@
   function open(calibration=false){
     calibration=calibration===true;context={...options.getContext(),calibration};if(!['setup','ending'].includes(context.stage)&&!(calibration&&context.stage==='running'))return;
     $('ocr-apply').hidden=calibration;
-    stop();clearImage();error('ocr-capture-error','');$('ocr-file').value='';$('ocr-file-name').textContent='PNG, JPG, or WebP · up to 15 MB';$('ocr-capture-status').textContent='';$('ocr-review-form').hidden=true;$('ocr-guide').open=true;
+    stop();clearImage();error('ocr-capture-error','');$('ocr-file').value='';$('ocr-file-name').textContent='PNG, JPG, or WebP · up to 15 MB';$('ocr-capture-status').textContent='';$('ocr-review-form').hidden=true;$('ocr-guide').open=false;$('ocr-apply').textContent=context.stage==='setup'?'Review & start recording':'Apply ending values';
     $('ocr-context').textContent=calibration?'Adjust regions and readers using an Entire screen snapshot. Remember regions & image settings, then close and enable Auto screenshots. Numeric readings stay in this calibration preview. Use Remember shortcut regions below to update automatic capture positions. Correct item identities and prices under Use items & costs on the tracker.':context.stage==='setup'?'Fill your starting values from a screenshot taken before training.':'Fill ending values from your final screenshot. Map and class stay as recorded at the start. Use Remember shortcut regions below to update automatic capture positions. Correct item identities and prices under Use items & costs on the tracker.';
     $('ocr-region-field').replaceChildren(...activeFields().map(field=>new Option(field.label,field.id)));$('ocr-region-field').value='exp';error('ocr-error','');error('ocr-review-error','');$('screenshot-dialog').showModal();
     paintCaptureConnection();if(captureSession.active())$('ocr-capture-status').textContent='Your previous monitor is still connected. Click Capture snapshot to use it again.';
@@ -297,7 +297,7 @@
         const values={};for(const field of activeFields()){if(!$('ocr-use-'+field.id).checked)continue;const value=$('ocr-value-'+field.id).value.trim();const parsed=field.id==='map'?MapleMapMatcher.resolve(value)?.label||null:C.parse(field.id,value);if(parsed===null)throw new Error(field.id==='map'?'Choose a map from the MeowDB list, or uncheck Training map.':'Enter a valid '+field.label.toLowerCase()+', or uncheck it.');values[field.id]=parsed;if(['hp','mp'].includes(field.id))values[field.id+'Potion']=$('ocr-potion-'+field.id).value;}
         if(!expOnly()&&window.MapleUseSlots?.ready())values.uses=MapleUseSlots.reviewed();if(!expOnly()&&window.MapleEtcCapture)values.etc=MapleEtcCapture.reviewed();
         if(!Object.keys(values).length)throw new Error('Check at least one field to apply.');
-        window.MapleUseSlots?.validate(values.uses);options.apply(values);$('screenshot-dialog').close();
+        window.MapleUseSlots?.validate(values.uses);options.apply(values);const startAfterReview=!!image&&context.stage==='setup';$('screenshot-dialog').close();if(startAfterReview)options.afterApply?.(values);
       }catch(e){error('ocr-review-error',e.message);}
     });
   }
