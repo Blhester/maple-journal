@@ -3,22 +3,22 @@
   const $=id=>document.getElementById(id),M=MapleMath,storageKey='maple-journal-session-v1';
   const expOnly=()=>state.stage==='setup'?state.expOnly===true:state.start?.expOnly===true;
   // Switch views without rebuilding the tracker or interrupting an active timer.
-  const viewTabs=[$('session-tab'),$('history-tab')];
+  const views=['session','history','fm'],viewTabs=views.map(name=>$(name+'-tab'));
   function selectView(name,{focus=false,updateHash=false}={}){
-    const history=name==='history';
-    for(const tab of viewTabs){const selected=tab.id===(history?'history-tab':'session-tab');tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1;}
-    $('session-view').hidden=history;$('history-view').hidden=!history;
-    if(focus)$(history?'history-tab':'session-tab').focus();
-    if(updateHash)window.history.replaceState(null,'',history?'#history':'#session');
+    if(!views.includes(name))name='session';
+    for(const view of views){const selected=view===name,tab=$(view+'-tab');tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1;$(view+'-view').hidden=!selected;}
+    if(focus)$(name+'-tab').focus();
+    if(updateHash)window.history.replaceState(null,'','#'+name);
   }
-  function viewFromHash(){return ['#history','#history-view','#history-section','#comparison-section'].includes(window.location.hash)?'history':'session';}
+  function viewFromHash(){const hash=window.location.hash;return ['#history','#history-view','#history-section','#comparison-section'].includes(hash)?'history':['#fm','#fm-view'].includes(hash)?'fm':'session';}
   for(const [index,tab]of viewTabs.entries()){
-    tab.addEventListener('click',()=>selectView(index===1?'history':'session',{updateHash:true}));
+    tab.addEventListener('click',()=>selectView(views[index],{updateHash:true}));
     tab.addEventListener('keydown',event=>{
       let next;
-      if(event.key==='ArrowRight'||event.key==='ArrowLeft')next=1-index;
-      else if(event.key==='Home')next=0;else if(event.key==='End')next=1;else return;
-      event.preventDefault();selectView(next===1?'history':'session',{focus:true,updateHash:true});
+      if(event.key==='ArrowRight')next=(index+1)%views.length;
+      else if(event.key==='ArrowLeft')next=(index+views.length-1)%views.length;
+      else if(event.key==='Home')next=0;else if(event.key==='End')next=views.length-1;else return;
+      event.preventDefault();selectView(views[next],{focus:true,updateHash:true});
     });
   }
   window.addEventListener('hashchange',()=>selectView(viewFromHash()));

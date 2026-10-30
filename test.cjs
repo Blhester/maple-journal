@@ -1,5 +1,6 @@
 const assert=require('node:assert/strict');
 const {calculate,integer}=require('./dist/core.js');
+require('./test-fm.cjs');
 require('./test-rates.cjs')();
 require('./test-screenshot-transfer.cjs');
 require('./test-history-restore.cjs');

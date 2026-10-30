@@ -1,0 +1,18 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),M=require('./dist/fm-core.js');
+const first={quantity:2,boughtPrice:10000,targetSellPrice:15000};
+assert.deepEqual(M.estimate(first,3),{quantity:2,boughtPrice:10000,targetSellPrice:15000,cost:20000,gross:30000,fee:900,proceeds:29100,profit:9100,returnPercent:45.5,markupPercent:50,breakEven:10310});
+const second={quantity:3,boughtPrice:5000,targetSellPrice:4000};
+const total=M.summary([first,second],3);assert.deepEqual({...total,returnPercent:undefined},{entries:2,quantity:5,cost:35000,gross:42000,fee:1260,proceeds:40740,profit:5740,returnPercent:undefined});assert(Math.abs(total.returnPercent-16.4)<1e-9);
+assert.equal(M.estimate(second,3).profit,-3360);
+assert.equal(M.estimate({quantity:1,boughtPrice:0,targetSellPrice:100},3).returnPercent,null);
+assert.equal(M.estimate(first,0).profit,10000);
+assert.equal(M.estimate(first,100).breakEven,null);
+for(const bad of [-1,1.5,'',Number.MAX_SAFE_INTEGER+1])assert.throws(()=>M.integer(bad,'Price'));
+for(const bad of [-.1,101,'',Infinity])assert.throws(()=>M.feeRate(bad));
+const catalog=JSON.parse(fs.readFileSync(path.join(__dirname,'dist','data','fm-items.json'),'utf8'));
+assert(catalog.items.length>=2000);assert.equal(catalog.items.length,Object.values(catalog.counts).reduce((sum,count)=>sum+count,0));assert.deepEqual(Object.keys(catalog.counts).sort(),['Cash','Equip','Etc','Setup','Use']);
+assert(catalog.items.some(item=>item.name==='Meat'&&item.type==='Use'));
+assert(catalog.items.some(item=>item.type==='Equip'&&item.icon));
+assert(catalog.items.every(item=>item.sourceUrl===`https://meowdb.com/msclassic/item-db/${item.id}`&&(!item.icon||fs.existsSync(path.join(__dirname,'dist',item.icon)))));
+console.log(`Passed: FM fee, investment, net profit, return percentage, break-even, loss and free-item math; ${catalog.items.length} local MeowDB item/icon records.`);

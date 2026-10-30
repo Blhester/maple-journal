@@ -18,4 +18,4 @@ for(const match of html.matchAll(/(?:src|href)="([^"#?]+)"/g)){
 }
 for(const name of fs.readdirSync(output).filter(name=>name.endsWith('.js')))new vm.Script(fs.readFileSync(path.join(output,name),'utf8'),{filename:name});
 for(const name of ['README.txt','FEATURES.txt','TODO.txt','VERIFICATION.txt'])if(fs.existsSync(path.join(output,name)))throw new Error('Internal document leaked into website: '+name);
-console.log('Built site-build/ with validated scripts, local ETC assets, offline download, and deployment revision.');
+console.log('Built site-build/ with validated scripts, local item assets, offline download, and deployment revision.');

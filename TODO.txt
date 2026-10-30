@@ -79,3 +79,5 @@ Completed: active ETC inventory scan, per-item exclusions, duplicate-stack aggre
 [x] Replace broad ETC discovery for new recordings with a persistent selected-item watch list; baseline review, selected-template search, unselected-icon guard, all-slot/new-stack scanning, aggregation, quantity uncertainty and selected-only financial integration.
 
 [x] Add live time/counter reset using fresh validated per-metric baselines; preserve full recording, independent financial-only confirmation during EXP failures, strict missing-baseline behavior, counter charts/stream, reload, repeat reset, costs/restocks and pause tests.
+
+- [x] FM price journal tab: local MeowDB item search, buy/target/quantity rows, editable3% fee, profit/ROI/break-even, local persistence, copy shop sheet, tests.
