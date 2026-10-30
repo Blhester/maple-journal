@@ -68,6 +68,9 @@ dist/data/etc-items.json: canonical catalog of 331 priced non-Ossyria Classic ET
 dist/assets/etc/: 331 local PNG icons. dist/etc-data.js: generated offline catalog script, allowing dist/index.html to open directly without a fetch.
 refresh-etc-catalog.cjs: manual MeowDB catalog/icon refresh. Run node refresh-etc-catalog.cjs then node build-download.cjs. build-catalog.cjs validates the canonical JSON and icons and generates the runtime script; build-download.cjs also embeds catalog and icons into the standalone HTML. Existing session prices are snapshots and do not change after catalog refresh. No scraping or remote icon requests run in the end-user app.
 
+ETC INVENTORY REGION
+On a starting screenshot, choose ETC inventory grid under Check the read regions. Draw around the 5-by-6 visible item cells or edit Left, Top, Width and Height while seeing the screenshot and crop preview. Exclude the tabs and mesos bar. The adjusted grid is saved with the ETC tracking preferences in this browser and used for the initial and later automatic scans. Changing it clears the earlier ETC review, so rescan and confirm starting totals before recording.
+
 AWS CUSTOM DOMAIN DEPLOYMENT
 The GitHub Actions workflow .github/workflows/deploy-aws.yml tests/builds pull requests and deploys master to https://grindjournal.com once AWS is configured. See AWS-SETUP.txt for one-time Route 53/CloudFormation setup and the four repository Actions variables. infra/aws-static-site.json creates private S3/CloudFront/HTTPS/DNS and a scoped GitHub OIDC role. No AWS access-key secrets are used. Build locally with node scripts/build-site.cjs; generated site-build/ is excluded from Git and contains only publishable assets.
 

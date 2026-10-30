@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const $=id=>document.getElementById(id),C=MapleOcrCore,layoutKey='maple-journal-ocr-regions-v2',legacyLayoutKey='maple-journal-ocr-regions-v1',tuningKey='maple-journal-ocr-tuning-v1',tuningKeys=['reader','mode','contrast','brightness','threshold','chroma','scale','invert'];
-  let options,context,image=null,regions=structuredClone(C.defaults),busy=false,worker=null,run=0,objectUrl=null,drag=null;
+  let options,context,image=null,regions=structuredClone(C.defaults),etcRegionDraft=null,busy=false,worker=null,run=0,objectUrl=null,drag=null;
   let libraryPromise=null,workerUrls=[],tunings={},digitCancel=null,captureController=null,captureSession=null,captureWasActive=false,readCanvases=new Set();
   function paintCaptureConnection(){
     const active=!!captureSession?.active();
@@ -19,6 +19,8 @@
   function error(id,message){$(id).textContent=message||'';$(id).hidden=!message;}
   const expOnly=()=>options?.getContext().expOnly===true;
   const activeFields=()=>C.fields.filter(field=>(!expOnly()||['level','exp'].includes(field.id))&&(!window.MapleUseSlots?.ready()||!['hp','mp'].includes(field.id))&&(context.stage==='setup'||!['map','class'].includes(field.id)));
+  const selectedRegion=()=>$('ocr-region-field').value==='etc'?etcRegionDraft||MapleEtcCapture.region():regions[$('ocr-region-field').value];
+  function commitEtcRegion(){if(etcRegionDraft&&context.stage==='setup')MapleEtcCapture.setRegion(etcRegionDraft);}
   function svg(tag,attrs){const e=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [key,value]of Object.entries(attrs))e.setAttribute(key,value);return e;}
   function drawGuide(){
     for(const [index,field]of C.fields.entries()){
@@ -56,7 +58,7 @@
     canvas.width=enlarged.width+pad*2;canvas.height=enlarged.height+pad*2;const out=canvas.getContext('2d');out.fillStyle=settings.invert?'#000':'#fff';out.fillRect(0,0,canvas.width,canvas.height);out.drawImage(enlarged,pad,pad);enlarged.width=enlarged.height=1;return canvas;
   }
   function paintTuning(){
-    if(!image)return;const id=$('ocr-region-field').value;if(!C.fields.some(field=>field.id===id))return;const settings=C.tuning(id,tunings[id]);
+    if(!image)return;const id=$('ocr-region-field').value;$('ocr-enhance').hidden=id==='etc';$('ocr-read-field').textContent=id==='etc'?'Re-scan ETC inventory':'Re-read selected field';if(id==='etc')return;if(!C.fields.some(field=>field.id===id))return;const settings=C.tuning(id,tunings[id]);
     const numeric=C.fields.find(field=>field.id===id).numeric,fontReader=settings.reader!=='general';
     $('ocr-reader-wrap').hidden=false;$('ocr-general-controls').hidden=fontReader;
     $('ocr-reader-exp').disabled=!numeric;$('ocr-reader-quantity').disabled=!numeric;
@@ -66,14 +68,17 @@
     const canvas=$('ocr-processed');if(fontReader){canvas.width=canvas.height=1;return;}const source=processedCrop(id);canvas.width=source.width;canvas.height=source.height;canvas.getContext('2d').drawImage(source,0,0);source.width=source.height=1;
   }
   function paintRegion(){
-    if(!image)return;const id=$('ocr-region-field').value,r=regions[id],overlay=$('ocr-region-overlay');
-    overlay.setAttribute('viewBox','0 0 '+image.naturalWidth+' '+image.naturalHeight);overlay.replaceChildren(svg('rect',{x:r.x*image.naturalWidth,y:r.y*image.naturalHeight,width:r.w*image.naturalWidth,height:r.h*image.naturalHeight,class:'ocr-active-box'}));
+    if(!image)return;const id=$('ocr-region-field').value,r=selectedRegion(),overlay=$('ocr-region-overlay'),x=r.x*image.naturalWidth,y=r.y*image.naturalHeight,w=r.w*image.naturalWidth,h=r.h*image.naturalHeight;
+    overlay.setAttribute('viewBox','0 0 '+image.naturalWidth+' '+image.naturalHeight);overlay.replaceChildren(svg('rect',{x,y,width:w,height:h,class:'ocr-active-box'}));
+    if(id==='etc'){for(let col=1;col<5;col++)overlay.append(svg('line',{x1:x+w*col/5,y1:y,x2:x+w*col/5,y2:y+h,class:'ocr-etc-grid'}));for(let row=1;row<6;row++)overlay.append(svg('line',{x1:x,y1:y+h*row/6,x2:x+w,y2:y+h*row/6,class:'ocr-etc-grid'}));}
     for(const key of ['x','y','w','h'])$('ocr-region-'+key).value=String(Math.round(r[key]*10000)/100);
-    const canvas=$('ocr-crop'),source=crop(id);canvas.width=source.width;canvas.height=source.height;canvas.getContext('2d').drawImage(source,0,0);
-    $('ocr-crop-label').textContent=C.fields.find(field=>field.id===id).label+' · enlarged preview';
+    const canvas=$('ocr-crop');if(id==='etc'){canvas.width=Math.max(1,Math.round(w));canvas.height=Math.max(1,Math.round(h));canvas.getContext('2d').drawImage(image,x,y,w,h,0,0,canvas.width,canvas.height);}else{const source=crop(id);canvas.width=source.width;canvas.height=source.height;canvas.getContext('2d').drawImage(source,0,0);}
+    $('ocr-crop-label').textContent=id==='etc'?'ETC inventory · 5 columns × 6 rows':C.fields.find(field=>field.id===id).label+' · enlarged preview';
+    $('ocr-region-help').textContent=id==='etc'?'Draw around the 5 × 6 visible ETC item cells. Exclude the tabs, window border and mesos bar. The grid lines should cross the slot boundaries; fine alignment is automatic. Changes are saved for later captures.':'Select a field, then draw a box around its text. The starter layout matches the example. For EXP include the percentage and % sign; the full EXP bar also works. Use-item icons and counts have their own shortcut regions in the review.';
     paintTuning();
   }
   function invalidateReview(id){
+    if(id==='etc'){MapleEtcCapture.mount(null);$('ocr-field-status').textContent='ETC region changed. Re-scan the inventory before applying its totals.';return;}
     if(id){const row=$('ocr-review-'+id);if(row){$('ocr-use-'+id).checked=false;row.querySelector('.ocr-review-note').textContent='Image settings changed. Re-read this field or edit its value to include it.';}return;}
     $('ocr-review-form').hidden=true;$('ocr-empty-review').hidden=false;$('ocr-empty-review').textContent='The image or read region changed. Read the screenshot again to update the suggestions.';
   }
@@ -204,14 +209,14 @@
         else results[field.id]=field.id==='map'?MapleMapMatcher.select(reads):C.select(field.id,reads);
       }
     if(!expOnly()&&!selectedOnly&&window.MapleUseSlots?.ready()){const rows=await MapleUseSlots.read(image,readUseQuantity,{match:!background,isCurrent:()=>token===run,onStatus:value=>{$('ocr-progress-text').textContent=value;}});if(token!==run)return;results.uses=rows;}
-    if(!expOnly()&&!selectedOnly&&window.MapleEtcCapture){if(!background)$('ocr-progress-text').textContent='Reading visible ETC inventory · matching icons and stack counts…';results.etc=await MapleEtcCapture.read(image,readUseQuantity,{background,isCurrent:()=>token===run});if(token!==run)return;}
+    if(!expOnly()&&(!selectedOnly||$('ocr-region-field').value==='etc')&&window.MapleEtcCapture){if(!background)$('ocr-progress-text').textContent='Reading visible ETC inventory · matching icons and stack counts…';results.etc=await MapleEtcCapture.read(image,readUseQuantity,{background,isCurrent:()=>token===run});if(token!==run)return;}
     return results;
   }
   async function read(selectedOnly=false){
     if(!image||busy||window.MapleUseSlots?.reading())return;const token=++run,fields=activeFields().filter(field=>!selectedOnly||field.id===$('ocr-region-field').value);error('ocr-error','');error('ocr-review-error','');if(!selectedOnly)invalidateReview();setBusy(true);$('ocr-progress').value=0;$('ocr-progress-text').textContent='Loading local text recognition…';$('ocr-field-status').textContent='';
     try{
       const results=await recognize(fields,token,{selectedOnly});
-      if(token!==run)return;showReview(results,selectedOnly);$('ocr-progress-text').textContent='Reading complete. Review every value before applying.';if(selectedOnly)$('ocr-field-status').textContent=fields[0].label+' updated below. Other reviewed values were kept.';
+      if(token!==run)return;showReview(results,selectedOnly);$('ocr-progress-text').textContent='Reading complete. Review every value before applying.';if(selectedOnly)$('ocr-field-status').textContent=fields[0]?fields[0].label+' updated below. Other reviewed values were kept.':'ETC inventory scanned. Review the selected item totals before applying.';
     }catch(e){if(token===run){restoreReview();error('ocr-error','Screenshot reading could not finish. '+e.message+' You can continue with manual entry.');}}
     finally{if(token===run){if(worker)await worker.terminate();worker=null;releaseReadCanvases();for(const url of workerUrls)URL.revokeObjectURL(url);workerUrls=[];setBusy(false);}}
   }
@@ -254,7 +259,7 @@
       const details=document.createElement('details');details.className='ocr-raw';details.append(text('summary','Recognized text'),text('p',result.raw||'No text recognized'));row.append(details);if(previous){MaplePotionPicker.dispose(previous);previous.replaceWith(row);}else container.append(row);
     }
     $('ocr-review-form').hidden=false;$('ocr-empty-review').hidden=true;
-    syncExpEstimate();if(!partial)window.MapleEtcCapture?.mount(results.etc,image);if(results.uses&&window.MapleUseSlots)MapleUseSlots.mountReview(image,results.uses);
+    syncExpEstimate();if(!partial||$('ocr-region-field').value==='etc')window.MapleEtcCapture?.mount(results.etc,image);if(results.uses&&window.MapleUseSlots)MapleUseSlots.mountReview(image,results.uses);
     for(const field of ['hp','mp']){const select=$('ocr-potion-'+field);if(select)MaplePotionPicker.enhance(select,field);}
     MaplePotionPicker.syncAll();MaplePotionPicker.setBusy(container,busy);
   }
@@ -263,7 +268,8 @@
     $('ocr-apply').hidden=calibration;
     stop();clearImage();error('ocr-capture-error','');$('ocr-file').value='';$('ocr-file-name').textContent='PNG, JPG, or WebP · up to 15 MB';$('ocr-capture-status').textContent='';$('ocr-review-form').hidden=true;$('ocr-guide').open=false;$('ocr-apply').textContent=context.stage==='setup'?'Review & start recording':'Apply ending values';
     $('ocr-context').textContent=calibration?'Adjust regions and readers using an Entire screen snapshot. Remember regions & image settings, then close and enable Auto screenshots. Numeric readings stay in this calibration preview. Use Remember shortcut regions below to update automatic capture positions. Correct item identities and prices under Use items & costs on the tracker.':context.stage==='setup'?'Fill your starting values from a screenshot taken before training.':'Fill ending values from your final screenshot. Map and class stay as recorded at the start. Use Remember shortcut regions below to update automatic capture positions. Correct item identities and prices under Use items & costs on the tracker.';
-    $('ocr-region-field').replaceChildren(...activeFields().map(field=>new Option(field.label,field.id)));$('ocr-region-field').value='exp';error('ocr-error','');error('ocr-review-error','');$('screenshot-dialog').showModal();
+    const choices=activeFields().map(field=>new Option(field.label,field.id));if(context.stage==='setup'&&!context.expOnly&&window.MapleEtcCapture){choices.push(new Option('ETC inventory grid · 5 × 6 slots','etc'));etcRegionDraft={...MapleEtcCapture.region()};}else etcRegionDraft=null;
+    $('ocr-region-field').replaceChildren(...choices);$('ocr-region-field').value='exp';error('ocr-error','');error('ocr-review-error','');$('screenshot-dialog').showModal();
     paintCaptureConnection();if(captureSession.active())$('ocr-capture-status').textContent='Your previous monitor is still connected. Click Capture snapshot to use it again.';
   }
   function init(config){
@@ -281,13 +287,13 @@
     $('ocr-region-field').addEventListener('change',()=>{paintRegion();$('ocr-field-status').textContent='';});
     for(const key of tuningKeys)$('ocr-tune-'+key).addEventListener('input',()=>{const id=$('ocr-region-field').value;tunings[id]=C.tuning(id,Object.fromEntries(tuningKeys.map(k=>[k,k==='invert'?$('ocr-tune-'+k).checked:['mode','reader'].includes(k)?$('ocr-tune-'+k).value:Number($('ocr-tune-'+k).value)])));paintTuning();invalidateReview(id);$('ocr-field-status').textContent='Preview updated. Re-read this field to update its value.';});
     $('ocr-reset-tuning').addEventListener('click',()=>{const id=$('ocr-region-field').value;delete tunings[id];paintTuning();invalidateReview(id);$('ocr-field-status').textContent='Default image settings restored for this field.';});
-    for(const key of ['x','y','w','h'])$('ocr-region-'+key).addEventListener('change',()=>{try{const id=$('ocr-region-field').value;regions[id]=C.region(Object.fromEntries(['x','y','w','h'].map(k=>[k,Number($('ocr-region-'+k).value)/100])));paintRegion();invalidateReview(id);error('ocr-error','');}catch(e){error('ocr-error',e.message);paintRegion();}});
-    $('ocr-save-layout').addEventListener('click',()=>{try{localStorage.setItem(layoutKey,JSON.stringify(regions));localStorage.setItem(tuningKey,JSON.stringify(tunings));$('ocr-layout-status').textContent='Read regions and image settings remembered in this browser. The screenshot is not saved.';}catch{$('ocr-layout-status').textContent='Browser storage is unavailable; settings remain for this visit.';}});
-    $('ocr-reset-layout').addEventListener('click',()=>{regions=structuredClone(C.defaults);tunings={};try{localStorage.removeItem(layoutKey);localStorage.removeItem(legacyLayoutKey);localStorage.removeItem(tuningKey);}catch{}paintRegion();invalidateReview();$('ocr-layout-status').textContent='Example regions and image settings restored.';});
+    for(const key of ['x','y','w','h'])$('ocr-region-'+key).addEventListener('change',()=>{try{const id=$('ocr-region-field').value,r=C.region(Object.fromEntries(['x','y','w','h'].map(k=>[k,Number($('ocr-region-'+k).value)/100])));if(id==='etc'){etcRegionDraft=r;commitEtcRegion();}else regions[id]=r;paintRegion();invalidateReview(id);error('ocr-error','');}catch(e){error('ocr-error',e.message);paintRegion();}});
+    $('ocr-save-layout').addEventListener('click',()=>{try{localStorage.setItem(layoutKey,JSON.stringify(regions));localStorage.setItem(tuningKey,JSON.stringify(tunings));$('ocr-layout-status').textContent='Read regions and image settings remembered in this browser. The ETC grid is saved as you adjust it; the screenshot is not saved.';}catch{$('ocr-layout-status').textContent='Browser storage is unavailable; settings remain for this visit.';}});
+    $('ocr-reset-layout').addEventListener('click',()=>{regions=structuredClone(C.defaults);tunings={};if(etcRegionDraft){etcRegionDraft={...MapleEtcCapture.defaultRegion};commitEtcRegion();}try{localStorage.removeItem(layoutKey);localStorage.removeItem(legacyLayoutKey);localStorage.removeItem(tuningKey);}catch{}paintRegion();invalidateReview();$('ocr-layout-status').textContent='Example regions and image settings restored.';});
     const overlay=$('ocr-region-overlay'),point=event=>{const rect=overlay.getBoundingClientRect();return {x:Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width)),y:Math.max(0,Math.min(1,(event.clientY-rect.top)/rect.height))};};
     overlay.addEventListener('pointerdown',event=>{if(!image||busy||event.button!==0)return;event.preventDefault();drag=point(event);overlay.setPointerCapture(event.pointerId);});
-    overlay.addEventListener('pointermove',event=>{if(!drag)return;const end=point(event),next={x:Math.min(drag.x,end.x),y:Math.min(drag.y,end.y),w:Math.abs(end.x-drag.x),h:Math.abs(end.y-drag.y)};if(next.w*image.naturalWidth<3||next.h*image.naturalHeight<3)return;regions[$('ocr-region-field').value]=C.region(next);paintRegion();});
-    overlay.addEventListener('pointerup',()=>{if(drag){drag=null;invalidateReview($('ocr-region-field').value);}});overlay.addEventListener('pointercancel',()=>{drag=null;});
+    overlay.addEventListener('pointermove',event=>{if(!drag)return;const end=point(event),next={x:Math.min(drag.x,end.x),y:Math.min(drag.y,end.y),w:Math.abs(end.x-drag.x),h:Math.abs(end.y-drag.y)};if(next.w*image.naturalWidth<3||next.h*image.naturalHeight<3)return;const id=$('ocr-region-field').value;if(id==='etc')etcRegionDraft=C.region(next);else regions[id]=C.region(next);paintRegion();});
+    overlay.addEventListener('pointerup',()=>{if(drag){drag=null;if($('ocr-region-field').value==='etc')commitEtcRegion();invalidateReview($('ocr-region-field').value);}});overlay.addEventListener('pointercancel',()=>{drag=null;});
     $('ocr-review-form').addEventListener('submit',event=>{
       event.preventDefault();if(busy||window.MapleUseSlots?.reading())return;
       try{

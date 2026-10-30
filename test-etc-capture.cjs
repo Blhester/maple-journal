@@ -17,6 +17,15 @@ function allNodes(n,tag){return [...(n.tag===tag?[n]:[]),...n.children.flatMap(c
 function image(file){const im=decode(fs.readFileSync(file));return {...im,naturalWidth:im.width,naturalHeight:im.height};}
 async function quantity(im,r,settings,countRegion){const b=countRegion?C.digitRegion({x:Math.round(countRegion.x*im.width),y:Math.round(countRegion.y*im.height),w:Math.round(countRegion.w*im.width),h:Math.round(countRegion.h*im.height)},im.width,im.height,'quantity-font'):C.slotCountRegion(r,im.width,im.height),data=new Uint8ClampedArray(b.w*b.h*4);for(let y=0;y<b.h;y++)data.set(im.data.subarray(((b.y+y)*im.width+b.x)*4,((b.y+y)*im.width+b.x+b.w)*4),y*b.w*4);return Q.read({data,width:b.w,height:b.h});}
 (async()=>{
+ h.fire('screenshot-start');assert(h.node('ocr-region-field').children.some(option=>option.value==='etc'),'Starting screenshot exposes the ETC inventory region');
+ h.node('ocr-region-field').value='etc';h.fire('ocr-region-field','change');const original=capture.region();
+ for(const [key,value]of Object.entries(original))h.node('ocr-region-'+key).value=(value*100).toFixed(4);
+ h.node('ocr-region-x').value=((original.x+.01)*100).toFixed(4);h.fire('ocr-region-x','change');
+ assert(Math.abs(h.state().etcDraft.region.x-original.x-.01)<.000001,'Screenshot ETC control saves the scanner region to the session draft');
+ assert.equal(h.state().etcDraft.validated,false,'Moving the grid requires a fresh starting-total review');h.fire('ocr-close');
+ h.fire('screenshot-start');h.node('ocr-region-field').value='etc';h.fire('ocr-region-field','change');
+ assert(Math.abs(Number(h.node('ocr-region-x').value)/100-original.x-.01)<.000001,'Reopening the screenshot keeps the adjusted ETC grid');
+ capture.setRegion(original);h.fire('ocr-close');
  const im=image('fixtures/etc-inventory-synthetic.png'),read=await capture.read(im,quantity);assert.equal(read.readable,true);assert.deepEqual(Array.from(read.items,r=>[r.name,r.quantity]),[['Slime Bubble',32],['Snail Shell',31],['Octopus Leg',52],[catalog.find(i=>i.id==='357').name,0]]);
  // Empty HUD cells are not necessarily bright white. Include grey, tinted,
  // shadowed and slightly noisy backgrounds in the starting screenshot.

@@ -14,6 +14,11 @@
     const confirmation=checkbox('I checked the starting ETC totals (0 means none owned)',!!cfg.validated,yes=>{cfg.validated=yes;options.changed();}),confirm=confirmation.children[0];host.append(confirmation,el('small','These item choices and the inventory region are remembered in this browser. Starting totals reset each run. A reviewed screenshot can fill them; otherwise enter and confirm them here.'));
   }
   function region(){return config()?.region||defaultRegion;}
+  function setRegion(value){
+    const s=state();if(s.stage!=='setup')throw Error('The ETC inventory region can be changed before starting a run.');
+    s.etcDraft??={enabled:false,trackedIds:[],excluded:[],baseline:[],validated:false};
+    s.etcDraft.region=MapleOcrCore.region(value);s.etcDraft.validated=false;options.changed();
+  }
   function enabled(){const c=config();return !!c?.enabled&&(c.trackedIds===undefined||c.trackedIds.length>0);}
   function icon(id){const n=el('img');n.src=byId(id)?.icon||'';n.alt='';n.width=n.height=32;return n;}
   function checkbox(label,checked,change){const l=el('label'),n=el('input');n.type='checkbox';n.checked=checked;n.addEventListener('change',()=>change(n.checked));l.append(n,document.createTextNode(label));return l;}
@@ -28,7 +33,7 @@
     if(setup){host.append(el('p','Choose the ETC drops you want counted. Every visible inventory slot is scanned for these items, and all matching stacks are summed, including stacks that appear later.'));
       if(cfg)host.append(checkbox('Track selected ETC drops',!!cfg.enabled,yes=>{cfg.enabled=yes;options.changed();render();}));
       if(cfg?.trackedIds)chooseTargets(host,cfg);
-      const d=el('details');d.append(el('summary','ETC inventory region · 5 columns × 6 rows · fine alignment is automatic'));const r={...region()};for(const k of ['x','y','w','h']){const label=el('label',({x:'Left %',y:'Top %',w:'Width %',h:'Height %'})[k]),n=el('input');n.type='number';n.min=0;n.max=100;n.step=.01;n.value=(r[k]*100).toFixed(2);n.addEventListener('change',()=>{s.etcDraft??={enabled:true,excluded:[],baseline:[]};s.etcDraft.region={...region(),[k]:Number(n.value)/100};s.etcDraft.validated=false;options.changed();});label.append(n);d.append(label);}host.append(d);
+      host.append(el('small','To adjust the ETC inventory grid, open a starting screenshot and select ETC inventory grid under Check the read regions. You can draw its box directly over the image.'));
       if(cfg?.trackedIds===undefined&&cfg?.baseline?.length){const list=el('div');paintItems(list,cfg.baseline,cfg.excluded,()=>options.changed());host.append(list);}
     }else if(cfg){host.append(checkbox('Include tracked ETC vendor estimates',!!cfg.enabled,yes=>{cfg.enabled=yes;options.changed();options.refresh();render();}));const latest=MapleLiveModel.points(s).at(-1),rows=s.etcEnd||MapleLiveModel.etcTotals(s);host.append(el('p',s.stage==='ending'?'Review final visible totals below. Counts start from the last confirmed capture; update them before calculating. Excluded items contribute no automatic loot.':cfg.trackedIds?'All 30 visible slots are rescanned for your selected ETC items. New stacks are included and matching stacks are summed. Keep ETC selected, fixed and unscrolled. Change the watch list before your next run.':'All 30 selected slots are rescanned each capture. Matching stacks are totaled. Keep ETC selected, fixed and unscrolled.'));
       const list=el('div');if(s.stage==='ending'){s.etcEnd??=structuredClone(rows);for(const r of s.etcSeen||[])if(!s.etcEnd.some(x=>x.itemId===r.itemId))s.etcEnd.push(structuredClone(r));paintItems(list,s.etcEnd,cfg.excluded,()=>{options.changed();},{editable:true});}else {const seen=new Map([...cfg.baseline,...rows].map(r=>[r.itemId,r]));for(const r of s.etcSeen||[])seen.set(r.itemId,r);paintItems(list,[...seen.values()],cfg.excluded,()=>{options.changed();options.refresh();});}if(s.stage==='running'){const d=el('details');d.append(el('summary','Tracked ETC items & exclusions · provisional counts'),list);host.append(d);}else host.append(list);
@@ -79,5 +84,5 @@
   function paintResult(result){const host=$('etc-track-result');host.replaceChildren();host.hidden=!result.etcDrops?.length;if(host.hidden)return;host.append(el('h3','Automatically tracked ETC drops'));for(const row of result.etcDrops){const line=el('p');line.append(icon(row.itemId),document.createTextNode(row.label+' · '+row.quantity+' drops × '+row.unitPrice+' = '+row.value.toLocaleString()+' mesos'));host.append(line);}}
   function ending(prefix='end'){const c=config(),draft=prefix==='cp'?state().etcCheckpoint:state().etcEnd;return c?.enabled?M.cleanEtcItems((draft||MapleLiveModel.etcTotals(state())).filter(r=>!c.excluded.includes(r.itemId))):undefined;}
   function paint(stats){if(!options)return;$('live-etc-value').textContent=config()?.enabled?(stats?.etcValue===null?'N/A':(stats?.estimatedComponents?.some(r=>r.key==='etc')?'≈ ':'')+Number(stats?.etcValue||0).toLocaleString(undefined,{maximumFractionDigits:2})+' mesos'):'Off';}
-  window.MapleEtcCapture={preferences,paintResult,init,read,mount,reviewed,apply,starting,ending,render,paint,enabled,region};
+  window.MapleEtcCapture={preferences,paintResult,init,read,mount,reviewed,apply,starting,ending,render,paint,enabled,region,setRegion,defaultRegion};
 })();
