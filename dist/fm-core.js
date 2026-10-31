@@ -23,7 +23,14 @@
     result.returnPercent=result.cost?result.profit/result.cost*100:null;
     return result;
   }
-  const api={integer,feeRate,estimate,summary};
+  function split(rows){return {active:rows.filter(row=>row.status!=='sold'),sold:rows.filter(row=>row.status==='sold')};}
+  function archive(row,percent,at){
+    estimate(row,percent);
+    if(!Number.isSafeInteger(at)||at<0)throw Error('Invalid sale time.');
+    return {...row,status:'sold',soldAt:at,soldFeePercent:feeRate(percent)};
+  }
+  function unarchive(row){const restored={...row,status:'active'};delete restored.soldAt;delete restored.soldFeePercent;return restored;}
+  const api={integer,feeRate,estimate,summary,split,archive,unarchive};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   else root.MapleFmMath=api;
 })(typeof window!=='undefined'?window:globalThis);
