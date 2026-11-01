@@ -2,6 +2,7 @@
   'use strict';
   const M=MapleMath,items=MapleUseData.items,$=id=>document.getElementById(id),clone=structuredClone;
   let options,review=null,reviewImage=null,drawing=null,quantityReader=null,reviewGeneration=0,useReading=false,readerBusy=()=>false;
+  const scanKey='maple-journal-use-scan-region-v1',defaultScanRegion={x:0,y:0,w:1,h:1};let scanRegion={...defaultScanRegion};
   const el=(tag,value,cls)=>{const n=document.createElement(tag);if(value!==undefined)n.textContent=value;if(cls)n.className=cls;return n;};
   const button=(label,action)=>{const b=el('button',label,'secondary');b.type='button';b.addEventListener('click',action);return b;};
   const itemFor=id=>items.find(i=>i.id===id);
@@ -13,6 +14,7 @@
   function commit(){options.changed();}
   function init(config){
     options={...config,readQuantity:quantityReader};document.body.classList.add('generic-uses');
+    try{const saved=JSON.parse(localStorage.getItem(scanKey));if(saved)scanRegion=MapleOcrCore.region(saved);}catch{scanRegion={...defaultScanRegion};}
     const s=state();if(s.start&&!s.start.expOnly&&s.start.uses===undefined){s.start.uses=legacy(s.start);const convert=e=>{if(e)e.uses=s.start.uses.map((r,i)=>({id:r.id,quantity:e[i?'mp':'hp'],added:e[(i?'mp':'hp')+'Added']||0}));};convert(s.end);for(const p of [...(s.checkpoints||[]),...(s.autoPoints||[])])convert(p.end);for(const e of [s.end,...(s.checkpoints||[]).map(p=>p.end),...(s.autoPoints||[]).map(p=>p.end)])if(e)e.hp=e.mp=e.hpAdded=e.mpAdded=0;s.start.hp=s.start.mp=s.start.hpCost=s.start.mpCost=0;}
     if(!s.useDraft)s.useDraft=s.start?.uses?clone(s.start.uses):legacy({hp:0,mp:0,hpCost:Number($('hp-cost').value)||80,mpCost:Number($('mp-cost').value)||150,hpPotion:$('hp-potion').value,mpPotion:$('mp-potion').value});
     $('use-add').addEventListener('click',()=>{if(slots().length>=12)return;slots().push({id:'use-'+Date.now().toString(36),itemId:'custom',name:'Custom use item',cost:null,quantity:0});render();commit();});
@@ -56,8 +58,8 @@
   function apply(rows){validate(rows);if(!rows)return;const s=state();if(s.stage==='setup'){const old=s.useDraft||[];s.useDraft=rows.map(row=>({...row,quantity:row.quantity===null?old.find(r=>r.id===row.id)?.quantity??'':row.quantity}));M.cleanUses(s.useDraft.map(r=>({...r,quantity:r.quantity===''?0:r.quantity})));}else {const existing=clone(s.start.uses);for(const row of rows){const slot=existing.find(r=>r.id===row.id);if(!slot)throw Error('Only starting slots can be read during a run.');slot.itemId=row.itemId;slot.name=row.name;slot.cost=M.integer(row.cost,'Use cost');slot.region=row.region;slot.ocr=row.ocr;slot.countRegion=row.countRegion;}M.cleanUses(existing);const previous=endRows('end');s.start.uses=existing;s.useEndDraft=rows.map(r=>({id:r.id,quantity:r.quantity===null?previous.find(x=>x.id===r.id)?.quantity??'':M.integer(r.quantity,'Use count'),added:previous.find(x=>x.id===r.id)?.added||0}));}render();}
   function pixels(image,r,size=48){if(!r)throw Error('Choose a shortcut region first.');const c=el('canvas');c.width=c.height=size;const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,r.x*image.naturalWidth,r.y*image.naturalHeight,r.w*image.naturalWidth,r.h*image.naturalHeight,0,0,size,size);const p=ctx.getImageData(0,0,size,size);c.width=c.height=1;return p;}
   async function scan(image,readQuantity,{isCurrent=()=>true,onStatus=()=>{}}={}){
-    const c=el('canvas'),scale=Math.min(1,960/image.naturalWidth);c.width=Math.round(image.naturalWidth*scale);c.height=Math.round(image.naturalHeight*scale);const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,0,0,c.width,c.height);const data=ctx.getImageData(0,0,c.width,c.height);c.width=c.height=1;
-    const boxes=MapleIconMatcher.cells(data.data,data.width,data.height),rows=[],seen=new Set(),existing=slots(),ids=new Set(existing.map(r=>r.id));
+    const source={x:scanRegion.x*image.naturalWidth,y:scanRegion.y*image.naturalHeight,w:scanRegion.w*image.naturalWidth,h:scanRegion.h*image.naturalHeight},c=el('canvas'),scale=Math.min(1,(source.w>2200?1920:960)/source.w);c.width=Math.max(1,Math.round(source.w*scale));c.height=Math.max(1,Math.round(source.h*scale));const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,source.x,source.y,source.w,source.h,0,0,c.width,c.height);const data=ctx.getImageData(0,0,c.width,c.height);c.width=c.height=1;
+    const boxes=MapleIconMatcher.cells(data.data,data.width,data.height,{topRatio:scanRegion.y===0&&scanRegion.h===1?(source.w>2200?.25:.55):0}).map(box=>({x:scanRegion.x+box.x*scanRegion.w,y:scanRegion.y+box.y*scanRegion.h,w:box.w*scanRegion.w,h:box.h*scanRegion.h})),rows=[],seen=new Set(),existing=slots(),ids=new Set(existing.map(r=>r.id));
     const freshId=i=>{let id='use-detected-'+i;while(ids.has(id))id+='-new';ids.add(id);return id;};
     for(const [i,box]of boxes.entries()){
       onStatus('Reading shortcut '+(i+1)+' of '+boxes.length+' · matching icon and count…');await new Promise(r=>setTimeout(r,0));if(!isCurrent())return [];
@@ -65,9 +67,9 @@
       // A readable count alone cannot turn a skill or an empty key into a Use
       // item. We need both a distinct catalog icon match and a usable count.
       if(!best||!(best.strong||(best.score<60&&(alternative?.score??255)-best.score>8)))continue;
-      const item=itemFor(best.id);if(!item||seen.has(item.id))continue;const old=existing.find(r=>r.itemId===item.id),result=await readQuantity(image,box,old?.ocr);
-      if(!isCurrent())return [];if(result?.value===null||result?.value===undefined||result.value===''||result.needsConfirmation)continue;
-      if(rows.length>=12)break;seen.add(item.id);rows.push({...old,id:old?.id||freshId(i),itemId:item.id,name:item.name,cost:old?.cost??item.purchasePrice,region:box,countRegion:undefined,quantity:result.value,include:true,result,suggestions:matches});
+      const item=itemFor(best.id);if(!item||seen.has(item.id)&&rows.find(r=>r.itemId===item.id)?.quantity!==null)continue;const old=existing.find(r=>r.itemId===item.id),result=await readQuantity(image,box,old?.ocr);
+      if(!isCurrent())return [];const readable=result?.value!==null&&result?.value!==undefined&&result.value!==''&&!result.needsConfirmation;
+      if(rows.length>=12)break;seen.add(item.id);const prior=rows.findIndex(r=>r.itemId===item.id);if(prior>=0)rows.splice(prior,1);rows.push({...old,id:old?.id||freshId(i),itemId:item.id,name:item.name,cost:old?.cost??item.purchasePrice,region:box,countRegion:undefined,quantity:readable?result.value:null,include:readable,result,suggestions:matches});
     }
     return rows;
   }
@@ -83,14 +85,14 @@
     return rows;
   }
   function paintCanvas(){
-    const c=$('use-region-canvas');if(!reviewImage)return;const offset=Math.floor(reviewImage.naturalHeight*.55);c.width=reviewImage.naturalWidth;c.height=reviewImage.naturalHeight-offset;const ctx=c.getContext('2d');ctx.drawImage(reviewImage,0,offset,c.width,c.height,0,0,c.width,c.height);ctx.lineWidth=Math.max(2,c.width/600);ctx.font=Math.max(14,c.width/85)+'px sans-serif';
-    for(const [i,r]of review.entries())if(r.region){const b=r.region,x=b.x*c.width,y=b.y*reviewImage.naturalHeight-offset;ctx.strokeStyle=r.id===drawing?'#ffcd70':'#b8d398';ctx.fillStyle=ctx.strokeStyle;ctx.strokeRect(x,y,b.w*c.width,b.h*reviewImage.naturalHeight);ctx.fillText(String(i+1),x,Math.max(16,y-3));}
+    const c=$('use-region-canvas');if(!reviewImage)return;c.width=reviewImage.naturalWidth;c.height=reviewImage.naturalHeight;const ctx=c.getContext('2d');ctx.drawImage(reviewImage,0,0,c.width,c.height);ctx.lineWidth=Math.max(2,c.width/600);ctx.font=Math.max(14,c.width/85)+'px sans-serif';
+    for(const [i,r]of review.entries())if(r.region){const b=r.region,x=b.x*c.width,y=b.y*c.height;ctx.strokeStyle=r.id===drawing?'#ffcd70':'#b8d398';ctx.fillStyle=ctx.strokeStyle;ctx.strokeRect(x,y,b.w*c.width,b.h*c.height);ctx.fillText(String(i+1),x,Math.max(16,y-3));}
   }
   function renderReview(){editor($('use-review-list'),review,{reviewing:true});paintCanvas();}
   function mountReview(image,rows){
     reviewGeneration++;reviewImage=image;review=clone(rows);$('use-review').hidden=false;renderReview();$('use-review-status').textContent=reviewMessage(rows.filter(r=>r.include!==false&&r.quantity!==null).length);
   }
-  function reviewed(){if(!review)return undefined;return review.map(row=>({...row,quantity:row.include===false?null:row.quantity}));}
+  function reviewed(){if(!review)return undefined;return (state().stage==='setup'?review.filter(row=>row.include!==false):review).map(row=>({...row,quantity:row.include===false?null:row.quantity}));}
   async function detect(){
     if(!reviewImage||useReading||readerBusy())return;useReading=true;const status=$('use-review-status'),b=$('use-detect'),generation=reviewGeneration;b.disabled=true;
     try{
@@ -102,9 +104,12 @@
   function reviewMessage(count){return count?'Detected '+count+' counted Use items across all shortcut slots. Check each item, count and cost before applying. Duplicate hotkeys are tracked once.':state().stage==='setup'?'No counted Use icons matched. Skills, empty cells and unreadable counts are omitted. Add an item manually on the starting form if needed.':'No readable tracked items matched. Existing slots stay unknown until corrected; new items require a starting baseline.';}
   function bindReview(readQuantity,isBusy=()=>false){readerBusy=isBusy;
     quantityReader=readQuantity;if(options)options.readQuantity=readQuantity;$('use-detect').addEventListener('click',()=>void detect());
+    $('use-review-add').addEventListener('click',()=>{if(!review||review.length>=12)return;review.push({id:'use-manual-'+Date.now(),itemId:'custom',name:'Custom use item',cost:null,quantity:null,include:false});renderReview();$('use-review-list').lastElementChild.open=true;$('use-review-status').textContent='Choose an item, draw its full shortcut cell, and enter or re-read the count.';});
     $('use-save-regions').addEventListener('click',()=>{try{for(const row of review||[]){const target=slots().find(s=>s.id===row.id);if(target){target.region=row.region;target.ocr=row.ocr;target.countRegion=row.countRegion;}}commit();$('use-review-status').textContent='Shortcut regions remembered for automatic captures. Counts were not applied.';}catch(e){$('use-review-status').textContent=e.message;}});
-    const c=$('use-region-canvas');let down=null;const point=e=>{const b=c.getBoundingClientRect();return {x:Math.max(0,Math.min(1,(e.clientX-b.left)/b.width)),y:.55+Math.max(0,Math.min(1,(e.clientY-b.top)/b.height))*.45};};c.addEventListener('pointerdown',e=>{if(!drawing||!review||e.button!==0)return;e.preventDefault();down=point(e);c.setPointerCapture(e.pointerId);});c.addEventListener('pointerup',e=>{if(!down)return;const p=point(e),r={x:Math.min(p.x,down.x),y:Math.min(p.y,down.y),w:Math.abs(p.x-down.x),h:Math.abs(p.y-down.y)};down=null;if(r.w*c.width<15||r.h*reviewImage.naturalHeight<15)return;const row=review.find(r=>r.id===drawing);row.region=r;delete row.countRegion;row.quantity=null;const crop=pixels(reviewImage,r);row.suggestions=MapleIconMatcher.rank(crop.data,crop.width,crop.height,MapleUseIcons);renderReview();$('use-review-status').textContent='Region updated. Read this count again, then choose the matching item suggestion.';});c.addEventListener('pointercancel',()=>{down=null;});
+    const c=$('use-region-canvas');let down=null;const point=e=>{const b=c.getBoundingClientRect();return {x:Math.max(0,Math.min(1,(e.clientX-b.left)/b.width)),y:Math.max(0,Math.min(1,(e.clientY-b.top)/b.height))};};c.addEventListener('pointerdown',e=>{if(!drawing||!review||e.button!==0)return;e.preventDefault();down=point(e);c.setPointerCapture(e.pointerId);});c.addEventListener('pointerup',e=>{if(!down)return;const p=point(e),r={x:Math.min(p.x,down.x),y:Math.min(p.y,down.y),w:Math.abs(p.x-down.x),h:Math.abs(p.y-down.y)};down=null;if(r.w*c.width<15||r.h*c.height<15)return;const row=review.find(r=>r.id===drawing);row.region=r;delete row.countRegion;row.quantity=null;const crop=pixels(reviewImage,r);row.suggestions=MapleIconMatcher.rank(crop.data,crop.width,crop.height,MapleUseIcons);renderReview();$('use-review-status').textContent='Region updated. Read this count again, then choose the matching item suggestion.';});c.addEventListener('pointercancel',()=>{down=null;});
   }
   function clearReview(){reviewGeneration++;review=null;reviewImage=null;drawing=null;if($('use-review')){$('use-review').hidden=true;$('use-region-canvas').width=$('use-region-canvas').height=1;$('use-review-list').replaceChildren();}}
-  window.MapleUseSlots={reading:()=>useReading,ready:()=>!!options,validate,detect,init,render,starting,ending,slots,apply,reset,paintLive,paintStats,read,mountReview,reviewed,bindReview,clearReview};
+  function setScanRegion(value){scanRegion=MapleOcrCore.region(value);try{localStorage.setItem(scanKey,JSON.stringify(scanRegion));}catch{}return {...scanRegion};}
+  function resetScanRegion(){scanRegion={...defaultScanRegion};try{localStorage.removeItem(scanKey);}catch{}return {...scanRegion};}
+  window.MapleUseSlots={reading:()=>useReading,ready:()=>!!options,validate,detect,init,render,starting,ending,slots,apply,reset,paintLive,paintStats,read,mountReview,reviewed,bindReview,clearReview,scanRegion:()=>({...scanRegion}),setScanRegion,resetScanRegion};
 })();

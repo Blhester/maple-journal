@@ -130,6 +130,12 @@
     onStatus:status=>{if(status.message)autoMessage=status.message;paintAuto();},
     onSample:read=>{
       try{
+        if(!expOnly()&&state.start.etc?.baselinePending&&read.results.etc?.readable){
+          state.start.etc.baseline=M.cleanEtcItems(read.results.etc.items);
+          state.start.etc.baselinePending=false;
+          autoFilter=MapleAutoProgress.createFilter({start:state.start,anchor:progressPoints().at(-1),mesoAnchor:state.checkpoints.at(-1),etcAnchor:MapleLiveModel.etcTotals(state)});
+          autoLog(null,'ETC baseline','First readable ETC inventory saved as the starting count. New visible drops will count from here.');
+        }
         if(!expOnly()&&state.start.etc?.enabled&&read.results.etc?.items){state.etcSeen=structuredClone(read.results.etc.items);window.MapleEtcCapture?.render();}
         if((state.counterFinancePoints?.length||0)>=4999){stopAuto('Checkpoint limit reached. Finish this session before starting another.');return;}
         const layout=read.width+'x'+read.height+':'+read.layout;
@@ -256,7 +262,7 @@
       else if(window.MapleUseSlots){start.uses=MapleUseSlots.starting();start.hp=start.mp=start.hpCost=start.mpCost=0;}
       else {for(const k of ['hp','mp'])start[k]=M.integer($('start-'+k).value,'Starting '+k);start.hpCost=M.integer($('hp-cost').value,'HP cost');start.mpCost=M.integer($('mp-cost').value,'MP cost');}
       const etc=expOnly()?undefined:window.MapleEtcCapture?.starting();if(etc)start.etc=etc;
-      const preferences={...(expOnly()?{useDraft:structuredClone(state.useDraft||[])}:{}),...(state.etcDraft?{etcDraft:{...state.etcDraft,baseline:[],validated:false}}:{})};counterFinanceFilter=null;const now=Date.now();state={...preferences,stage:'running',id:'run-'+now+'-'+Math.random().toString(36).slice(2,8),start,startedAt:now,pausedMs:0,autoBreakEnabled:$('auto-break').checked,autoBreakPreference:$('auto-break').checked,checkpoints:[],ledger:[],meta:{map:$('session-map').value.trim(),class:$('session-class').value.trim()}};resetBreakDetector();$('end-level').value=start.level||'';$('cp-level').value=start.level||'';error('start-error','');persist();render();$('done-button').focus();if($('auto-start').checked&&start.level&&MapleScreenCapture.supported()){autoFilter=MapleAutoProgress.createFilter({start});autoLayout=null;autoRecorder.start();}
+      const preferences={...(expOnly()?{useDraft:structuredClone(state.useDraft||[])}:{}),...(state.etcDraft?{etcDraft:{...state.etcDraft,baseline:[],validated:false}}:{})};counterFinanceFilter=null;const startAutomatic=$('auto-start').checked&&!!start.level&&MapleScreenCapture.supported(),hadScreenShare=MapleScreenshot.sharingActive(),now=Date.now();state={...preferences,stage:'running',id:'run-'+now+'-'+Math.random().toString(36).slice(2,8),start,startedAt:now,pausedMs:0,autoBreakEnabled:$('auto-break').checked,autoBreakPreference:$('auto-break').checked,checkpoints:[],ledger:[],meta:{map:$('session-map').value.trim(),class:$('session-class').value.trim()}};resetBreakDetector();$('end-level').value=start.level||'';$('cp-level').value=start.level||'';error('start-error','');persist();render();$('done-button').focus();if(startAutomatic){autoFilter=MapleAutoProgress.createFilter({start});autoLayout=null;autoMessage=hadScreenShare?'Using your selected screen for automatic screenshots.':'Choose a screen once to begin automatic screenshots.';autoRecorder.start();}
     }catch(e){$('manual-setup').open=true;error('start-error',e.message);}
   });
   $('reset-live-stats').addEventListener('click',()=>{if(state.stage!=='running')return;state.counterReset=MapleLiveModel.resetMarker(state,Date.now());autoPreview=null;autoLastSample=null;if(autoRecorder.active())autoRecorder.cancelPending();persist();paintAuto();tick();});

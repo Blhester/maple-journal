@@ -114,11 +114,11 @@
   function cleanEtc(config){
     if(!config?.enabled)return undefined;const r=config.region;if(!r||!['x','y','w','h'].every(k=>Number.isFinite(r[k]))||r.x<0||r.y<0||r.w<=0||r.h<=0||r.x+r.w>1||r.y+r.h>1)throw Error('Invalid ETC inventory region.');
     if(!Array.isArray(config.excluded)||config.excluded.length>331||config.excluded.some(id=>!/^\d{1,10}$/.test(id)))throw Error('Invalid ETC exclusions.');
-    const ignoredCells=config.ignoredCells||[];if(!Array.isArray(ignoredCells)||ignoredCells.length>30||ignoredCells.some(i=>!Number.isInteger(i)||i<0||i>=30))throw Error('Invalid ETC ignored cells.');const baseline=cleanEtcItems(config.baseline),out={enabled:true,ignoredCells:[...new Set(ignoredCells)],region:{x:r.x,y:r.y,w:r.w,h:r.h},baseline,excluded:[...new Set(config.excluded)]};
+    const ignoredCells=config.ignoredCells||[];if(!Array.isArray(ignoredCells)||ignoredCells.length>30||ignoredCells.some(i=>!Number.isInteger(i)||i<0||i>=30))throw Error('Invalid ETC ignored cells.');const baseline=cleanEtcItems(config.baseline),out={enabled:true,ignoredCells:[...new Set(ignoredCells)],region:{x:r.x,y:r.y,w:r.w,h:r.h},baseline,excluded:[...new Set(config.excluded)],...(config.baselinePending===true?{baselinePending:true}:{})};
     if(config.trackedIds!==undefined){const ids=config.trackedIds;if(!Array.isArray(ids)||ids.length>30||ids.some(id=>typeof id!=='string'||!/^\d{1,10}$/.test(id))||new Set(ids).size!==ids.length||baseline.length!==ids.length||baseline.some(r=>!ids.includes(r.itemId)))throw Error('Review a starting total for every selected ETC item.');out.trackedIds=[...ids];}return out;
   }
   function etcLoot(start,end){
-    const config=cleanEtc(start.etc);if(!config)return [];
+    const config=cleanEtc(start.etc);if(!config)return [];if(config.baselinePending)return null;
     if(!end.etc)return null;const rows=cleanEtcItems(end.etc),old=new Map(config.baseline.map(r=>[r.itemId,r])),now=new Map(rows.map(r=>[r.itemId,r])),excluded=new Set(config.excluded);
     for(const r of config.baseline)if(isTrackedEtc(config,r.itemId)&&(!now.has(r.itemId)||now.get(r.itemId).quantity<r.quantity))return null;
     return rows.filter(r=>isTrackedEtc(config,r.itemId)).map(r=>{const initial=old.get(r.itemId),quantity=r.quantity-(initial?.quantity||0),unitPrice=initial?.unitPrice??r.unitPrice;if(quantity<0)return null;const value=quantity*unitPrice;if(!Number.isSafeInteger(value))throw Error('ETC value is too large.');return {source:'etc',itemId:r.itemId,label:initial?.name||r.name,quantity,unitPrice,value,kind:'loot'};}).filter(r=>r&&r.quantity>0);

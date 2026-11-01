@@ -25,8 +25,8 @@
   }
   // Light connected components find the shortcut cell backgrounds in the lower
   // HUD, wherever the shortcut panel was moved. Large scenery regions fall out.
-  function cells(data,width,height){
-    const mask=new Uint8Array(width*height),out=[],queue=new Int32Array(width*height),top=Math.floor(height*.55);
+  function cells(data,width,height,{topRatio=.55}={}){
+    const mask=new Uint8Array(width*height),out=[],queue=new Int32Array(width*height),top=Math.floor(height*topRatio);
     for(let y=top;y<height;y++)for(let x=0;x<width;x++){const i=(y*width+x)*4,a=Math.min(data[i],data[i+1],data[i+2]),b=Math.max(data[i],data[i+1],data[i+2]);if(a>195&&b-a<32)mask[y*width+x]=1;}
     for(let y=top;y<height;y++)for(let x=0;x<width;x++){
       const p=y*width+x;if(!mask[p])continue;let head=0,tail=1,minX=x,maxX=x,minY=y,maxY=y;queue[0]=p;mask[p]=0;

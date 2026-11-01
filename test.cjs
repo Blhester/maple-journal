@@ -93,6 +93,7 @@ require('./test-etc-partial-value.cjs');
 require('./test-etc-vision.cjs');
 require('./test-financial-fallback.cjs');
 require('node:child_process').execFileSync(process.execPath,['test-etc-capture.cjs'],{stdio:'inherit'});
+require('node:child_process').execFileSync(process.execPath,['test-etc-auto-baseline.cjs'],{stdio:'inherit'});
 require('node:child_process').execFileSync(process.execPath,['test-use-detection.cjs'],{stdio:'inherit'});
 
 require('./test-quantity.cjs');

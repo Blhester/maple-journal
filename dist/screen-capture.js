@@ -60,7 +60,10 @@
         if(blob.size>15*1024*1024)throw new Error('The snapshot exceeds 15 MB. Choose a smaller screen or upload a smaller screenshot.');
         return blob;
       }catch(error){
-        release();throw error;
+        // A failed frame, encoding timeout, or cancelled read does not revoke
+        // the user's still-live screen share. The next sample can retry it.
+        if(!active()||error.name==='CaptureSourceError'||error.name==='NotAllowedError')release();
+        throw error;
       }finally{
         clearTimeout(timer);signal?.removeEventListener('abort',abort);if(operation===controller)operation=null;
         if(video){video.pause();video.srcObject=null;video.remove();}if(canvas)canvas.width=canvas.height=1;

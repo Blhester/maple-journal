@@ -130,6 +130,7 @@ tbody td{font-size:16px}.totals span{font-size:12px}.insight-grid strong{font-si
 .use-detected-summary{display:flex;align-items:center;gap:10px;cursor:pointer}.use-detected-summary strong{flex:1}.use-detected-summary span{white-space:nowrap;font-variant-numeric:tabular-nums}.use-detected-summary::after{content:"⌄"}.use-slot-card[open]>.use-detected-summary{margin-bottom:16px}
 
 #use-review .use-slot-grid{gap:10px}#use-review .use-slot-card:not([open]){padding:10px 14px}
+.ocr-auto-start{display:block;grid-column:1/-1;font-size:14px;font-weight:600}.ocr-auto-start input{width:auto;margin-right:8px}.ocr-auto-start small{display:block;font-size:12px;font-weight:400;color:var(--muted);margin:5px 0 0 25px}
 
 .etc-track-panel{border-top:1px solid var(--line);margin:18px 0;padding-top:14px}.etc-track-panel p,.etc-track-panel small{font-size:13px;line-height:1.6}.etc-track-panel label{display:block;margin:8px 0}.etc-track-panel input[type=checkbox]{width:auto;margin-right:9px}.etc-track-item{padding:10px;border:1px solid var(--line);border-radius:8px;margin:8px 0}.etc-track-item>div{display:flex;align-items:center;gap:8px}.etc-track-item img{object-fit:contain;image-rendering:pixelated}.etc-track-panel details label{display:inline-block;width:46%;margin-right:3%}
 
