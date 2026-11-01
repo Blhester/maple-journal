@@ -1,8 +1,11 @@
 (() => {
   'use strict';
-  const $=id=>document.getElementById(id),C=MapleOcrCore,layoutKey='maple-journal-ocr-regions-v2',legacyLayoutKey='maple-journal-ocr-regions-v1',tuningKey='maple-journal-ocr-tuning-v1',tuningKeys=['reader','mode','contrast','brightness','threshold','chroma','scale','invert'];
+  const $=id=>document.getElementById(id),C=MapleOcrCore,layoutKey='maple-journal-ocr-regions-v2',legacyLayoutKey='maple-journal-ocr-regions-v1',tuningKey='maple-journal-ocr-tuning-v1',autoRegionKey='maple-journal-auto-regions-v1',tuningKeys=['reader','mode','contrast','brightness','threshold','chroma','scale','invert'];
   let options,context,image=null,regions=structuredClone(C.defaults),etcRegionDraft=null,busy=false,worker=null,run=0,objectUrl=null,drag=null;
-  let libraryPromise=null,workerUrls=[],tunings={},digitCancel=null,captureController=null,captureSession=null,captureWasActive=false,readCanvases=new Set();
+  let libraryPromise=null,referencePromise=null,workerUrls=[],tunings={},digitCancel=null,captureController=null,captureSession=null,captureWasActive=false,readCanvases=new Set();
+  const manuallyPlaced=new Set(),automaticallyPlaced=new Set();
+  function rememberAutoRegions(){try{localStorage.setItem(autoRegionKey,JSON.stringify([...automaticallyPlaced]));}catch{}}
+  function markManual(id){manuallyPlaced.add(id);automaticallyPlaced.delete(id);rememberAutoRegions();}
   function paintCaptureConnection(){
     const active=!!captureSession?.active();
     $('ocr-capture').textContent=active?'Capture snapshot':'Capture screen';
@@ -21,6 +24,41 @@
   const activeFields=()=>C.fields.filter(field=>(!expOnly()||['level','exp'].includes(field.id))&&(!window.MapleUseSlots?.ready()||!['hp','mp'].includes(field.id))&&(context.stage==='setup'||!['map','class'].includes(field.id)));
   const selectedRegion=()=>$('ocr-region-field').value==='etc'?etcRegionDraft||MapleEtcCapture.region():$('ocr-region-field').value==='use'?MapleUseSlots.scanRegion():regions[$('ocr-region-field').value];
   function commitEtcRegion(){if(etcRegionDraft&&context.stage==='setup')MapleEtcCapture.setRegion(etcRegionDraft);}
+  const sameRegion=(a,b)=>!!a&&!!b&&['x','y','w','h'].every(key=>Math.abs(a[key]-b[key])<.0001);
+  function referenceImage(){
+    if(!referencePromise)referencePromise=(async()=>{const img=new Image();img.src=$('ocr-guide').querySelector('img').src;await img.decode();return img;})().catch(error=>{referencePromise=null;throw error;});
+    return referencePromise;
+  }
+  async function detectRegions(force=false){
+    if(!image||!window.MapleRegionDetector)return;
+    $('ocr-detect-status').textContent='Locating the game HUD and inventory…';
+    const current=image;
+    try{
+      const reference=await referenceImage();if(image!==current)return;
+      const proposal=MapleRegionDetector.detect(current,reference,C.defaults),applied=[];
+      for(const [id,box]of Object.entries(proposal.regions)){
+        if(manuallyPlaced.has(id)&&!force)continue;
+        if(id==='etc'){
+          if(context.stage!=='setup'||!etcRegionDraft||!window.MapleEtcCapture)continue;
+          if(!force&&!automaticallyPlaced.has(id)&&!sameRegion(etcRegionDraft,MapleEtcCapture.defaultRegion))continue;
+          etcRegionDraft=C.region(box);commitEtcRegion();
+        }else if(id==='use'){
+          if(!window.MapleUseSlots?.ready())continue;
+          const previous=MapleUseSlots.scanRegion();if(!force&&!automaticallyPlaced.has(id)&&!sameRegion(previous,{x:0,y:0,w:1,h:1}))continue;
+          MapleUseSlots.setScanRegion(box);
+        }else{
+          if(!force&&!automaticallyPlaced.has(id)&&!sameRegion(regions[id],C.defaults[id]))continue;
+          regions[id]=C.region(box);
+        }
+        automaticallyPlaced.add(id);if(force)manuallyPlaced.delete(id);applied.push(id);
+      }
+      if(image!==current)return;
+      if(applied.length)rememberAutoRegions();
+      paintRegion();
+      const found=Object.entries(proposal.anchors).filter(([,hit])=>hit).map(([name])=>name==='hud'?'EXP HUD':name==='inventory'?'inventory':'minimap');
+      $('ocr-detect-status').textContent=found.length?'Found '+found.join(', ')+'. '+(applied.length?'Placed '+applied.join(', ')+'. ':'Saved custom regions were kept. ')+'Check the crops before applying.':'No clear UI anchors found. Saved regions were kept; draw any missing box manually.';
+    }catch{$('ocr-detect-status').textContent='Could not locate UI anchors in this image. Saved regions were kept; draw a box manually.';}
+  }
   function svg(tag,attrs){const e=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [key,value]of Object.entries(attrs))e.setAttribute(key,value);return e;}
   function drawGuide(){
     for(const [index,field]of C.fields.entries()){
@@ -74,7 +112,7 @@
     for(const key of ['x','y','w','h'])$('ocr-region-'+key).value=String(Math.round(r[key]*10000)/100);
     const canvas=$('ocr-crop');if(id==='etc'||id==='use'){canvas.width=Math.max(1,Math.min(960,Math.round(w)));canvas.height=Math.max(1,Math.round(h*canvas.width/w));canvas.getContext('2d').drawImage(image,x,y,w,h,0,0,canvas.width,canvas.height);}else{const source=crop(id);canvas.width=source.width;canvas.height=source.height;canvas.getContext('2d').drawImage(source,0,0);}
     $('ocr-crop-label').textContent=id==='etc'?'ETC inventory · 5 columns × 6 rows':id==='use'?'Use shortcut scan area':C.fields.find(field=>field.id===id).label+' · enlarged preview';
-    $('ocr-region-help').textContent=id==='etc'?'Draw around the 5 × 6 visible ETC item cells. Exclude the tabs, window border and mesos bar. The grid lines should cross the slot boundaries; fine alignment is automatic. Changes are saved for later captures.':id==='use'?'Draw around the shortcut panel, including every cell you want scanned. This search area is remembered for future screenshots. If an individual item is missed, add it in the review and draw its cell there.':'Select a field, then draw a box around its text. The starter layout matches the example. For EXP include the percentage and % sign; the full EXP bar also works.';
+    $('ocr-region-help').textContent=id==='etc'?'Draw around the 5 × 6 visible ETC item cells. Exclude the tabs, window border and mesos bar. The grid lines should cross the slot boundaries; fine alignment is automatic. Changes are saved for later captures.':id==='use'?'Draw around the shortcut panel, including every cell you want scanned. This search area is remembered for future screenshots. If an individual item is missed, add it in the review and draw its cell there.':'Check the proposed box and draw around the text if needed. For EXP include the percentage and % sign; the full EXP bar also works.';
     paintTuning();
   }
   function invalidateReview(id){
@@ -86,7 +124,7 @@
   function restoreReview(){if(!$('ocr-review-fields').children.length)return false;$('ocr-review-form').hidden=false;$('ocr-empty-review').hidden=true;return true;}
   function setBusy(value){
     busy=value;$('ocr-progress-wrap').hidden=!value;
-    for(const id of ['ocr-read','ocr-read-field','ocr-reset-tuning','ocr-file','ocr-capture','ocr-capture-change','ocr-example','ocr-region-field','ocr-save-layout','ocr-reset-layout','ocr-apply',...['x','y','w','h'].map(k=>'ocr-region-'+k),...tuningKeys.map(k=>'ocr-tune-'+k)])$(id).disabled=value;
+    for(const id of ['ocr-read','ocr-read-field','ocr-reset-tuning','ocr-file','ocr-capture','ocr-capture-change','ocr-example','ocr-detect-regions','ocr-region-field','ocr-save-layout','ocr-reset-layout','ocr-apply',...['x','y','w','h'].map(k=>'ocr-region-'+k),...tuningKeys.map(k=>'ocr-tune-'+k)])$(id).disabled=value;
     for(const button of $('ocr-review-fields').querySelectorAll('button'))button.disabled=value||button.dataset.unsupported==='true';
     MaplePotionPicker.setBusy($('ocr-review-fields'),value);
     if(!value&&image)paintTuning();
@@ -147,6 +185,7 @@
       // Replace the previous image and review only after decoding succeeds.
       clearImage();invalidateReview();MaplePotionPicker.dispose($('ocr-review-fields'));$('ocr-review-fields').replaceChildren();$('ocr-field-status').textContent='';objectUrl=nextUrl;nextUrl=null;
       image=img;$('ocr-image').src=img.src;$('ocr-workspace').hidden=false;$('ocr-guide').open=false;$('ocr-file-name').textContent=name+' · '+img.naturalWidth+' × '+img.naturalHeight;paintRegion();
+      await detectRegions();if(token!==run||signal?.aborted)return false;
       $('ocr-empty-review').textContent='Check the regions, then read your screenshot. Each field remains editable before applying.';return true;
     }catch(e){if(token===run&&!signal?.aborted){if(signal)throw e;error('ocr-error','The image could not be opened. '+e.message);}return false;}
     finally{if(nextUrl)URL.revokeObjectURL(nextUrl);}
@@ -268,7 +307,7 @@
     calibration=calibration===true;context={...options.getContext(),calibration};if(!['setup','ending'].includes(context.stage)&&!(calibration&&context.stage==='running'))return;
     $('ocr-apply').hidden=calibration;
     $('ocr-auto-start-wrap').hidden=context.stage!=='setup'||calibration;$('ocr-auto-start').checked=$('auto-start').checked;
-    stop();clearImage();error('ocr-capture-error','');$('ocr-file').value='';$('ocr-file-name').textContent='PNG, JPG, or WebP · up to 15 MB';$('ocr-capture-status').textContent='';$('ocr-review-form').hidden=true;$('ocr-guide').open=false;$('ocr-apply').textContent=context.stage==='setup'?'Review & start recording':'Apply ending values';
+    stop();clearImage();manuallyPlaced.clear();$('ocr-detect-status').textContent='';error('ocr-capture-error','');$('ocr-file').value='';$('ocr-file-name').textContent='PNG, JPG, or WebP · up to 15 MB';$('ocr-capture-status').textContent='';$('ocr-review-form').hidden=true;$('ocr-guide').open=false;$('ocr-apply').textContent=context.stage==='setup'?'Review & start recording':'Apply ending values';
     $('ocr-context').textContent=calibration?'Adjust regions and readers using an Entire screen snapshot. Remember regions & image settings, then close and enable Auto screenshots. Numeric readings stay in this calibration preview. Use Remember shortcut regions below to update automatic capture positions. Correct item identities and prices under Use items & costs on the tracker.':context.stage==='setup'?'Fill your starting values from a screenshot taken before training.':'Fill ending values from your final screenshot. Map and class stay as recorded at the start. Use Remember shortcut regions below to update automatic capture positions. Correct item identities and prices under Use items & costs on the tracker.';
     const choices=activeFields().map(field=>new Option(field.label,field.id));if(!context.expOnly&&window.MapleUseSlots?.ready())choices.push(new Option('Use shortcuts · scan area','use'));if(context.stage==='setup'&&!context.expOnly&&window.MapleEtcCapture){choices.push(new Option('ETC inventory grid · 5 × 6 slots','etc'));etcRegionDraft={...MapleEtcCapture.region()};}else etcRegionDraft=null;
     $('ocr-region-field').replaceChildren(...choices);$('ocr-region-field').value='exp';error('ocr-error','');error('ocr-review-error','');$('screenshot-dialog').showModal();
@@ -282,21 +321,22 @@
     window.addEventListener('pagehide',()=>{stop();captureSession.stop();});
     try{const current=localStorage.getItem(layoutKey),saved=JSON.parse(current||localStorage.getItem(legacyLayoutKey));if(saved){for(const field of C.fields)regions[field.id]=C.region(field.id==='mesos'?C.migrateMesosRegion(saved.mesos):!current&&field.id==='exp'?C.migrateExpRegion(saved.exp):saved[field.id]);if(!current||JSON.stringify(saved.mesos)!==JSON.stringify(regions.mesos))localStorage.setItem(layoutKey,JSON.stringify(regions));}}catch{regions=structuredClone(C.defaults);}
     try{const saved=JSON.parse(localStorage.getItem(tuningKey));if(saved)for(const field of C.fields)if(saved[field.id])tunings[field.id]=field.id==='level'?C.migrateLevelTuning(saved[field.id]):C.tuning(field.id,saved[field.id]);}catch{tunings={};}
+    try{const saved=JSON.parse(localStorage.getItem(autoRegionKey));if(Array.isArray(saved))for(const id of saved)if([...C.fields.map(field=>field.id),'use','etc'].includes(id))automaticallyPlaced.add(id);}catch{}
     $('screenshot-start').addEventListener('click',open);$('screenshot-end').addEventListener('click',open);
     $('ocr-close').addEventListener('click',()=>$('screenshot-dialog').close());$('screenshot-dialog').addEventListener('close',()=>{stop();clearImage();$('ocr-file').value='';$('ocr-file-name').textContent='PNG, JPG, or WebP · up to 15 MB';MaplePotionPicker.dispose($('ocr-review-fields'));$('ocr-review-fields').replaceChildren();});
     $('ocr-auto-start').addEventListener('change',()=>$('auto-start').checked=$('ocr-auto-start').checked);
     $('ocr-capture').addEventListener('click',()=>void captureScreen());$('ocr-capture-cancel').addEventListener('click',()=>{stop();$('ocr-capture-status').textContent='Capture cancelled. Your previous screenshot and reviewed values were kept. If the browser picker is still open, dismiss it there too.';});
-    $('ocr-file').addEventListener('change',event=>{if(event.target.files[0]){$('ocr-capture-status').textContent='';void loadImage(event.target.files[0]);}});$('ocr-example').addEventListener('click',()=>{$('ocr-capture-status').textContent='';void loadImage(null);});$('ocr-read').addEventListener('click',()=>void read());$('ocr-read-field').addEventListener('click',()=>void read(true));$('ocr-cancel').addEventListener('click',()=>{stop();$('ocr-progress-text').textContent='Reading cancelled. You can retry or enter values manually.';$('ocr-field-status').textContent=restoreReview()?'Reading cancelled. Other values were kept.':'Reading cancelled. You can retry or enter values manually.';});
+    $('ocr-file').addEventListener('change',event=>{if(event.target.files[0]){$('ocr-capture-status').textContent='';void loadImage(event.target.files[0]);}});$('ocr-example').addEventListener('click',()=>{$('ocr-capture-status').textContent='';void loadImage(null);});$('ocr-detect-regions').addEventListener('click',async()=>{if(busy||!image)return;await detectRegions(true);invalidateReview();});$('ocr-read').addEventListener('click',()=>void read());$('ocr-read-field').addEventListener('click',()=>void read(true));$('ocr-cancel').addEventListener('click',()=>{stop();$('ocr-progress-text').textContent='Reading cancelled. You can retry or enter values manually.';$('ocr-field-status').textContent=restoreReview()?'Reading cancelled. Other values were kept.':'Reading cancelled. You can retry or enter values manually.';});
     $('ocr-region-field').addEventListener('change',()=>{paintRegion();$('ocr-field-status').textContent='';});
     for(const key of tuningKeys)$('ocr-tune-'+key).addEventListener('input',()=>{const id=$('ocr-region-field').value;tunings[id]=C.tuning(id,Object.fromEntries(tuningKeys.map(k=>[k,k==='invert'?$('ocr-tune-'+k).checked:['mode','reader'].includes(k)?$('ocr-tune-'+k).value:Number($('ocr-tune-'+k).value)])));paintTuning();invalidateReview(id);$('ocr-field-status').textContent='Preview updated. Re-read this field to update its value.';});
     $('ocr-reset-tuning').addEventListener('click',()=>{const id=$('ocr-region-field').value;delete tunings[id];paintTuning();invalidateReview(id);$('ocr-field-status').textContent='Default image settings restored for this field.';});
-    for(const key of ['x','y','w','h'])$('ocr-region-'+key).addEventListener('change',()=>{try{const id=$('ocr-region-field').value,r=C.region(Object.fromEntries(['x','y','w','h'].map(k=>[k,Number($('ocr-region-'+k).value)/100])));if(id==='etc'){etcRegionDraft=r;commitEtcRegion();}else if(id==='use')MapleUseSlots.setScanRegion(r);else regions[id]=r;paintRegion();invalidateReview(id);error('ocr-error','');}catch(e){error('ocr-error',e.message);paintRegion();}});
+    for(const key of ['x','y','w','h'])$('ocr-region-'+key).addEventListener('change',()=>{try{const id=$('ocr-region-field').value,r=C.region(Object.fromEntries(['x','y','w','h'].map(k=>[k,Number($('ocr-region-'+k).value)/100])));if(id==='etc'){etcRegionDraft=r;commitEtcRegion();}else if(id==='use')MapleUseSlots.setScanRegion(r);else regions[id]=r;markManual(id);paintRegion();invalidateReview(id);error('ocr-error','');}catch(e){error('ocr-error',e.message);paintRegion();}});
     $('ocr-save-layout').addEventListener('click',()=>{try{localStorage.setItem(layoutKey,JSON.stringify(regions));localStorage.setItem(tuningKey,JSON.stringify(tunings));$('ocr-layout-status').textContent='Read regions and image settings remembered in this browser. The ETC grid is saved as you adjust it; the screenshot is not saved.';}catch{$('ocr-layout-status').textContent='Browser storage is unavailable; settings remain for this visit.';}});
-    $('ocr-reset-layout').addEventListener('click',()=>{regions=structuredClone(C.defaults);tunings={};MapleUseSlots?.resetScanRegion();if(etcRegionDraft){etcRegionDraft={...MapleEtcCapture.defaultRegion};commitEtcRegion();}try{localStorage.removeItem(layoutKey);localStorage.removeItem(legacyLayoutKey);localStorage.removeItem(tuningKey);}catch{}paintRegion();invalidateReview();$('ocr-layout-status').textContent='Example regions and image settings restored.';});
+    $('ocr-reset-layout').addEventListener('click',()=>{regions=structuredClone(C.defaults);tunings={};manuallyPlaced.clear();automaticallyPlaced.clear();MapleUseSlots?.resetScanRegion();if(etcRegionDraft){etcRegionDraft={...MapleEtcCapture.defaultRegion};commitEtcRegion();}try{localStorage.removeItem(layoutKey);localStorage.removeItem(legacyLayoutKey);localStorage.removeItem(tuningKey);localStorage.removeItem(autoRegionKey);}catch{}paintRegion();invalidateReview();$('ocr-layout-status').textContent='Example regions and image settings restored.';});
     const overlay=$('ocr-region-overlay'),point=event=>{const rect=overlay.getBoundingClientRect();return {x:Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width)),y:Math.max(0,Math.min(1,(event.clientY-rect.top)/rect.height))};};
     overlay.addEventListener('pointerdown',event=>{if(!image||busy||event.button!==0)return;event.preventDefault();drag=point(event);overlay.setPointerCapture(event.pointerId);});
     overlay.addEventListener('pointermove',event=>{if(!drag)return;const end=point(event),next={x:Math.min(drag.x,end.x),y:Math.min(drag.y,end.y),w:Math.abs(end.x-drag.x),h:Math.abs(end.y-drag.y)};if(next.w*image.naturalWidth<3||next.h*image.naturalHeight<3)return;const id=$('ocr-region-field').value;if(id==='etc')etcRegionDraft=C.region(next);else if(id==='use')MapleUseSlots.setScanRegion(next);else regions[id]=C.region(next);paintRegion();});
-    overlay.addEventListener('pointerup',()=>{if(drag){drag=null;if($('ocr-region-field').value==='etc')commitEtcRegion();invalidateReview($('ocr-region-field').value);}});overlay.addEventListener('pointercancel',()=>{drag=null;});
+    overlay.addEventListener('pointerup',()=>{if(drag){drag=null;const id=$('ocr-region-field').value;markManual(id);if(id==='etc')commitEtcRegion();invalidateReview(id);}});overlay.addEventListener('pointercancel',()=>{drag=null;});
     $('ocr-review-form').addEventListener('submit',event=>{
       event.preventDefault();if(busy||window.MapleUseSlots?.reading())return;
       try{

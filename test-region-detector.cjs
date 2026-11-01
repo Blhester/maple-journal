@@ -1,0 +1,22 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),{decode}=require('./lib/png-rgba.cjs');
+const C=require('./dist/ocr-core.js'),R=require('./dist/region-detector.js');
+const image=file=>decode(fs.readFileSync(file));
+const ref=image('dist/assets/ocr-example.png'),actual=image('fixtures/use-shortcuts-all.png');
+const near=(a,b,tolerance=3)=>assert(Math.abs(a-b)<=tolerance,`${a} should be near ${b}`);
+const direct=R.detectPixels(actual,ref,C.defaults);
+assert(direct.anchors.hud&&direct.anchors.inventory&&direct.anchors.minimap,'Independent UI anchors are present');
+near(direct.regions.exp.x*actual.width,1047);near(direct.regions.map.x*actual.width,67);
+near(direct.regions.mesos.x*actual.width,1628);near(direct.regions.etc.x*actual.width,1598);
+near(direct.regions.etc.y*actual.height,282);near(direct.regions.use.x*actual.width,1314);
+const blank={width:actual.width,height:actual.height,data:new Uint8ClampedArray(actual.width*actual.height*4).fill(255)};
+assert.equal(Object.keys(R.detectPixels(blank,ref,C.defaults).regions).length,0,'A blank image cannot replace calibrated regions');
+// A 1080p game can occupy only part of a 4K desktop capture.
+const desktop={width:3840,height:2160,data:new Uint8ClampedArray(3840*2160*4).fill(255)},left=200,top=100;
+for(let y=0;y<actual.height;y++)for(let x=0;x<actual.width;x++)desktop.data.set(actual.data.subarray((y*actual.width+x)*4,(y*actual.width+x)*4+4),((y+top)*desktop.width+x+left)*4);
+const shifted=R.detectPixels(desktop,ref,C.defaults);
+assert(shifted.anchors.hud&&shifted.anchors.inventory&&shifted.anchors.minimap,'Native-pixel fallback finds a window inside a 4K capture');
+near(shifted.regions.exp.x*desktop.width,1047+left);near(shifted.regions.exp.y*desktop.height,1037+top);
+near(shifted.regions.mesos.x*desktop.width,1628+left);near(shifted.regions.etc.x*desktop.width,1598+left);
+near(shifted.regions.use.y*desktop.height,828+top);
+console.log('Passed: local HUD/minimap/inventory anchors, transformed EXP/mesos/Use/ETC regions, blank-image fallback and windowed 1080p game inside a 4K screenshot.');

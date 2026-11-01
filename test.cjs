@@ -103,6 +103,7 @@ require('./test-exp-display-scaling.cjs');
 require('./test-level-inference.cjs');
 
 require('./test-maps.cjs');
+require('node:child_process').execFileSync(process.execPath,['test-region-detector.cjs'],{stdio:'inherit'});
 
 require('./test-capture.cjs');
 require('./test-capture-controls.cjs');
