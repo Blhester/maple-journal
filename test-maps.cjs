@@ -16,4 +16,8 @@ assert.equal(select('MINI MAP\nVictoria Road\nPerion').value,'Victoria Road · P
 assert.equal(select('Victoria Road: Perion').value,select('Victoria Road - Perion').value);
 assert.equal(select('Victoria Road · Perion').needsConfirmation,false);
 assert.equal(M.lookup('perion')[0].label,'Victoria Road · Perion');assert(M.lookup('ant tunnel').length<=5);assert.equal(M.lookup('Victoria Roar - Ferien')[0].label,'Victoria Road · Perion');
+for(const site of ['Excavation Site I','Excavation Site II','Excavation Site III','Excavation Site <Camp>']){
+  assert.equal(M.lookup(site)[0].label,'Victoria Road · '+site);
+  assert.equal(select('Victoria Road\n'+site).value,'Victoria Road · '+site);
+}
 console.log('Passed: MeowDB map catalog, all canonical labels, Ferien correction, either OCR reading, numeric map suffixes, ambiguous/empty rejection, and catalog-only suggestions.');

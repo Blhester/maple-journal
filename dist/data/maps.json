@@ -1,14 +1,10 @@
 {
   "schemaVersion": 1,
   "source": "https://meowdb.com/msclassic/maps",
-  "checkedAt": "2026-10-20T19:45:02.389Z",
+  "checkedAt": "2026-11-01T15:13:18.166Z",
   "scope": "Named maps in MeowDB Classic’s public English map index, including optional Ossyria content. Duplicate display names retain distinct source IDs. Unnamed numeric placeholders are excluded.",
-  "sourceMapCount": 429,
+  "sourceMapCount": 453,
   "excludedUnnamedIds": [
-    "080003000",
-    "080003100",
-    "080003200",
-    "080003300",
     "080003500"
   ],
   "maps": [
@@ -1155,17 +1151,24 @@
     },
     {
       "id": "010003110",
-      "name": "The Murky Swamp",
+      "name": "The Murky Swamp I",
       "street": "Hidden Street",
       "region": "Victoria Island",
       "sourceUrl": "https://meowdb.com/msclassic/maps/010003110"
     },
     {
       "id": "010003111",
-      "name": "Cabin of the Forsaken",
+      "name": "The Murky Swamp II",
       "street": "Hidden Street",
       "region": "Victoria Island",
       "sourceUrl": "https://meowdb.com/msclassic/maps/010003111"
+    },
+    {
+      "id": "010003112",
+      "name": "Cabin of the Forsaken",
+      "street": "Hidden Street",
+      "region": "Victoria Island",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/010003112"
     },
     {
       "id": "010004000",
@@ -1308,6 +1311,13 @@
       "sourceUrl": "https://meowdb.com/msclassic/maps/010004056"
     },
     {
+      "id": "010004057",
+      "name": "Parched Land",
+      "street": "Victoria Road",
+      "region": "Victoria Island",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/010004057"
+    },
+    {
       "id": "010004060",
       "name": "Rocky Road I",
       "street": "Victoria Road",
@@ -1418,6 +1428,90 @@
       "street": "Warning Street",
       "region": "Victoria Island",
       "sourceUrl": "https://meowdb.com/msclassic/maps/010004121"
+    },
+    {
+      "id": "010004130",
+      "name": "Excavation Site I",
+      "street": "Victoria Road",
+      "region": "Victoria Island",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/010004130"
+    },
+    {
+      "id": "010004131",
+      "name": "Excavation Site II",
+      "street": "Victoria Road",
+      "region": "Victoria Island",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/010004131"
+    },
+    {
+      "id": "010004132",
+      "name": "Excavation Site III",
+      "street": "Victoria Road",
+      "region": "Victoria Island",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/010004132"
+    },
+    {
+      "id": "010004133",
+      "name": "Excavation Site <Camp>",
+      "street": "Victoria Road",
+      "region": "Victoria Island",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/010004133"
+    },
+    {
+      "id": "010004134",
+      "name": "Remains <Tomb> I",
+      "street": "Victoria Road",
+      "region": "Victoria Island",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/010004134"
+    },
+    {
+      "id": "010004135",
+      "name": "Remains <Tomb> II",
+      "street": "Victoria Road",
+      "region": "Victoria Island",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/010004135"
+    },
+    {
+      "id": "010004136",
+      "name": "Remains <Tomb> III",
+      "street": "Victoria Road",
+      "region": "Victoria Island",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/010004136"
+    },
+    {
+      "id": "010004137",
+      "name": "Remains <Tomb> IV",
+      "street": "Victoria Road",
+      "region": "Victoria Island",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/010004137"
+    },
+    {
+      "id": "010004138",
+      "name": "Remains <Cliff>",
+      "street": "Victoria Road",
+      "region": "Victoria Island",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/010004138"
+    },
+    {
+      "id": "010004140",
+      "name": "Camp 1",
+      "street": "Victoria Road",
+      "region": "Victoria Island",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/010004140"
+    },
+    {
+      "id": "010004141",
+      "name": "Camp 2",
+      "street": "Victoria Road",
+      "region": "Victoria Island",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/010004141"
+    },
+    {
+      "id": "010004142",
+      "name": "Camp 3",
+      "street": "Victoria Road",
+      "region": "Victoria Island",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/010004142"
     },
     {
       "id": "010005000",
@@ -2797,6 +2891,104 @@
       "street": "Hidden Street",
       "region": "Hidden Street",
       "sourceUrl": "https://meowdb.com/msclassic/maps/080002011"
+    },
+    {
+      "id": "080002012",
+      "name": "Free Market <12>",
+      "street": "Hidden Street",
+      "region": "Hidden Street",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/080002012"
+    },
+    {
+      "id": "080002013",
+      "name": "Free Market <13>",
+      "street": "Hidden Street",
+      "region": "Hidden Street",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/080002013"
+    },
+    {
+      "id": "080002014",
+      "name": "Free Market <14>",
+      "street": "Hidden Street",
+      "region": "Hidden Street",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/080002014"
+    },
+    {
+      "id": "080002015",
+      "name": "Free Market <15>",
+      "street": "Hidden Street",
+      "region": "Hidden Street",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/080002015"
+    },
+    {
+      "id": "080002016",
+      "name": "Free Market <16>",
+      "street": "Hidden Street",
+      "region": "Hidden Street",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/080002016"
+    },
+    {
+      "id": "080002017",
+      "name": "Free Market <17>",
+      "street": "Hidden Street",
+      "region": "Hidden Street",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/080002017"
+    },
+    {
+      "id": "080002018",
+      "name": "Free Market <18>",
+      "street": "Hidden Street",
+      "region": "Hidden Street",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/080002018"
+    },
+    {
+      "id": "080002019",
+      "name": "Free Market <19>",
+      "street": "Hidden Street",
+      "region": "Hidden Street",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/080002019"
+    },
+    {
+      "id": "080002020",
+      "name": "Free Market <20>",
+      "street": "Hidden Street",
+      "region": "Hidden Street",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/080002020"
+    },
+    {
+      "id": "080003000",
+      "name": "Primrose Hill",
+      "street": "Hidden Street",
+      "region": "Hidden Street",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/080003000"
+    },
+    {
+      "id": "080003100",
+      "name": "Shortcut",
+      "street": "Hidden Street",
+      "region": "Hidden Street",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/080003100"
+    },
+    {
+      "id": "080003200",
+      "name": "Pig Town",
+      "street": "Hidden Street",
+      "region": "Hidden Street",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/080003200"
+    },
+    {
+      "id": "080003300",
+      "name": "Back to Town",
+      "street": "Hidden Street",
+      "region": "Hidden Street",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/080003300"
+    },
+    {
+      "id": "080003400",
+      "name": "Shortcut",
+      "street": "Hidden Street",
+      "region": "Hidden Street",
+      "sourceUrl": "https://meowdb.com/msclassic/maps/080003400"
     },
     {
       "id": "088000000",
