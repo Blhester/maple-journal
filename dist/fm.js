@@ -22,11 +22,7 @@
     }catch{message('The saved FM list could not be read. Your current list starts empty; the training journal is unaffected.',true);}
   }
   function save(){try{localStorage.setItem(key,JSON.stringify(data));}catch{message('Browser storage is unavailable. Copy the shop list before closing this tab.',true);}}
-  function matches(query){const words=query.toLowerCase().trim().split(/\s+/).filter(Boolean);if(!words.length)return [];
-    return catalog.filter(item=>words.every(word=>(item.name+' '+item.type+' '+item.subtype+' '+item.id).toLowerCase().includes(word))).sort((a,b)=>{
-      const aStart=a.name.toLowerCase().startsWith(words[0]),bStart=b.name.toLowerCase().startsWith(words[0]);return Number(bStart)-Number(aStart)||a.name.localeCompare(b.name);
-    }).slice(0,24);
-  }
+  function matches(query){return math.search(catalog,query);}
   function hideSearch(){const host=$('fm-search-results');host.hidden=true;$('fm-search').setAttribute('aria-expanded','false');}
   function choose(item){selected=item;$('fm-search').value=item.name;hideSearch();const host=$('fm-selected');host.replaceChildren(icon(item),element('strong',item.name),element('span',item.type+(item.subtype?' · '+item.subtype:'')));$('fm-bought').focus();message('');}
   function showSearch(){const query=$('fm-search').value.trim(),host=$('fm-search-results');host.replaceChildren();if(!query){hideSearch();return;}

@@ -30,7 +30,19 @@
     return {...row,status:'sold',soldAt:at,soldFeePercent:feeRate(percent)};
   }
   function unarchive(row){const restored={...row,status:'active'};delete restored.soldAt;delete restored.soldFeePercent;return restored;}
-  const api={integer,feeRate,estimate,summary,split,archive,unarchive};
+  function search(catalog,query,limit=24){
+    const words=String(query).toLowerCase().trim().split(/\s+/).filter(Boolean);
+    if(!words.length)return [];
+    return catalog.filter(item=>{
+      const aliases=item.type==='Cash Equip'||item.type==='Cash'?' nx cosmetic':'';
+      const haystack=(item.name+' '+item.type+' '+item.subtype+' '+item.id+aliases).toLowerCase();
+      return words.every(word=>haystack.includes(word));
+    }).sort((a,b)=>{
+      const aStart=a.name.toLowerCase().startsWith(words[0]),bStart=b.name.toLowerCase().startsWith(words[0]);
+      return Number(bStart)-Number(aStart)||a.name.localeCompare(b.name);
+    }).slice(0,limit);
+  }
+  const api={integer,feeRate,estimate,summary,split,archive,unarchive,search};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   else root.MapleFmMath=api;
 })(typeof window!=='undefined'?window:globalThis);

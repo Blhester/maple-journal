@@ -88,3 +88,5 @@ Completed: active ETC inventory scan, per-item exclusions, duplicate-stack aggre
 [x] Replace new-run ETC watch-list setup with default all-visible-cell detection, first-readable automatic baseline, new-item/new-stack vendor valuation and per-item opt-out.
 [ ] Validate ETC icon matching against more user screenshots with varying inventory scales and positions.
 [x] Detect HUD, minimap and inventory UI anchors on the starting screenshot; place EXP/level/map/class, mesos, Use and ETC regions with safe fallback, a manual rerun control and a 4K windowed-game test.
+
+- [x] Include MeowDB Cash Equip/NX cosmetics and icons in the FM item picker; support NX searches.

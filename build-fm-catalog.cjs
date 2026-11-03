@@ -6,7 +6,7 @@ function build(){
   if(catalog.schemaVersion!==1||!Array.isArray(catalog.items)||catalog.items.length<2000)throw Error('FM item catalog is missing or incomplete');
   const ids=new Set();
   for(const item of catalog.items){
-    if(!/^\d+$/.test(item.id)||ids.has(item.id)||!['Equip','Use','Etc','Setup','Cash'].includes(item.type)||typeof item.name!=='string'||!item.name.trim()||item.sourceUrl!==`https://meowdb.com/msclassic/item-db/${item.id}`)throw Error('Invalid FM item metadata');
+    if(!/^\d+$/.test(item.id)||ids.has(item.id)||!['Equip','Use','Etc','Setup','Cash','Cash Equip'].includes(item.type)||typeof item.name!=='string'||!item.name.trim()||item.sourceUrl!==`https://meowdb.com/msclassic/item-db/${item.id}`)throw Error('Invalid FM item metadata');
     if(item.icon&&(!/^assets\/fm\/\d+\.png$/.test(item.icon)||!fs.existsSync(path.join(dist,item.icon))))throw Error('Missing FM icon: '+item.icon);
     ids.add(item.id);
   }

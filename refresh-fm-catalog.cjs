@@ -3,7 +3,7 @@
  */
 'use strict';
 const fs=require('node:fs/promises'),path=require('node:path');
-const root=__dirname,base='https://meowdb.com',types=['Equip','Use','Etc','Setup','Cash'];
+const root=__dirname,base='https://meowdb.com',types=['Equip','Use','Etc','Setup','Cash','Cash Equip'];
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function request(url,binary=false){
   for(let attempt=0;attempt<3;attempt++){
@@ -22,9 +22,9 @@ async function request(url,binary=false){
 async function main(){
   const items=[],seen=new Set(),iconKeys=new Set(),counts={};
   for(const type of types){
-    const count=await request(`${base}/msclassic/api/items/count?type=${type}&ossyria=1`);let fetched=0;
+    const count=await request(`${base}/msclassic/api/items/count?type=${encodeURIComponent(type)}&ossyria=1`);let fetched=0;
     for(let page=1;page<=100;page++){
-      const data=await request(`${base}/msclassic/api/items?type=${type}&ossyria=1&page=${page}&limit=100&locale=en`);
+      const data=await request(`${base}/msclassic/api/items?type=${encodeURIComponent(type)}&ossyria=1&page=${page}&limit=100&locale=en`);
       if(!Array.isArray(data.items))throw Error('Unexpected item response');
       for(const row of data.items){
         if(row.type!==type||!Number.isSafeInteger(row.id)||seen.has(row.id))throw Error('Unexpected or duplicate item');
@@ -44,7 +44,7 @@ async function main(){
   }
   const iconDir=path.join(root,'dist','assets','fm');await fs.mkdir(iconDir,{recursive:true});
   const keys=[...iconKeys];let next=0,downloaded=0;
-  await Promise.all(Array.from({length:3},async()=>{
+  await Promise.all(Array.from({length:8},async()=>{
     while(next<keys.length){
       const key=keys[next++],file=path.join(iconDir,key+'.png');
       try{await fs.access(file);continue;}catch{}
@@ -53,7 +53,7 @@ async function main(){
     }
   }));
   items.sort((a,b)=>a.name.localeCompare(b.name,'en')||a.type.localeCompare(b.type)||Number(a.id)-Number(b.id));
-  const catalog={schemaVersion:1,checkedAt:new Date().toISOString(),source:`${base}/msclassic/item-db`,scope:'MeowDB Classic Equip, Use, Etc, Setup and Cash items with Ossyria enabled. Names and icons only; player market prices are entered by the user.',counts,items};
+  const catalog={schemaVersion:1,checkedAt:new Date().toISOString(),source:`${base}/msclassic/item-db`,scope:'MeowDB Classic Equip, Use, Etc, Setup, Cash and Cash Equip items with Ossyria enabled. Names and icons only; player market prices are entered by the user.',counts,items};
   await fs.writeFile(path.join(root,'dist','data','fm-items.json'),JSON.stringify(catalog)+'\n');
   console.log(`Saved ${items.length} searchable items, ${iconKeys.size} icons (${downloaded} downloaded).`);
 }
